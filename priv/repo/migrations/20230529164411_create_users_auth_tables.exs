@@ -6,13 +6,15 @@ defmodule Tc.Repo.Migrations.CreateUsersAuthTables do
 
     create table(:users, primary_key: false) do
       add :id, :binary_id, primary_key: true
+      add :name, :string, null: false
       add :email, :citext, null: false
+      add :avatar_upload, :string
       add :hashed_password, :string, null: false
       add :confirmed_at, :naive_datetime
       timestamps()
     end
 
-    create unique_index(:users, [:email])
+    create unique_index(:users, [:name, :email])
 
     create table(:users_tokens, primary_key: false) do
       add :id, :binary_id, primary_key: true
