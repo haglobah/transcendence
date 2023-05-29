@@ -4,7 +4,9 @@ defmodule Tc.Accounts.User do
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
   schema "users" do
+    field :name, :string
     field :email, :string
+    field :avatar_upload, :string
     field :password, :string, virtual: true, redact: true
     field :hashed_password, :string, redact: true
     field :confirmed_at, :naive_datetime
@@ -37,9 +39,18 @@ defmodule Tc.Accounts.User do
   """
   def registration_changeset(user, attrs, opts \\ []) do
     user
-    |> cast(attrs, [:email, :password])
+    |> cast(attrs, [:name, :email, :password])
+    |> validate_name(opts)
     |> validate_email(opts)
     |> validate_password(opts)
+  end
+
+  defp validate_name(changeset, opts) do
+    changeset
+    |> validate_required([:name])
+    |> validate_format(:name, ~r/^[^\s]+$/, message: "must have no spaces")
+    |> validate_length(:name, min: 5, max: 15)
+    |> maybe_validate_unique_name(opts)
   end
 
   defp validate_email(changeset, opts) do
@@ -73,6 +84,16 @@ defmodule Tc.Accounts.User do
       # would keep the database transaction open longer and hurt performance.
       |> put_change(:hashed_password, Bcrypt.hash_pwd_salt(password))
       |> delete_change(:password)
+    else
+      changeset
+    end
+  end
+
+  defp maybe_validate_unique_name(changeset, opts) do
+    if Keyword.get(opts, :validate_name, true) do
+      changeset
+      |> unsafe_validate_unique(:name, Tc.Repo)
+      |> unique_constraint(:name)
     else
       changeset
     end
