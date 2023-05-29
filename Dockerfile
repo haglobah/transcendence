@@ -41,7 +41,7 @@ ARG UID=1000
 ARG GID=1000
 
 RUN apt-get update \
-  && apt-get install -y --no-install-recommends build-essential curl inotify-tools \
+  && apt-get install -y --no-install-recommends ca-certificates build-essential curl inotify-tools \
   && rm -rf /var/lib/apt/lists/* /usr/share/doc /usr/share/man \
   && apt-get clean \
   && groupadd -g "${GID}" elixir \
