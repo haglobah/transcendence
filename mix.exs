@@ -28,6 +28,7 @@ defmodule Tc.MixProject do
 
   defp deps do
     [
+      {:bcrypt_elixir, "~> 3.0"},
       {:credo, "1.7.0", only: [:dev, :test], runtime: false},
       {:ecto_sql, "3.10.1"},
       {:excoveralls, "0.16.1", only: [:dev, :test]},
