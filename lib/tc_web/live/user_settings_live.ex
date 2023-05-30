@@ -10,6 +10,16 @@ defmodule TcWeb.UserSettingsLive do
       <:subtitle>Manage your account email address and password settings</:subtitle>
     </.header>
 
+    <div>
+      <h2 class="text-2xl my-5">
+        <%= @current_user.name %>
+      </h2>
+      <img
+        alt="user_avatar" width="200"
+        src={@current_user.avatar_upload}
+        />
+    </div>
+
     <div class="space-y-12 divide-y">
       <div>
         <.simple_form
