@@ -170,7 +170,7 @@ defmodule TcWeb.UserSettingsLive do
     {:ok, socket}
   end
 
-  def handle_event("update_avatar", %{"user" => user_params}, socket) do
+  def handle_event("update_avatar", user_params, socket) do
     user_params = params_with_image(socket, user_params)
     user = socket.assigns.current_user
 
@@ -181,7 +181,7 @@ defmodule TcWeb.UserSettingsLive do
         {:noreply, socket |> put_flash(:info, info)}
 
       {:error, changeset} ->
-        {:noreply, assign(socket, :avatar_form, to_form(Map.put(changeset, :action, :insert)))}
+        {:noreply, assign(socket, avatar_form: to_form(changeset))}
     end
   end
 

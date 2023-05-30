@@ -76,7 +76,9 @@ defmodule TcWeb.UserRegistrationLive do
   end
 
   def handle_event("save", %{"user" => user_params}, socket) do
+    IO.inspect(user_params)
     user_params = params_with_image(socket, user_params)
+    IO.inspect(user_params)
 
     case Accounts.register_user(user_params) do
       {:ok, user} ->
