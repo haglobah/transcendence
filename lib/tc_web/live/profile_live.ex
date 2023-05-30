@@ -18,7 +18,7 @@ defmodule TcWeb.ProfileLive do
     """
   end
 
-  def mount(%{"user_name" => user_name} = params, _session, socket) do
+  def mount(%{"user_name" => user_name}, _session, socket) do
     profile = Accounts.get_user_by_name(user_name)
 
     {:ok,
