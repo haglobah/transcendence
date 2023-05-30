@@ -110,6 +110,14 @@ defmodule Tc.Accounts.User do
   end
 
   @doc """
+  A user changeset for changing the user avatar.
+  """
+  def avatar_changeset(user, attrs, _opts \\ []) do
+    user
+    |> cast(attrs, [:avatar_upload])
+  end
+
+  @doc """
   A user changeset for changing the name.
 
   It requires the name to change otherwise an error is added.

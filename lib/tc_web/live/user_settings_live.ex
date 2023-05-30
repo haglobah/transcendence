@@ -18,6 +18,29 @@ defmodule TcWeb.UserSettingsLive do
         alt="user_avatar" width="200"
         src={@current_user.avatar_upload}
         />
+      <.simple_form
+        for={@avatar_form}
+        multipart
+        id="avatar_form"
+        phx-submit="update_avatar"
+      >
+        <div phx-drop-target={ @uploads.image.ref}>
+          <label>Avatar</label>
+          <.live_file_input upload={ @uploads.image} />
+        </div>
+        <:actions>
+          <.button phx-disable-with="Changing...">Change Avatar</.button>
+        </:actions>
+      </.simple_form>
+      <%= for image <- @uploads.image.entries do %>
+        <div class="mt-4">
+          <.live_img_preview entry={image} width="60" />
+        </div>
+        <progress value={image.progress} max="100" />
+        <%= for err <- upload_errors(@uploads.image, image) do %>
+          <.error><%= err %></.error>
+        <% end %>
+      <% end %>
     </div>
 
     <div class="space-y-12 divide-y">
@@ -39,7 +62,7 @@ defmodule TcWeb.UserSettingsLive do
             required
           />
           <:actions>
-            <.button phx-disable-with="Changing...">Change Email</.button>
+            <.button phx-disable-with="Changing...">Change Username</.button>
           </:actions>
         </.simple_form>
       </div>
@@ -120,6 +143,7 @@ defmodule TcWeb.UserSettingsLive do
 
   def mount(_params, _session, socket) do
     user = socket.assigns.current_user
+    avatar_changeset = Accounts.change_user_avatar(user)
     name_changeset = Accounts.change_user_name(user)
     email_changeset = Accounts.change_user_email(user)
     password_changeset = Accounts.change_user_password(user)
@@ -129,14 +153,36 @@ defmodule TcWeb.UserSettingsLive do
       |> assign(:current_password, nil)
       |> assign(:name_form_current_password, nil)
       |> assign(:email_form_current_password, nil)
+      |> assign(:current_avatar_upload, user.avatar_upload)
       |> assign(:current_name, user.name)
       |> assign(:current_email, user.email)
+      |> assign(:avatar_form, to_form(avatar_changeset))
       |> assign(:name_form, to_form(name_changeset))
       |> assign(:email_form, to_form(email_changeset))
       |> assign(:password_form, to_form(password_changeset))
       |> assign(:trigger_submit, false)
+      |> allow_upload(:image,
+        accept: ~w(.jpg .jpeg .png),
+        max_entries: 1,
+        max_file_size: 9_000_000,
+        auto_upload: true)
 
     {:ok, socket}
+  end
+
+  def handle_event("update_avatar", %{"user" => user_params}, socket) do
+    user_params = params_with_image(socket, user_params)
+    user = socket.assigns.current_user
+
+    case Accounts.update_user_avatar(user, user_params) do
+      {:ok, _updated_user} ->
+
+        info = "You have successfully changed your avatar"
+        {:noreply, socket |> put_flash(:info, info)}
+
+      {:error, changeset} ->
+        {:noreply, assign(socket, :avatar_form, to_form(Map.put(changeset, :action, :insert)))}
+    end
   end
 
   def handle_event("validate_name", params, socket) do
@@ -226,5 +272,23 @@ defmodule TcWeb.UserSettingsLive do
       {:error, changeset} ->
         {:noreply, assign(socket, password_form: to_form(changeset))}
     end
+  end
+
+  def params_with_image(socket, params) do
+    path =
+      socket
+      |> consume_uploaded_entries(:image, &upload_static_file/2)
+      |> List.first()
+
+    Map.put(params, "avatar_upload", path)
+  end
+
+  defp upload_static_file(%{path: path}, _entry) do
+    # Real image persistence
+    filename = Path.basename(path)
+    dest = Path.join("priv/static/images", filename)
+    File.cp!(path, dest)
+
+    {:ok, ~p"/images/#{filename}"}
   end
 end
