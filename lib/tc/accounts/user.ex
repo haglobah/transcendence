@@ -39,7 +39,7 @@ defmodule Tc.Accounts.User do
   """
   def registration_changeset(user, attrs, opts \\ []) do
     user
-    |> cast(attrs, [:name, :email, :password])
+    |> cast(attrs, [:name, :email, :password, :avatar_upload])
     |> validate_name(opts)
     |> validate_email(opts)
     |> validate_password(opts)
