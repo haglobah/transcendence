@@ -96,6 +96,19 @@ defmodule Tc.Accounts do
   ## Settings
 
   @doc """
+  Returns an `%Ecto.Changeset{}` for changing the user name.
+
+  ## Examples
+
+      iex> change_user_name(user)
+      %Ecto.Changeset{data: %User{}}
+
+  """
+  def change_user_name(user, attrs \\ %{}) do
+    User.name_changeset(user, attrs, validate_name: false)
+  end
+
+  @doc """
   Returns an `%Ecto.Changeset{}` for changing the user email.
 
   ## Examples
@@ -106,6 +119,19 @@ defmodule Tc.Accounts do
   """
   def change_user_email(user, attrs \\ %{}) do
     User.email_changeset(user, attrs, validate_email: false)
+  end
+
+    @doc """
+  Updates the username.
+  """
+  def update_user_name(user, password, attrs) do
+    changeset =
+      user
+      |> User.name_changeset(attrs)
+      |> User.validate_current_password(password)
+      |> User.confirm_changeset()
+
+    Repo.update(changeset, name: user.name)
   end
 
   @doc """

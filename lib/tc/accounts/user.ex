@@ -110,6 +110,21 @@ defmodule Tc.Accounts.User do
   end
 
   @doc """
+  A user changeset for changing the name.
+
+  It requires the name to change otherwise an error is added.
+  """
+  def name_changeset(user, attrs, opts \\ []) do
+    user
+    |> cast(attrs, [:name])
+    |> validate_name(opts)
+    |> case do
+      %{changes: %{name: _}} = changeset -> changeset
+      %{} = changeset -> add_error(changeset, :name, "did not change")
+    end
+  end
+
+  @doc """
   A user changeset for changing the email.
 
   It requires the email to change otherwise an error is added.
