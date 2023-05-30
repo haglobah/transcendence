@@ -27,6 +27,22 @@ defmodule Tc.Accounts do
   end
 
   @doc """
+  Gets a user by username.
+
+  ## Examples
+
+      iex> get_user_by_name("foo")
+      %User{}
+
+      iex> get_user_by_name("unknown")
+      nil
+
+  """
+  def get_user_by_name(name) when is_binary(name) do
+    Repo.get_by(User, name: name)
+  end
+
+  @doc """
   Gets a user by email and password.
 
   ## Examples

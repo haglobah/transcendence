@@ -49,7 +49,7 @@ defmodule Tc.Accounts.User do
     changeset
     |> validate_required([:name])
     |> validate_format(:name, ~r/^[^\s]+$/, message: "must have no spaces")
-    |> validate_length(:name, min: 5, max: 15)
+    |> validate_length(:name, min: 2, max: 15)
     |> maybe_validate_unique_name(opts)
   end
 
