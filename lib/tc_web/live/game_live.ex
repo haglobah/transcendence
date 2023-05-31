@@ -12,9 +12,9 @@ defmodule TcWeb.GameLive do
   def render(assigns) do
     ~H"""
     <.canvas view_box="0 0 100 100">
-      <% {lx, ly} = @state.paddle_right.position %>
+      <% {_lx, ly} = @state.paddle_right.position %>
       <.paddle x={2} y={ ly } />
-      <% {rx, ry} = @state.paddle_right.position %>
+      <% {_rx, ry} = @state.paddle_right.position %>
       <.paddle x={96} y={ ry } />
       <.ball x={50} y={50} />
       <.score left={0} right={0} />
@@ -51,11 +51,7 @@ defmodule TcWeb.GameLive do
     {:noreply, assign(socket, state: state)}
   end
 
-  defp handle_move(key, socket) do
-    case key do
-      "ArrowUp" -> Game.move_paddle(:paddle_right, :up)
-      "ArrowDown" -> Game.move_paddle(:paddle_right, :down)
-      _ -> socket
-    end
-  end
+  defp handle_move("ArrowUp", _socket), do: Game.move_paddle(:paddle_right, :up)
+  defp handle_move("ArrowDown", _socket), do: Game.move_paddle(:paddle_right, :down)
+  defp handle_move(_, socket), do: socket.state
 end
