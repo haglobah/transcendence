@@ -42,8 +42,8 @@ defmodule Tc.Game do
 
   def handle_call({:move, paddle, direction}, _from, state) do
     case direction do
-      :up -> make_change(state, paddle, {0, -10})
-      :down -> make_change(state, paddle, {0, 10})
+      :up -> make_change(state, paddle, {0, -1})
+      :down -> make_change(state, paddle, {0, 1})
     end
   end
 
