@@ -10,8 +10,8 @@ defmodule TcWeb.GameLive do
   def render(assigns) do
     ~H"""
     <.canvas view_box="0 0 100 100">
-      <.paddle x={0} y="40%" />
-      <.paddle x={98} y="40%" />
+      <.paddle x={2} y="37%" />
+      <.paddle x={96} y="37%" />
       <.ball x={50} y={50} />
       <.score left={0} right={0} />
     </.canvas>

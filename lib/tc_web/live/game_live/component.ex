@@ -13,7 +13,7 @@ defmodule TcWeb.GameLive.Component do
       phx-window-keyup="stop"
       fill="black">
       <defs>
-        <rect id="paddle" width="2" height="30"/>
+        <rect id="paddle" width="2" height="25"/>
         <rect id="ball" width="2" height="2"/>
 
       </defs>
