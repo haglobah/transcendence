@@ -8,8 +8,8 @@ defmodule Tc.Game.Ball do
     %__MODULE__{
       position: {0, 0},
       velocity: {0, 0},
-      width: 10,
-      height: 10,
+      width: 2,
+      height: 2,
     }
   end
 
