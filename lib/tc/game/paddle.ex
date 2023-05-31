@@ -8,13 +8,17 @@ defmodule Tc.Game.Paddle do
     %__MODULE__{
       position: {0, 0},
       velocity: {0, 0},
-      width: 10,
-      height: 10,
+      width: 2,
+      height: 25,
     }
   end
 
   def begin(paddle) do
     alter_velocity(paddle, {Enum.random(50..100), Enum.random(50..100)})
+  end
+
+  def change_position(state, paddle, {dx, dy} = _change) do
+    update_in(state.paddle_right.position, fn {x, y} -> {x + dx, y + dy} end)
   end
 
   def alter_velocity(paddle, velocity) when tuple_size(velocity) == 2 do
