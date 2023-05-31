@@ -53,5 +53,5 @@ defmodule TcWeb.GameLive do
 
   defp handle_move("ArrowUp", _socket), do: Game.move_paddle(:paddle_right, :up)
   defp handle_move("ArrowDown", _socket), do: Game.move_paddle(:paddle_right, :down)
-  defp handle_move(_, socket), do: socket.state
+  defp handle_move(_, socket), do: socket.assigns.state
 end
