@@ -12,8 +12,10 @@ defmodule TcWeb.GameLive do
   def render(assigns) do
     ~H"""
     <.canvas view_box="0 0 100 100">
-      <.paddle x={2} y={37} />
-      <.paddle x={96} y={37} />
+      <% {lx, ly} = @state.paddle_right.position %>
+      <.paddle x={2} y={ ly } />
+      <% {rx, ry} = @state.paddle_right.position %>
+      <.paddle x={96} y={ ry } />
       <.ball x={50} y={50} />
       <.score left={0} right={0} />
     </.canvas>
@@ -44,7 +46,7 @@ defmodule TcWeb.GameLive do
   end
 
   def handle_info({:game_state, state}, socket) do
-    IO.puts("\n\n\nSTATE:\n\n\n")
+    IO.puts("\nSTATE:\n")
     IO.inspect(state)
     {:noreply, assign(socket, state: state)}
   end
