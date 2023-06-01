@@ -2,9 +2,10 @@ defmodule TcWeb.GameLive do
   use TcWeb, :live_view
 
   alias Tc.Game
-  import TcWeb.GameLive.Component
-
+  alias Tc.Accounts
   alias TcWeb.Endpoint
+
+  import TcWeb.GameLive.Component
 
   @moduledoc """
   Main LiveView running the game.
@@ -26,11 +27,10 @@ defmodule TcWeb.GameLive do
     if connected?(socket) do
       Endpoint.subscribe(Game.topic())
     end
-    {:ok, initial_state} = Game.init(:t)
 
     {:ok,
     socket
-    |> assign(state: initial_state)
+    |> assign(state: Game.current_state())
     }
   end
 
