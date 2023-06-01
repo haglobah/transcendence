@@ -4,16 +4,18 @@ defmodule Tc.Game.State do
 
   @moduledoc """
   Keeps track of:
-    [:start_time, :time, :paddle_left, :paddle_right, :ball, :score]
+    [:start_time, :time, :player_left, :player_right, :paddle_left, :paddle_right, :ball, :score]
   """
 
-  defstruct [:start_time, :time, :paddle_left, :paddle_right, :ball, :score]
+  defstruct [:start_time, :time, :player_left, :player_right, :paddle_left, :paddle_right, :ball, :score]
 
-  def new() do
+  def new(player_left, player_right) do
     start_time = System.monotonic_time()
     %__MODULE__{
       start_time: start_time,
       time: start_time,
+      player_left: player_left,
+      player_right: player_right,
       paddle_left: Paddle.new(),
       paddle_right: Paddle.new(),
       ball: Ball.new(),

@@ -1,6 +1,7 @@
 defmodule Tc.Game do
   use GenServer
 
+  alias Tc.Game.Queue
   alias Tc.Game.State
   alias Tc.Game.Paddle
   alias Phoenix.PubSub
@@ -26,19 +27,28 @@ defmodule Tc.Game do
   end
 
   def start_link(_opts) do
-    GenServer.start_link(__MODULE__, nil, name: @name)
+    players = Queue.get()
+    GenServer.start_link(__MODULE__, players, name: @name)
+  end
+
+  def current_state() do
+    GenServer.call @name, :current
   end
 
   def move_paddle(paddle, direction) do
     GenServer.call @name, {:move, paddle, direction}
   end
 
-  def init(_) do
+  def init({player_left, player_right}) do
     # tick?
-    {:ok, State.new()}
+    {:ok, State.new(player_left, player_right)}
   end
 
   # Implementation (runs in the GenServer Process)
+
+  def handle_call(:current, _from, state) do
+    {:reply, state, state}
+  end
 
   def handle_call({:move, paddle, direction}, _from, state) do
     case direction do
