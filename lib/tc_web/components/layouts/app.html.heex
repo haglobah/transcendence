@@ -2,7 +2,9 @@
   <div class="flex items-center justify-between border-b border-zinc-100 py-3 text-sm">
     <%= if @current_user do %>
       <div class="flex items-center gap-4">
+        <.link href={~p"/"}>Home</.link>
 	  	<.button phx-click="enqueue">Start Game</.button>
+        <.link href={~p"/index"}>Main Page</.link>
         <.link href={~p"/game"}>Game</.link>
         <.link href={~p"/survey"}>Survey</.link>
         <.link href={~p"/users/settings"}>Settings</.link>
