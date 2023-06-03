@@ -1,7 +1,6 @@
 defmodule Tc.Game do
   use GenServer
 
-  alias Tc.Game.Queue
   alias Tc.Game.State
   alias Tc.Game.Paddle
   alias Phoenix.PubSub
