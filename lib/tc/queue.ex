@@ -13,6 +13,7 @@ defmodule Tc.Queue do
   def enqueue(user) do
     GenServer.call @name, %{enq: user}
   end
+
   def current() do
     GenServer.call @name, :current
   end
@@ -22,14 +23,16 @@ defmodule Tc.Queue do
   end
 
   def handle_call(%{enq: user}, _from, state) do
-    IO.puts("Appending")
-    IO.inspect(user)
-    IO.puts("to")
-    IO.inspect(state)
-    IO.puts(":")
-    state = [user | state]
-    IO.inspect(state)
-    {:reply, state, state}
+    case length(state) do
+      1 ->
+        player_left = hd(state)
+        player_right = user
+        DynamicSupervisor.start_child(Tc.GameSupervisor, {Game, :_?})
+        {:reply, [], []}
+      0 ->
+        state = [user | state]
+        {:reply, state, state}
+    end
   end
 
   def handle_call(:current, _from, state) do
