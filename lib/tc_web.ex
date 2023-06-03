@@ -57,6 +57,11 @@ defmodule TcWeb do
       use Phoenix.LiveView,
         layout: {TcWeb.Layouts, :app}
 
+      def handle_event("enqueue", _params, socket) do
+        Tc.Queue.enqueue(socket.assigns.current_user)
+        {:noreply, socket}
+      end
+
       unquote(html_helpers())
     end
   end
