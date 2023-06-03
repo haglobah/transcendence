@@ -12,12 +12,14 @@ defmodule Tc.Application do
       TcWeb.Telemetry,
       # Start the PubSub System
       {Phoenix.PubSub, name: Tc.PubSub},
+      # Start the Game Supervisor
+      {DynamicSupervisor, name: Tc.GameSupervisor, strategy: :one_for_one},
       # Start the Endpoint (http/https)
       TcWeb.Endpoint,
       # Start a worker by calling: Tc.Worker.start_link(arg)
       # {Tc.Worker, arg}
-      # Start the App state
-      Tc.Game,
+      # Start the Game queue
+      Tc.Queue,
     ]
 
     opts = [strategy: :one_for_one, name: Tc.Supervisor]
