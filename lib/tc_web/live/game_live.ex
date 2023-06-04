@@ -23,14 +23,14 @@ defmodule TcWeb.GameLive do
     """
   end
 
-  def mount(_params, _session, socket) do
+  def mount(%{"game_id" => game_id}, _session, socket) do
     if connected?(socket) do
       Endpoint.subscribe(Game.topic())
     end
 
     {:ok,
     socket
-    |> assign(state: Game.current_state())
+    |> assign(state: Game.current_state(game_id))
     }
   end
 
@@ -46,23 +46,21 @@ defmodule TcWeb.GameLive do
   end
 
   def handle_info({:game_state, state}, socket) do
-    IO.puts("\nSTATE:\n")
     IO.inspect(state)
     {:noreply, assign(socket, state: state)}
   end
 
   defp handle_move("ArrowUp", user, state) when user == state.player_right do
-      Game.move_paddle(:paddle_right, :up)
+      Game.move_paddle(state.game_id, :paddle_right, :up)
     end
   defp handle_move("ArrowDown", user, state) when user == state.player_right do
-      Game.move_paddle(:paddle_right, :down)
+      Game.move_paddle(state.game_id, :paddle_right, :down)
     end
   defp handle_move("ArrowUp", user, state) when user == state.player_left do
-      IO.puts("here!")
-      Game.move_paddle(:paddle_left, :up)
+      Game.move_paddle(state.game_id, :paddle_left, :up)
     end
   defp handle_move("ArrowDown", user, state) when user == state.player_left do
-      Game.move_paddle(:paddle_left, :down)
+      Game.move_paddle(state.game_id, :paddle_left, :down)
     end
   defp handle_move(_, _user, state), do: state
 end

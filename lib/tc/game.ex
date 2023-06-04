@@ -5,7 +5,7 @@ defmodule Tc.Game do
   alias Tc.Game.Paddle
   alias Phoenix.PubSub
 
-  @name :game_server
+  @registry :game_registry
 
   @fps 60
   @tick_ms div(1000, @fps)
@@ -25,16 +25,16 @@ defmodule Tc.Game do
     "move"
   end
 
-  def start_link({_, _, _game_id} = init_game) do
-    GenServer.start_link(__MODULE__, init_game, name: @name)
+  def start_link({_, _, game_id} = init_game) do
+    GenServer.start_link(__MODULE__, init_game, name: via_tuple(game_id))
   end
 
-  def current_state() do
-    GenServer.call @name, :current
+  def current_state(game_id) do
+    game_id |> via_tuple() |> GenServer.call(:current)
   end
 
-  def move_paddle(paddle, direction) do
-    GenServer.call @name, {:move, paddle, direction}
+  def move_paddle(game_id, paddle, direction) do
+    game_id |> via_tuple() |> GenServer.call({:move, paddle, direction})
   end
 
   def init({left, right, game_id}) do
@@ -62,6 +62,7 @@ defmodule Tc.Game do
     {:reply, new_state, new_state}
   end
 
+  defp via_tuple(game_id), do: {:via, Registry, {@registry, game_id}}
 
   # @impl true
   # def init(_) do
