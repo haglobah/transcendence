@@ -58,8 +58,19 @@ defmodule TcWeb do
         layout: {TcWeb.Layouts, :app}
 
       def handle_event("enqueue", _params, socket) do
+        TcWeb.Endpoint.subscribe(Tc.Queue.topic())
         Tc.Queue.enqueue(socket.assigns.current_user)
         {:noreply, socket}
+      end
+
+      def handle_info({player_left, player_right, route}, socket) do
+        if socket.assigns.current_user == player_left
+        || socket.assigns.current_user == player_right do
+          TcWeb.Endpoint.unsubscribe(Tc.Queue.topic())
+          {:noreply, push_navigate(socket, to: "/game/#{route}")}
+        else
+          {:noreply, socket}
+        end
       end
 
       unquote(html_helpers())

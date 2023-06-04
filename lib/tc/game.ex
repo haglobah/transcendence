@@ -25,8 +25,7 @@ defmodule Tc.Game do
     "move"
   end
 
-  def start_link(_opts) do
-    players = Queue.get()
+  def start_link(players) do
     GenServer.start_link(__MODULE__, players, name: @name)
   end
 
