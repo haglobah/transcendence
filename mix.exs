@@ -37,6 +37,7 @@ defmodule Tc.MixProject do
       {:gettext, "0.22.1"},
       {:heroicons, "0.5.2"},
       {:jason, "1.4.0"},
+      {:nanoid, "~> 2.0.5"},
       {:phoenix, "1.7.2"},
       {:phoenix_ecto, "4.4.1"},
       {:phoenix_html, "3.3.1"},

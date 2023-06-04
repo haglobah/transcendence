@@ -25,8 +25,8 @@ defmodule Tc.Game do
     "move"
   end
 
-  def start_link(players) do
-    GenServer.start_link(__MODULE__, players, name: @name)
+  def start_link(init_game) do
+    GenServer.start_link(__MODULE__, init_game, name: @name)
   end
 
   def current_state() do
@@ -37,9 +37,9 @@ defmodule Tc.Game do
     GenServer.call @name, {:move, paddle, direction}
   end
 
-  def init({player_left, player_right}) do
+  def init({left, right, game_id}) do
     # tick?
-    {:ok, State.new(player_left, player_right)}
+    {:ok, State.new(left, right, game_id)}
   end
 
   # Implementation (runs in the GenServer Process)

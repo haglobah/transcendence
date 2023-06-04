@@ -63,11 +63,11 @@ defmodule TcWeb do
         {:noreply, socket}
       end
 
-      def handle_info({player_left, player_right, route}, socket) do
-        if socket.assigns.current_user == player_left
-        || socket.assigns.current_user == player_right do
+      def handle_info({left, right, game_id}, socket) do
+        if socket.assigns.current_user == left
+        || socket.assigns.current_user == right do
           TcWeb.Endpoint.unsubscribe(Tc.Queue.topic())
-          {:noreply, push_navigate(socket, to: "/game/#{route}")}
+          {:noreply, push_navigate(socket, to: "/game/#{game_id}")}
         else
           {:noreply, socket}
         end

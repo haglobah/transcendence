@@ -30,11 +30,11 @@ defmodule Tc.Queue do
   def handle_call(%{enq: user}, _from, state) do
     case length(state) do
       1 ->
-        player_left = hd(state)
-        player_right = user
-        route = "aaa"
-        DynamicSupervisor.start_child(Tc.GameSupervisor, {Game, {player_left, player_right}})
-        Phoenix.PubSub.broadcast(Tc.PubSub, topic(), {player_left, player_right, route})
+        left = hd(state)
+        right = user
+        game_id = Nanoid.generate()
+        DynamicSupervisor.start_child(Tc.GameSupervisor, {Game, {left, right, game_id}})
+        Phoenix.PubSub.broadcast(Tc.PubSub, topic(), {left, right, game_id})
         {:reply, [], []}
       0 ->
         state = [user | state]
