@@ -3,8 +3,13 @@ defmodule Tc.Queue do
 
   alias Tc.Game
   alias Tc.Accounts
+  alias TcWeb.Endpoint
 
   @name :game_queue
+
+  def topic() do
+    "in_queue"
+  end
 
   def start_link(_opts) do
     GenServer.start_link(__MODULE__, [], name: @name)
@@ -27,7 +32,9 @@ defmodule Tc.Queue do
       1 ->
         player_left = hd(state)
         player_right = user
-        DynamicSupervisor.start_child(Tc.GameSupervisor, {Game, :_?})
+        route = "aaa"
+        DynamicSupervisor.start_child(Tc.GameSupervisor, {Game, {player_left, player_right}})
+        Phoenix.PubSub.broadcast(Tc.PubSub, topic(), {player_left, player_right, route})
         {:reply, [], []}
       0 ->
         state = [user | state]
@@ -37,11 +44,5 @@ defmodule Tc.Queue do
 
   def handle_call(:current, _from, state) do
     {:reply, state, state}
-  end
-
-  def get() do
-    player_left = Accounts.get_user_by_email("max@example.com")
-    player_right = Accounts.get_user_by_email("talea@example.com")
-    {player_left, player_right}
   end
 end
