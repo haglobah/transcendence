@@ -1,7 +1,7 @@
 defmodule TcWeb.HomeLive do
   use TcWeb, :live_view
 
-  alias Tc.Accounts
+  # alias Tc.Accounts
 
   @moduledoc """
   The home page one accesses when logged in.

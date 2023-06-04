@@ -2,8 +2,7 @@ defmodule Tc.Queue do
   use GenServer
 
   alias Tc.Game
-  alias Tc.Accounts
-  alias TcWeb.Endpoint
+  alias Phoenix.PubSub
 
   @name :game_queue
 
@@ -34,7 +33,7 @@ defmodule Tc.Queue do
         right = user
         game_id = Nanoid.generate()
         DynamicSupervisor.start_child(Tc.GameSupervisor, {Game, {left, right, game_id}})
-        Phoenix.PubSub.broadcast(Tc.PubSub, topic(), {left, right, game_id})
+        PubSub.broadcast(Tc.PubSub, topic(), {left, right, game_id})
         {:reply, [], []}
       0 ->
         state = [user | state]
