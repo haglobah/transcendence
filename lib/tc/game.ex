@@ -25,7 +25,7 @@ defmodule Tc.Game do
     "move"
   end
 
-  def start_link(init_game) do
+  def start_link({_, _, _game_id} = init_game) do
     GenServer.start_link(__MODULE__, init_game, name: @name)
   end
 

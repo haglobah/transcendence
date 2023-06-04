@@ -17,8 +17,11 @@ defmodule Tc.Game.Paddle do
     alter_velocity(paddle, {Enum.random(50..100), Enum.random(50..100)})
   end
 
-  def change_position(state, _paddle, {dx, dy} = _change) do
+  def change_position(state, :paddle_right, {dx, dy} = _change) do
     update_in(state.paddle_right.position, fn {x, y} -> {x + dx, y + dy} end)
+  end
+  def change_position(state, :paddle_left, {dx, dy} = _change) do
+    update_in(state.paddle_left.position, fn {x, y} -> {x + dx, y + dy} end)
   end
 
   def alter_velocity(paddle, velocity) when tuple_size(velocity) == 2 do
