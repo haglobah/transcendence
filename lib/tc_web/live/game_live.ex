@@ -25,7 +25,7 @@ defmodule TcWeb.GameLive do
 
   def mount(%{"game_id" => game_id}, _session, socket) do
     if connected?(socket) do
-      Endpoint.subscribe(Game.topic())
+      Endpoint.subscribe(Game.topic(game_id))
     end
 
     {:ok,
