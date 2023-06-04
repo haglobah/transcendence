@@ -7,12 +7,12 @@ defmodule Tc.Game.State do
     [:start_time, :time, :player_left, :player_right, :paddle_left, :paddle_right, :ball, :score]
   """
 
-  defstruct [:id, :start_time, :time, :player_left, :player_right, :paddle_left, :paddle_right, :ball, :score]
+  defstruct [:game_id, :start_time, :time, :player_left, :player_right, :paddle_left, :paddle_right, :ball, :score]
 
   def new(player_left, player_right, game_id) do
     start_time = System.monotonic_time()
     %__MODULE__{
-      id: game_id,
+      game_id: game_id,
       start_time: start_time,
       time: start_time,
       player_left: player_left,
