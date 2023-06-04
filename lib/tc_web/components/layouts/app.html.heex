@@ -2,7 +2,7 @@
   <div class="flex items-center justify-between border-b border-zinc-100 py-3 text-sm">
     <%= if @current_user do %>
       <div class="flex items-center gap-4">
-        <.link href={~p"/"}>
+        <.link href={~p"/home"}>
 		  <svg viewBox="0 0 55 55" class="h-8">
 			<rect x="0" y="0" width="55" height="55" fill="#fff"/>
 			<rect x="10" y="5" width="30" height="30" fill="#a4bfeb"></rect>
@@ -10,7 +10,6 @@
 		  </svg>
 		</.link>
 	  	<.button phx-click="enqueue">Start Game</.button>
-        <.link href={~p"/index"}>Main Page</.link>
         <.link href={~p"/game"}>Game</.link>
         <.link href={~p"/survey"}>Survey</.link>
         <.link href={~p"/users/settings"}>Settings</.link>
@@ -22,6 +21,13 @@
       </div>
 	<% else %>
       <div class="flex items-center gap-4">
+		<.link href={~p"/"}>
+		  <svg viewBox="0 0 55 55" class="h-8">
+			<rect x="0" y="0" width="55" height="55" fill="#fff"/>
+			<rect x="10" y="5" width="30" height="30" fill="#a4bfeb"></rect>
+			<rect x="10" y="35" width="15" height="15" fill="#a4bfeb"></rect>
+		  </svg>
+		</.link>
         <.link href={~p"/users/register"}>Register</.link>
         <.link href={~p"/users/log_in"}>Log in</.link>
       </div>
