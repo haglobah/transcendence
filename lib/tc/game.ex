@@ -21,8 +21,8 @@ defmodule Tc.Game do
 
   # External API (runs in the client)
 
-  def topic() do
-    "move"
+  def topic(game_id) do
+    "#{game_id}:move"
   end
 
   def start_link({_, _, game_id} = init_game) do
@@ -58,7 +58,7 @@ defmodule Tc.Game do
   defp make_change(state, paddle, {_dx, _dy} = change) do
     new_state =
       Paddle.change_position(state, paddle, change)
-    PubSub.broadcast(Tc.PubSub, topic(), {:game_state, new_state})
+    PubSub.broadcast(Tc.PubSub, topic(state.game_id), {:game_state, new_state})
     {:reply, new_state, new_state}
   end
 
