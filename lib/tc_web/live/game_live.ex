@@ -55,7 +55,8 @@ defmodule TcWeb.GameLive do
   end
 
   def handle_info({:game_over, _state}, socket) do
-    {:noreply, assign(socket, title: "Game over")}
+    # Patch to the game_over screen
+    {:noreply, socket}
   end
 
   defp handle_stop("ArrowUp", user, state) when user == state.player_right do

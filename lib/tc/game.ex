@@ -1,5 +1,5 @@
 defmodule Tc.Game do
-  use GenServer
+  use GenServer, restart: :transient
 
   alias Tc.Game.State
   alias Tc.Game.Paddle
@@ -10,7 +10,7 @@ defmodule Tc.Game do
   @fps 30
   @tick_ms div(1000, @fps)
 
-  @max_round_length 90
+  @max_round_length 20
 
   @moduledoc """
   A named GenServer which runs the Pong game.
@@ -63,6 +63,8 @@ defmodule Tc.Game do
   end
 
   def handle_call({:move, which, paddle, direction}, _from, state) do
+    IO.inspect(state.paddle_left)
+    IO.inspect(state.paddle_right)
     case direction do
       :up -> make_change(state, which, paddle, {0, -1})
       :down -> make_change(state, which, paddle, {0, 1})
@@ -80,7 +82,7 @@ defmodule Tc.Game do
 
     if rest_seconds < 0 do
       PubSub.broadcast(Tc.PubSub, over_topic(new_state.game_id), {:game_over, new_state})
-      {:stop, :game_over, new_state}
+      {:stop, :normal, new_state}
     else
       PubSub.broadcast(Tc.PubSub, tick_topic(new_state.game_id), {:game_state, new_state})
       schedule_tick()
@@ -88,10 +90,11 @@ defmodule Tc.Game do
     end
   end
 
-  # def terminate(:normal, _state) do
-  #   # Write important game stats to DB
-  #   # Return nothing?
-  # end
+  def terminate(:normal, _state) do
+    # Write important game stats to DB
+    
+    # Return nothing?
+  end
 
   defp next(state) do
     new_time = System.monotonic_time()
@@ -106,36 +109,4 @@ defmodule Tc.Game do
 
   defp schedule_tick(), do: Process.send_after(self(), :tick, @tick_ms)
   defp via_tuple(game_id), do: {:via, Registry, {@registry, game_id}}
-
-  # @impl true
-  # def init(_) do
-  #   Process.send_after(self(), :tick, @tick_ms)
-  #   # subscibe to the velocity topic?
-  #   {:ok, State.new()}
-  # end
-
-  # @impl true
-  # def handle_info(:tick, state) do
-  #   Process.send_after(self(), :tick, @tick_ms)
-  #   state = tick(state)
-  #   {:noreply, state}
-  # end
-
-  # defp tick(state) do
-  #   new_time = System.monotonic_time()
-  #   delta_time = new_time - state.time
-  #   total_time = new_time - state.start_time
-  #   rest_seconds = @game_round_length - System.convert_time_unit(total_time, :native, :second)
-
-  #   game_state = State.tick(state.game_state, delta_time)
-
-  #   if rest_seconds < 0 do
-  #     Endpoint.broadcast(Tc.PubSub, "game/over", %{})
-  #     game_state
-  #   else
-  #     Endpoint.broadcast(Tc.PubSub, "game/tick", %{game_state: game_state})
-
-  #     %{state | time: new_time, game_state: game_state}
-  #   end
-  # end
 end
