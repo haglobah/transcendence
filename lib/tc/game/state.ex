@@ -30,10 +30,15 @@ defmodule Tc.Game.State do
 
   def tick(state, new_time, dt) do
     %{state | time: new_time,
-              # ball: Ball.move(state.ball, dt),
+              ball: Ball.move(state.ball, dt),
               paddle_left: Paddle.move(state.paddle_left, dt),
               paddle_right: Paddle.move(state.paddle_right, dt),
             }
+    |> check_collisions()
+  end
+
+  def check_collisions(state) do
+    state
   end
 
 end
