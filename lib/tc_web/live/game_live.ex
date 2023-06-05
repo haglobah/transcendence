@@ -57,6 +57,10 @@ defmodule TcWeb.GameLive do
     {:noreply, assign(socket, state: state)}
   end
 
+  def handle_info({:game_over, _state}, socket) do
+    {:noreply, assign(socket, title: "Game over")}
+  end
+
   defp handle_stop("ArrowUp", user, state) when user == state.player_right do
       Game.stop_paddle(state.game_id, :paddle_right, state.paddle_right)
     end
