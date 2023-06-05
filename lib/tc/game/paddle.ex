@@ -1,6 +1,6 @@
 defmodule Tc.Game.Paddle do
 
-  @movement_speed 1/30000000
+  @movement_speed 1/3000000000
 
   defstruct [:position, :velocity, :width, :height]
 
