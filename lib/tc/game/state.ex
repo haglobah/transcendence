@@ -7,7 +7,11 @@ defmodule Tc.Game.State do
     [:start_time, :time, :player_left, :player_right, :paddle_left, :paddle_right, :ball, :score]
   """
 
-  defstruct [:game_id, :start_time, :time, :player_left, :player_right, :paddle_left, :paddle_right, :ball, :score]
+  defstruct [:game_id,
+    :start_time, :time,
+    :player_left, :player_right,
+    :paddle_left, :paddle_right,
+    :ball, :score]
 
   def new(player_left, player_right, game_id) do
     start_time = System.monotonic_time()
@@ -24,11 +28,12 @@ defmodule Tc.Game.State do
     }
   end
 
-  def tick(state, dt) do
-    state
-    |> Ball.move(state.ball, dt)
-    |> Paddle.move(state.paddle_left, dt)
-    |> Paddle.move(state.paddle_right, dt)
+  def tick(state, new_time, dt) do
+    %{state | time: new_time,
+              # ball: Ball.move(state.ball, dt),
+              paddle_left: Paddle.move(state.paddle_left, dt),
+              paddle_right: Paddle.move(state.paddle_right, dt),
+            }
   end
 
 end
