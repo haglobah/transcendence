@@ -70,12 +70,7 @@ defmodule Tc.Game do
   end
 
   defp make_change(state, which, paddle, {_dx, _dy} = change) do
-    IO.inspect(paddle)
-    new_paddle = Paddle.put_velocity(paddle, change)
-    IO.inspect(new_paddle)
-    new_state = %{state | which => new_paddle}
-    IO.puts("AFTER\n")
-    IO.inspect(new_state)
+    new_state = %{state | which => Paddle.put_velocity(paddle, change)}
     # PubSub.broadcast(Tc.PubSub, topic(state.game_id), {:game_state, new_state})
     {:reply, new_state, new_state}
   end
