@@ -21,9 +21,6 @@ defmodule Tc.Game do
 
   # External API (runs in the client)
 
-  def topic(game_id) do
-    "#{game_id}:move"
-  end
   def over_topic(game_id) do
     "#{game_id}:over"
   end
@@ -92,7 +89,7 @@ defmodule Tc.Game do
 
   def terminate(:normal, _state) do
     # Write important game stats to DB
-    
+
     # Return nothing?
   end
 
