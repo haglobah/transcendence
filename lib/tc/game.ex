@@ -10,7 +10,7 @@ defmodule Tc.Game do
   @fps 60
   @tick_ms div(1000, @fps)
 
-  @max_round_length 20
+  @max_round_length 3
 
   @moduledoc """
   A named GenServer which runs the Pong game.
@@ -77,6 +77,7 @@ defmodule Tc.Game do
 
     if rest_seconds < 0 do
       PubSub.broadcast(Tc.PubSub, over_topic(new_state.game_id), {:game_over, new_state})
+      :timer.sleep(2000)
       {:stop, :normal, new_state}
     else
       PubSub.broadcast(Tc.PubSub, tick_topic(new_state.game_id), {:game_state, new_state})

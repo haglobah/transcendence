@@ -23,6 +23,31 @@ defmodule TcWeb.GameLive.Component do
     """
   end
 
+  attr :view_box, :string
+  slot :inner_block, required: true
+  def game_over(assigns) do
+    ~H"""
+    <svg
+      viewBox={ @view_box }
+      xmlns="http://www.w3.org/2000/svg"
+      xmlns:xlink="http://www.w3.org/1999/xlink"
+      fill="black">
+      <defs>
+        <rect id="paddle" width="2" height="25"/>
+        <rect id="ball" width="2" height="2"/>
+
+      </defs>
+      <rect width="100%" height="100%" fill="black"/>
+      <%= render_slot(@inner_block) %>
+      <text id="game_over"
+            x="50%" y="50%"
+            font-size="15"
+            fill="lightgray"
+            text-anchor="middle">GAME OVER</text>
+    </svg>
+    """
+  end
+
   attr :x, :integer, required: true
   attr :y, :integer, required: true
   attr :color, :string
