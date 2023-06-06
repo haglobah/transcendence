@@ -7,14 +7,10 @@ defmodule Tc.Game.Ball do
   def new do
     %__MODULE__{
       pos: %{x: 50, y: 50},
-      velocity: %{x: 1, y: 1},
+      velocity: %{x: 2, y: 1},
       width: 2,
       height: 2,
     }
-  end
-
-  def begin(ball) do
-    alter_velocity(ball, {-1, -1})
   end
 
   def enforce(ball, %{min: min, max: max}) do
@@ -28,6 +24,16 @@ defmodule Tc.Game.Ball do
       ball.pos.x < min -> put_in(new_ball.pos.x, min)
       ball.pos.x > max -> put_in(new_ball.pos.x, max)
       true -> new_ball
+    end
+  end
+
+  def collision(%__MODULE__{} = ball, %{min: min, max: max}) do
+    cond do
+      ball.pos.y == min -> update_in(ball.velocity, fn %{x: vx, y: vy} -> %{x: vx, y: -vy} end)
+      ball.pos.y == max -> update_in(ball.velocity, fn %{x: vx, y: vy} -> %{x: vx, y: -vy} end)
+      ball.pos.x == min -> update_in(ball.velocity, fn %{x: vx, y: vy} -> %{x: -vx, y: vy} end)
+      ball.pos.x == max -> update_in(ball.velocity, fn %{x: vx, y: vy} -> %{x: -vx, y: vy} end)
+      true -> ball
     end
   end
 
