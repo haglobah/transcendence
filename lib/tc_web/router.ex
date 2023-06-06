@@ -52,8 +52,8 @@ defmodule TcWeb.Router do
         live "/users/settings/confirm_email/:token", UserSettingsLive, :confirm_email
 
         live "/home", HomeLive
-        # live "/game/", GameLive
         live "/game/:game_id", GameLive
+        live "/game/:game_id/game_over", GameLive, :game_over
 
         live "/:user_name", ProfileLive
     end

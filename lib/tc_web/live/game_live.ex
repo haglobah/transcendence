@@ -10,6 +10,18 @@ defmodule TcWeb.GameLive do
   @moduledoc """
   Main LiveView running the game.
   """
+  def render(%{live_action: :game_over} = assigns) do
+    ~H"""
+    <.game_over view_box="0 0 100 100">
+      <.paddle x={ @left.x } y={ @left.y } />
+      <.paddle x={ @right.x } y={ @right.y } />
+      <.ball x={ @ball.x } y={ @ball.y } />
+      <.score left={ @score.left } right={ @score.right } />
+      <.clock seconds={ 0 } />
+    </.game_over>
+    """
+  end
+
   def render(assigns) do
     ~H"""
     <.canvas view_box="0 0 100 100">
@@ -22,6 +34,10 @@ defmodule TcWeb.GameLive do
     """
   end
 
+  def mount(_params, _session, %{assigns: %{live_action: :game_over} = assigns} = socket) do
+    {:ok, socket}
+  end
+
   def mount(%{"game_id" => game_id}, _session, socket) do
     if connected?(socket) do
       Endpoint.subscribe(Game.tick_topic(game_id))
@@ -31,6 +47,15 @@ defmodule TcWeb.GameLive do
     {:ok,
     socket
     |> assign(state: Game.current_state(game_id))
+    }
+  end
+
+  def handle_params(_params, _uri, %{assigns: assigns } = socket) do
+    {:noreply, socket
+      |> assign(left: %{x: assigns.state.left.pos.x, y: assigns.state.left.pos.y})
+      |> assign(right: %{x: assigns.state.right.pos.x, y: assigns.state.right.pos.y})
+      |> assign(ball: %{x: assigns.state.ball.pos.x, y: assigns.state.ball.pos.y})
+      |> assign(score: %{left: assigns.state.score.left, right: assigns.state.score.right})
     }
   end
 
@@ -52,9 +77,9 @@ defmodule TcWeb.GameLive do
     {:noreply, assign(socket, state: state)}
   end
 
-  def handle_info({:game_over, _state}, socket) do
+  def handle_info({:game_over, state}, socket) do
     # Patch to the game_over screen
-    {:noreply, socket}
+    {:noreply, push_patch(socket, to: "/game/#{state.game_id}/game_over")}
   end
 
   defp handle_stop("ArrowUp", user, state) when user == state.player_right do
