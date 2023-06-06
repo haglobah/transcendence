@@ -4,9 +4,9 @@ defmodule Tc.Game.Paddle do
 
   defstruct [:pos, :velocity, :width, :height]
 
-  def new() do
+  def new(x) do
     %__MODULE__{
-      pos: %{x: 0, y: 37},
+      pos: %{x: x, y: 37},
       velocity: %{x: 0, y: 0},
       width: 2,
       height: 25,

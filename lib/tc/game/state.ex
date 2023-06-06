@@ -27,8 +27,8 @@ defmodule Tc.Game.State do
       time: start_time,
       player_left: player_left,
       player_right: player_right,
-      left: Paddle.new(),
-      right: Paddle.new(),
+      left: Paddle.new(2),
+      right: Paddle.new(96),
       ball: Ball.new(),
       score: %{left: 0, right: 0},
     }
