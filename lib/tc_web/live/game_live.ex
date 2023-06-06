@@ -13,10 +13,9 @@ defmodule TcWeb.GameLive do
   def render(assigns) do
     ~H"""
     <.canvas view_box="0 0 100 100">
-      <.paddle x={2} y={ @state.left.pos.y } />
-      <.paddle x={96} y={ @state.right.pos.y } />
-      <% %{x: bx, y: by} = @state.ball.pos %>
-      <.ball x={ bx } y={ by } />
+      <.paddle x={ @state.left.pos.x } y={ @state.left.pos.y } />
+      <.paddle x={ @state.right.pos.x } y={ @state.right.pos.y } />
+      <.ball x={ @state.ball.pos.x } y={ @state.ball.pos.y } />
       <.score left={0} right={0} />
     </.canvas>
     """
