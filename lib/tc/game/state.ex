@@ -55,12 +55,9 @@ defmodule Tc.Game.State do
   def collisions(state) do
     new_ball =
       state.ball
-      # |> IO.inspect()
       |> Ball.collision(%{min: @min_ball, max: @max_ball})
-      # |> Ball.collision(state.left)
-      # |> Ball.collision(state.right)
+      |> Ball.collision(state, %{west_left_edge: 0, west_right_edge: 94})
 
-    IO.inspect(new_ball)
     %{state | ball: new_ball}
   end
 
