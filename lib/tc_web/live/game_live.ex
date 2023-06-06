@@ -16,7 +16,7 @@ defmodule TcWeb.GameLive do
       <.paddle x={ @state.left.pos.x } y={ @state.left.pos.y } />
       <.paddle x={ @state.right.pos.x } y={ @state.right.pos.y } />
       <.ball x={ @state.ball.pos.x } y={ @state.ball.pos.y } />
-      <.score left={0} right={0} />
+      <.score left={ @state.score.left } right={ @state.score.right } />
     </.canvas>
     """
   end

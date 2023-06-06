@@ -41,6 +41,7 @@ defmodule Tc.Game.State do
               right: Paddle.move(state.right, dt),
             }
     |> enforce_borders()
+    |> score_points()
     |> collisions()
   end
 
@@ -50,6 +51,14 @@ defmodule Tc.Game.State do
         right: Paddle.enforce(state.right, %{min: @min_paddle_y, max: @max_paddle_y}),
         ball: Ball.enforce(state.ball, %{min: @min_ball, max: @max_ball}),
     }
+  end
+
+  def score_points(state) do
+    cond do
+      state.ball.pos.x == @min_ball -> update_in(state.score.right, fn p -> p + 1 end)
+      state.ball.pos.x == @max_ball -> update_in(state.score.left, fn p -> p + 1 end)
+      true -> state
+    end
   end
 
   def collisions(state) do
