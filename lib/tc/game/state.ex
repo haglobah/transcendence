@@ -7,11 +7,11 @@ defmodule Tc.Game.State do
     [:start_time, :time, :player_left, :player_right, :left, :right, :ball, :score]
   """
 
-  @max_paddle_y 75
   @min_paddle_y 0
+  @max_paddle_y 75
 
-  @max_ball 98
   @min_ball 0
+  @max_ball 98
 
   defstruct [:game_id,
     :start_time, :time,
@@ -40,25 +40,45 @@ defmodule Tc.Game.State do
               left: Paddle.move(state.left, dt),
               right: Paddle.move(state.right, dt),
             }
-    # |> enforce_boundaries()
+    |> enforce_borders()
     # |> check_collisions()
   end
 
-  def enforce_boundaries(state) do
-    %{x: _lx, y: ly} = state.left.pos
-    %{x: _rx, y: ry} = state.right.pos
-    %{x: bx, y: by} = state.ball.pos
+  def enforce_borders(state) do
+    state
+    |> enforce_left(state.left, %{min: @min_paddle_y, max: @max_paddle_y})
+    |> enforce_right(state.right, %{min: @min_paddle_y, max: @max_paddle_y})
+    |> enforce(state.ball, %{min: @min_ball, max: @max_ball})
+  end
 
-    if ly < @min_paddle_y, do: put_in(state.left.pos.y, @min_paddle_y)
-    if ly > @max_paddle_y, do: put_in(state.left.pos.y, @max_paddle_y)
+  def enforce_left(state, %Paddle{} = paddle, %{min: min, max: max}) do
+    cond do
+      paddle.pos.y < min -> put_in(state.left.pos.y, min)
+      paddle.pos.y > max -> put_in(state.left.pos.y, max)
+      true -> state
+    end
+  end
+  def enforce_right(state, %Paddle{} = paddle, %{min: min, max: max}) do
+    cond do
+      paddle.pos.y < min -> put_in(state.right.pos.y, min)
+      paddle.pos.y > max -> put_in(state.right.pos.y, max)
+      true -> state
+    end
+  end
 
-    if ry < @min_paddle_y, do: put_in(state.right.pos.y, @min_paddle_y)
-    if ry > @max_paddle_y, do: put_in(state.right.pos.y, @max_paddle_y)
+  def enforce(state, %Ball{} = ball, %{min: min, max: max}) do
 
-    if bx < @min_ball, do: put_in(state.ball.pos.x, @min_ball)
-    if bx > @max_ball, do: put_in(state.ball.pos.x, @max_ball)
-    if by < @min_ball, do: put_in(state.ball.pos.y, @min_ball)
-    if by > @max_ball, do: put_in(state.ball.pos.y, @max_ball)
+    new_state =
+      cond do
+        ball.pos.y < min -> put_in(state.ball.pos.y, min)
+        ball.pos.y > max -> put_in(state.ball.pos.y, max)
+        true -> state
+      end
+    cond do
+      ball.pos.x < min -> put_in(new_state.ball.pos.x, min)
+      ball.pos.x > max -> put_in(new_state.ball.pos.x, max)
+      true -> new_state
+    end
   end
 
   def check_collisions(state) do
