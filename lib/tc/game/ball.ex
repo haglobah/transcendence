@@ -1,6 +1,6 @@
 defmodule Tc.Game.Ball do
 
-  @movement_speed 1/300000000
+  @movement_speed 1/100000000
 
   defstruct [:pos, :velocity, :width, :height]
 
@@ -36,6 +36,30 @@ defmodule Tc.Game.Ball do
       true -> ball
     end
   end
+
+  @magic 4
+  def collision(%__MODULE__{} = ball, state, %{west_left_edge: wle, west_right_edge: wre}) do
+    left_border = %{min: wle + @magic, max: wre + @magic}
+    right_border = %{min: wle, max: wre}
+    cond do
+      ball.pos.x < wle + @magic && is_in_y(ball, state.left) ->
+        ball |> enforce(left_border) |> collision(left_border)
+      ball.pos.x > wre && is_in_y(ball, state.right) ->
+        ball |> enforce(right_border) |> collision(right_border)
+      true ->
+        ball
+    end
+  end
+
+  def is_in_y(ball, paddle) do
+    ball.pos.y < paddle.pos.y + paddle.height
+    && ball.pos.y + ball.height > paddle.pos.y
+  end
+
+  # rect1.x < rect2.x + rect2.w &&
+  # rect1.x + rect1.w > rect2.x &&
+  # rect1.y < rect2.y + rect2.h &&
+  # rect1.h + rect1.y > rect2.y
 
   def alter_velocity(ball, velocity) when tuple_size(velocity) == 2 do
     put_in(ball.velocity, velocity)

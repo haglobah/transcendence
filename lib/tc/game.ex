@@ -7,7 +7,7 @@ defmodule Tc.Game do
 
   @registry :game_registry
 
-  @fps 30
+  @fps 60
   @tick_ms div(1000, @fps)
 
   @max_round_length 20
@@ -60,8 +60,6 @@ defmodule Tc.Game do
   end
 
   def handle_call({:move, which, paddle, direction}, _from, state) do
-    IO.inspect(state.left)
-    IO.inspect(state.right)
     case direction do
       :up -> make_change(state, which, paddle, %{x: 0, y: -1})
       :down -> make_change(state, which, paddle, %{x: 0, y: 1})
@@ -100,6 +98,10 @@ defmodule Tc.Game do
     rest_seconds = @max_round_length - System.convert_time_unit(total_time, :native, :second)
 
     new_state = State.tick(state, new_time, delta_time)
+
+    # IO.inspect(state.ball)
+    # IO.inspect(state.left)
+    # IO.inspect(state.right)
 
     {rest_seconds, new_state}
   end

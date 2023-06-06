@@ -1,10 +1,10 @@
 defmodule Tc.Game.Paddle do
 
-  @movement_speed 1/3000000000
+  @movement_speed 1/30000000
 
   defstruct [:pos, :velocity, :width, :height]
 
-  def new do
+  def new() do
     %__MODULE__{
       pos: %{x: 0, y: 37},
       velocity: %{x: 0, y: 0},
