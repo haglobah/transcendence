@@ -14,17 +14,18 @@ defmodule Tc.Game.State do
   @max_ball 98
 
   defstruct [:game_id,
-    :start_time, :time,
+    :start_time, :time, :rest_seconds,
     :player_left, :player_right,
     :left, :right,
     :ball, :score]
 
-  def new(player_left, player_right, game_id) do
+  def new(player_left, player_right, game_id, game_length) do
     start_time = System.monotonic_time()
     %__MODULE__{
       game_id: game_id,
       start_time: start_time,
       time: start_time,
+      rest_seconds: game_length,
       player_left: player_left,
       player_right: player_right,
       left: Paddle.new(2),
@@ -34,8 +35,9 @@ defmodule Tc.Game.State do
     }
   end
 
-  def tick(state, new_time, dt) do
+  def tick(state, new_time, dt, rest_seconds) do
     %{state | time: new_time,
+              rest_seconds: rest_seconds,
               ball: Ball.move(state.ball, dt),
               left: Paddle.move(state.left, dt),
               right: Paddle.move(state.right, dt),

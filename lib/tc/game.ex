@@ -45,7 +45,7 @@ defmodule Tc.Game do
 
   def init({left, right, game_id}) do
     schedule_tick()
-    {:ok, State.new(left, right, game_id)}
+    {:ok, State.new(left, right, game_id, @max_round_length)}
   end
 
   # Implementation (runs in the GenServer Process)
@@ -97,7 +97,7 @@ defmodule Tc.Game do
     total_time = new_time - state.start_time
     rest_seconds = @max_round_length - System.convert_time_unit(total_time, :native, :second)
 
-    new_state = State.tick(state, new_time, delta_time)
+    new_state = State.tick(state, new_time, delta_time, rest_seconds)
 
     # IO.inspect(state.ball)
     # IO.inspect(state.left)

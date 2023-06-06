@@ -17,6 +17,7 @@ defmodule TcWeb.GameLive do
       <.paddle x={ @state.right.pos.x } y={ @state.right.pos.y } />
       <.ball x={ @state.ball.pos.x } y={ @state.ball.pos.y } />
       <.score left={ @state.score.left } right={ @state.score.right } />
+      <.clock seconds={ @state.rest_seconds } />
     </.canvas>
     """
   end
