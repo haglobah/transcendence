@@ -68,6 +68,7 @@ defmodule TcWeb.GameLive do
   defp handle_stop("ArrowDown", user, state) when user == state.player_left do
       Game.stop_paddle(state.game_id, :left, state.left)
     end
+  defp handle_stop(_, _user, state), do: state
 
   defp handle_move("ArrowUp", user, state) when user == state.player_right do
       Game.move_paddle(state.game_id, :right, state.right, :up)
