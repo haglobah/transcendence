@@ -41,7 +41,7 @@ defmodule Tc.Game.State do
               right: Paddle.move(state.right, dt),
             }
     |> enforce_borders()
-    # |> check_collisions()
+    |> collisions()
   end
 
   def enforce_borders(state) do
@@ -52,8 +52,16 @@ defmodule Tc.Game.State do
     }
   end
 
-  def check_collisions(state) do
-    state
+  def collisions(state) do
+    new_ball =
+      state.ball
+      # |> IO.inspect()
+      |> Ball.collision(%{min: @min_ball, max: @max_ball})
+      # |> Ball.collision(state.left)
+      # |> Ball.collision(state.right)
+
+    IO.inspect(new_ball)
+    %{state | ball: new_ball}
   end
 
 end

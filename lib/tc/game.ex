@@ -83,7 +83,7 @@ defmodule Tc.Game do
     else
       PubSub.broadcast(Tc.PubSub, tick_topic(new_state.game_id), {:game_state, new_state})
       schedule_tick()
-      {:noreply, state}
+      {:noreply, new_state}
     end
   end
 
