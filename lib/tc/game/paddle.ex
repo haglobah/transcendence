@@ -13,6 +13,14 @@ defmodule Tc.Game.Paddle do
     }
   end
 
+  def enforce(paddle, %{min: min, max: max}) do
+    cond do
+      paddle.pos.y < min -> put_in(paddle.pos.y, min)
+      paddle.pos.y > max -> put_in(paddle.pos.y, max)
+      true -> paddle
+    end
+  end
+
   def put_velocity(paddle, %{x: vx, y: vy}) do
     update_in(paddle.velocity, fn %{x: _vx, y: _vy} -> %{x: vx, y: vy} end)
   end

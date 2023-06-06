@@ -17,6 +17,20 @@ defmodule Tc.Game.Ball do
     alter_velocity(ball, {-1, -1})
   end
 
+  def enforce(ball, %{min: min, max: max}) do
+    new_ball =
+      cond do
+        ball.pos.y < min -> put_in(ball.pos.y, min)
+        ball.pos.y > max -> put_in(ball.pos.y, max)
+        true -> ball
+      end
+    cond do
+      ball.pos.x < min -> put_in(new_ball.pos.x, min)
+      ball.pos.x > max -> put_in(new_ball.pos.x, max)
+      true -> new_ball
+    end
+  end
+
   def alter_velocity(ball, velocity) when tuple_size(velocity) == 2 do
     put_in(ball.velocity, velocity)
   end
