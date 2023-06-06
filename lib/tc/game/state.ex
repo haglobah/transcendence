@@ -45,40 +45,11 @@ defmodule Tc.Game.State do
   end
 
   def enforce_borders(state) do
-    state
-    |> enforce_left(state.left, %{min: @min_paddle_y, max: @max_paddle_y})
-    |> enforce_right(state.right, %{min: @min_paddle_y, max: @max_paddle_y})
-    |> enforce(state.ball, %{min: @min_ball, max: @max_ball})
-  end
-
-  def enforce_left(state, %Paddle{} = paddle, %{min: min, max: max}) do
-    cond do
-      paddle.pos.y < min -> put_in(state.left.pos.y, min)
-      paddle.pos.y > max -> put_in(state.left.pos.y, max)
-      true -> state
-    end
-  end
-  def enforce_right(state, %Paddle{} = paddle, %{min: min, max: max}) do
-    cond do
-      paddle.pos.y < min -> put_in(state.right.pos.y, min)
-      paddle.pos.y > max -> put_in(state.right.pos.y, max)
-      true -> state
-    end
-  end
-
-  def enforce(state, %Ball{} = ball, %{min: min, max: max}) do
-
-    new_state =
-      cond do
-        ball.pos.y < min -> put_in(state.ball.pos.y, min)
-        ball.pos.y > max -> put_in(state.ball.pos.y, max)
-        true -> state
-      end
-    cond do
-      ball.pos.x < min -> put_in(new_state.ball.pos.x, min)
-      ball.pos.x > max -> put_in(new_state.ball.pos.x, max)
-      true -> new_state
-    end
+    %{state |
+        left: Paddle.enforce(state.left, %{min: @min_paddle_y, max: @max_paddle_y}),
+        right: Paddle.enforce(state.right, %{min: @min_paddle_y, max: @max_paddle_y}),
+        ball: Ball.enforce(state.ball, %{min: @min_ball, max: @max_ball}),
+    }
   end
 
   def check_collisions(state) do
