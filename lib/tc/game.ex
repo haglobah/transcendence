@@ -55,7 +55,7 @@ defmodule Tc.Game do
   end
 
   def handle_call({:unmove, which, paddle}, _from, state) do
-    new_state = %{state | which => Paddle.put_velocity(paddle, {0, 0})}
+    new_state = %{state | which => Paddle.put_velocity(paddle, %{x: 0, y: 0})}
     {:reply, new_state, new_state}
   end
 
@@ -63,12 +63,12 @@ defmodule Tc.Game do
     IO.inspect(state.paddle_left)
     IO.inspect(state.paddle_right)
     case direction do
-      :up -> make_change(state, which, paddle, {0, -1})
-      :down -> make_change(state, which, paddle, {0, 1})
+      :up -> make_change(state, which, paddle, %{x: 0, y: -1})
+      :down -> make_change(state, which, paddle, %{x: 0, y: 1})
     end
   end
 
-  defp make_change(state, which, paddle, {_dx, _dy} = change) do
+  defp make_change(state, which, paddle, change) do
     new_state = %{state | which => Paddle.put_velocity(paddle, change)}
     # PubSub.broadcast(Tc.PubSub, topic(state.game_id), {:game_state, new_state})
     {:reply, new_state, new_state}
@@ -87,11 +87,11 @@ defmodule Tc.Game do
     end
   end
 
-  def terminate(:normal, _state) do
-    # Write important game stats to DB
+  # def terminate(:normal, _state) do
+  #   # Write important game stats to DB
 
-    # Return nothing?
-  end
+  #   # Return nothing?
+  # end
 
   defp next(state) do
     new_time = System.monotonic_time()
