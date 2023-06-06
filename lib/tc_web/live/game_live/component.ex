@@ -60,4 +60,16 @@ defmodule TcWeb.GameLive.Component do
     text-anchor="middle"><%= @left %> : <%= @right %></text>
   """
   end
+
+  attr :seconds, :integer, required: true
+  def clock(assigns) do
+  ~H"""
+  <text id="clock"
+    x="50%" y="4%"
+    font-size="4"
+    font-family="monospace"
+    fill="lightgray"
+    text-anchor="middle"><%= @seconds %></text>
+  """
+  end
 end
