@@ -13,8 +13,8 @@ defmodule TcWeb.GameLive do
   def render(assigns) do
     ~H"""
     <.canvas view_box="0 0 100 100">
-      <.paddle x={2} y={ @state.paddle_left.pos.y } />
-      <.paddle x={96} y={ @state.paddle_right.pos.y } />
+      <.paddle x={2} y={ @state.left.pos.y } />
+      <.paddle x={96} y={ @state.right.pos.y } />
       <% %{x: bx, y: by} = @state.ball.pos %>
       <.ball x={ bx } y={ by } />
       <.score left={0} right={0} />
@@ -58,29 +58,29 @@ defmodule TcWeb.GameLive do
   end
 
   defp handle_stop("ArrowUp", user, state) when user == state.player_right do
-      Game.stop_paddle(state.game_id, :paddle_right, state.paddle_right)
+      Game.stop_paddle(state.game_id, :right, state.right)
     end
   defp handle_stop("ArrowDown", user, state) when user == state.player_right do
-      Game.stop_paddle(state.game_id, :paddle_right, state.paddle_right)
+      Game.stop_paddle(state.game_id, :right, state.right)
     end
   defp handle_stop("ArrowUp", user, state) when user == state.player_left do
-      Game.stop_paddle(state.game_id, :paddle_left, state.paddle_left)
+      Game.stop_paddle(state.game_id, :left, state.left)
     end
   defp handle_stop("ArrowDown", user, state) when user == state.player_left do
-      Game.stop_paddle(state.game_id, :paddle_left, state.paddle_left)
+      Game.stop_paddle(state.game_id, :left, state.left)
     end
 
   defp handle_move("ArrowUp", user, state) when user == state.player_right do
-      Game.move_paddle(state.game_id, :paddle_right, state.paddle_right, :up)
+      Game.move_paddle(state.game_id, :right, state.right, :up)
     end
   defp handle_move("ArrowDown", user, state) when user == state.player_right do
-      Game.move_paddle(state.game_id, :paddle_right, state.paddle_right, :down)
+      Game.move_paddle(state.game_id, :right, state.right, :down)
     end
   defp handle_move("ArrowUp", user, state) when user == state.player_left do
-      Game.move_paddle(state.game_id, :paddle_left, state.paddle_left, :up)
+      Game.move_paddle(state.game_id, :left, state.left, :up)
     end
   defp handle_move("ArrowDown", user, state) when user == state.player_left do
-      Game.move_paddle(state.game_id, :paddle_left, state.paddle_left, :down)
+      Game.move_paddle(state.game_id, :left, state.left, :down)
     end
   defp handle_move(_, _user, state), do: state
 end

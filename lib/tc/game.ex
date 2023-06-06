@@ -60,8 +60,8 @@ defmodule Tc.Game do
   end
 
   def handle_call({:move, which, paddle, direction}, _from, state) do
-    IO.inspect(state.paddle_left)
-    IO.inspect(state.paddle_right)
+    IO.inspect(state.left)
+    IO.inspect(state.right)
     case direction do
       :up -> make_change(state, which, paddle, %{x: 0, y: -1})
       :down -> make_change(state, which, paddle, %{x: 0, y: 1})
