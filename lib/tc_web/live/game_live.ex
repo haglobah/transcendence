@@ -34,7 +34,7 @@ defmodule TcWeb.GameLive do
     """
   end
 
-  def mount(_params, _session, %{assigns: %{live_action: :game_over} = assigns} = socket) do
+  def mount(_params, _session, %{assigns: %{live_action: :game_over}} = socket) do
     {:ok, socket}
   end
 
