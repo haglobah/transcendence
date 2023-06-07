@@ -51,9 +51,13 @@ defmodule Tc.Stats do
       ** (Ecto.NoResultsError)
 
   """
+  load_player = fn user_id -> user_id end
+
   def list_matches_for_user(user_id) do
     Match.Query.for_user(user_id)
     |> Repo.all()
+    |> Repo.preload(player_left: ^load_player)
+    |> Repo.preload(player_right: ^load_player)
   end
 
   @doc """
