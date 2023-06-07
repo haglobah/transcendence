@@ -38,6 +38,25 @@ defmodule Tc.Stats do
   def get_match!(id), do: Repo.get!(Match, id)
 
   @doc """
+  Gets all matches in which a user participated.
+
+  Raises `Ecto.NoResultsError` if the Match does not exist.
+
+  ## Examples
+
+      iex> list_matches_for_user(user.id)
+      [%Match{}, ...]
+
+      iex> list_matches_for_user(nobody.id)
+      ** (Ecto.NoResultsError)
+
+  """
+  def list_matches_for_user(user_id) do
+    Match.Query.for_user(user_id)
+    |> Repo.all()
+  end
+
+  @doc """
   Creates a match.
 
   ## Examples
