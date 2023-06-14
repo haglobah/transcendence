@@ -4,6 +4,7 @@ defmodule Tc.Game do
   alias Tc.Game.State
   alias Tc.Game.Paddle
   alias Phoenix.PubSub
+  alias Tc.Stats
 
   @registry :game_registry
 
@@ -77,7 +78,7 @@ defmodule Tc.Game do
 
     if rest_seconds < 0 do
       PubSub.broadcast(Tc.PubSub, over_topic(new_state.game_id), {:game_over, new_state})
-      :timer.sleep(2000)
+      # :timer.sleep(2000)
       {:stop, :normal, new_state}
     else
       PubSub.broadcast(Tc.PubSub, tick_topic(new_state.game_id), {:game_state, new_state})
@@ -86,11 +87,21 @@ defmodule Tc.Game do
     end
   end
 
-  # def terminate(:normal, _state) do
-  #   # Write important game stats to DB
+  def terminate(:normal, state) do
+    # Write important game stats to DB
+    match_attrs = %{
+      score_left: state.score.left,
+      player_left: state.player_left,
+      player_left_id: state.player_left.id,
 
-  #   # Return nothing?
-  # end
+      score_right: state.score.right,
+      player_right: state.player_right,
+      player_right_id: state.player_right.id,
+    }
+    Stats.create_match(match_attrs)
+
+    # Return nothing?
+  end
 
   defp next(state) do
     new_time = System.monotonic_time()
