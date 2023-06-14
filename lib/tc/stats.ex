@@ -7,6 +7,7 @@ defmodule Tc.Stats do
   alias Tc.Repo
 
   alias Tc.Stats.Match
+  alias Tc.Accounts
 
   @doc """
   Returns the list of matches.
@@ -51,15 +52,23 @@ defmodule Tc.Stats do
       ** (Ecto.NoResultsError)
 
   """
-  load_player = fn user_id -> user_id end
 
   def list_matches_for_user(user_id) do
+
     Match.Query.for_user(user_id)
     |> Repo.all()
-    |> Repo.preload(player_left: ^load_player)
-    |> Repo.preload(player_right: ^load_player)
+    |> Enum.map(&insert_players/1)
   end
 
+  def insert_players(match) do
+    player_left = Accounts.get_user!(match.player_left_id)
+    player_right = Accounts.get_user!(match.player_right_id)
+
+    %{match |
+      player_left: player_left,
+      player_right: player_right
+    }
+  end
   @doc """
   Creates a match.
 
