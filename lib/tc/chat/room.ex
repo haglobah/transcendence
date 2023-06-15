@@ -5,7 +5,7 @@ defmodule Tc.Chat.Room do
   alias Tc.Accounts.User
   alias Tc.Chat.Message
 
-  @primary_key {:room_id, :binary_id, autogenerate: true}
+  @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
   schema "rooms" do
     field :description, :string

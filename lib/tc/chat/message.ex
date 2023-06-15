@@ -10,7 +10,7 @@ defmodule Tc.Chat.Message do
   schema "messages" do
     field :content, :string
     belongs_to :sender, User
-    belongs_to :room, Room, foreign_key: :room_id
+    belongs_to :room, Room
 
     timestamps()
   end
