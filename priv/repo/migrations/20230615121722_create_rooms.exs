@@ -7,6 +7,9 @@ defmodule Tc.Repo.Migrations.CreateRooms do
       add :name, :string
       add :description, :string
       add :owner_id, references(:users, type: :binary_id), null: false
+      add :admins, {:array, :binary_id}
+      add :members, {:array, :binary_id}
+      add :blocked, {:array, :binary_id}
 
       timestamps()
     end
