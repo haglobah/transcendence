@@ -51,8 +51,14 @@ defmodule Tc.Chat do
   """
   def create_room(attrs \\ %{}) do
     %Room{}
-    |> Room.changeset(attrs)
+    |> Room.changeset(insert_owner(attrs))
     |> Repo.insert()
+  end
+
+  def insert_owner(%{owner_id: owner_id} = attrs) do
+    attrs
+    |> Map.put(:admins, [owner_id])
+    |> Map.put(:members, [owner_id])
   end
 
   @doc """

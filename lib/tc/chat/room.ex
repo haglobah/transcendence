@@ -10,9 +10,9 @@ defmodule Tc.Chat.Room do
     field :description, :string
     field :name, :string
     belongs_to :owner, User
-    has_many :admins, User
-    has_many :members, User
-    has_many :blocked, User
+    field :admins, {:array, :binary_id}
+    field :members, {:array, :binary_id}
+    field :blocked, {:array, :binary_id}
 
     timestamps()
   end
@@ -20,7 +20,7 @@ defmodule Tc.Chat.Room do
   @doc false
   def changeset(room, attrs) do
     room
-    |> cast(attrs, [:name, :description, :owner_id])
+    |> cast(attrs, [:name, :description, :owner_id, :admins, :members])
     |> validate_required([:name, :description, :owner_id])
   end
 end
