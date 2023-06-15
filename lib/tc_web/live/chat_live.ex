@@ -14,17 +14,17 @@ defmodule TcWeb.ChatLive do
     """
   end
 
-  def mount(_params, _session, socket) do
-    {:ok,
-      socket
-      # |> assign(rooms: [room])
-    }
-  end
-
   def mount(%{"room_id" => room_id}, _session, socket) do
     {:ok,
       socket
       |> assign(active_room: room_id)
+    }
+  end
+
+  def mount(_params, _session, socket) do
+    {:ok,
+      socket
+      # |> assign(rooms: [room])
     }
   end
 end
