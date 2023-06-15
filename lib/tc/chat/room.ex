@@ -3,6 +3,7 @@ defmodule Tc.Chat.Room do
   import Ecto.Changeset
 
   alias Tc.Accounts.User
+  alias Tc.Chat.Message
 
   @primary_key {:room_id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
@@ -13,6 +14,7 @@ defmodule Tc.Chat.Room do
     field :admins, {:array, :binary_id}
     field :members, {:array, :binary_id}
     field :blocked, {:array, :binary_id}
+    has_many :messages, Message
 
     timestamps()
   end
