@@ -4,6 +4,7 @@ defmodule TcWeb.ChatLive do
 
   import TcWeb.ChatLive.Component
   import TcWeb.ChatLive.Messages
+  alias TcWeb.ChatLive
 
   def render(%{live_action: :show} = assigns) do
     ~H"""
@@ -19,9 +20,11 @@ defmodule TcWeb.ChatLive do
           messages={ @streams.messages }
           page={ @page }
           start_of_messages?={ @start_of_messages? }/>
-        <%!-- <.live_component
-
-          /> --%>
+        <.live_component module={ ChatLive.WriteForm }
+          room_id={ @active_room }
+          sender_id={ @current_user.id }
+          id={ "room-#{@active_room}-message-form" }
+          />
       </div>
     </div>
     """
