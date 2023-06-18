@@ -3,7 +3,7 @@ defmodule TcWeb.ChatLive do
   alias Tc.Chat
 
   import TcWeb.ChatLive.Component
-  import TcWeb.ChatLive.Chat
+  import TcWeb.ChatLive.Messages
 
   def render(%{live_action: :show} = assigns) do
     ~H"""
