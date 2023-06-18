@@ -7,7 +7,7 @@ defmodule TcWeb.ChatLive.Component do
     ~H"""
     <div class="bg-sky-200">
       <%= for room <- @rooms do %>
-        <.link patch={~p"/chat/rooms/#{room.id}"}
+        <.link navigate={~p"/chat/rooms/#{room.id}"}
                class={"flex items-center p-2"}
         >
           <%!-- <.chat_icon /> --%>

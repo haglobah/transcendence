@@ -10,13 +10,20 @@ defmodule TcWeb.ChatLive do
     <div id="mobile-sidenav" class="fixed bg-white overflow-y-scroll block md:hidden z-50 inset-0">
       <.room_list rooms={ @rooms }/>
     </div>
-    <aside class="h-[88vh] sticky top-14 w-52 overflow-y-scroll hidden md:block">
-      <.room_list rooms={ @rooms }/>
-    </aside>
-    <.list_messages
-      messages={ @streams.messages }
-      page={ @page }
-      start_of_messages?={ @start_of_messages? }/>
+    <div class="flex">
+      <aside class="h-[88vh] sticky top-14 w-52 overflow-y-scroll hidden md:block">
+        <.room_list rooms={ @rooms }/>
+      </aside>
+      <div>
+        <.list_messages
+          messages={ @streams.messages }
+          page={ @page }
+          start_of_messages?={ @start_of_messages? }/>
+        <%!-- <.live_component
+
+          /> --%>
+      </div>
+    </div>
     """
   end
 
@@ -52,9 +59,6 @@ defmodule TcWeb.ChatLive do
     }
   end
 
-  def handle_params(_params, _session, socket) do
-    {:noreply, socket}
-  end
   def handle_params(_params, _session, socket), do: {:noreply, socket}
 
   # defp paginate_msgs(socket, new_page) when new_page >= 1 do
