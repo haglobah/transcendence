@@ -50,7 +50,7 @@ defmodule TcWeb.GameLive do
     }
   end
 
-  def handle_params(_params, _uri, %{assigns: assigns } = socket) do
+  def handle_params(_params, _uri, %{assigns: assigns} = socket) do
     {:noreply, socket
       |> assign(left: %{x: assigns.state.left.pos.x, y: assigns.state.left.pos.y})
       |> assign(right: %{x: assigns.state.right.pos.x, y: assigns.state.right.pos.y})
