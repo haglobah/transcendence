@@ -1,4 +1,4 @@
-defmodule TcWeb.ChatLive.Chat do
+defmodule TcWeb.ChatLive.Messages do
   use Phoenix.Component
   use TcWeb, :html
 
