@@ -42,10 +42,10 @@ defmodule Tc.Chat do
 
   ## Examples
 
-      iex> create_room(%{field: value})
+      iex> create_room(%{name: "The room", description: "This particular room", owner_id: user.id})
       {:ok, %Room{}}
 
-      iex> create_room(%{field: bad_value})
+      iex> create_room(%{name: 2, description: "No particular room", owner_id: nobody.id})
       {:error, %Ecto.Changeset{}}
 
   """
@@ -144,10 +144,10 @@ defmodule Tc.Chat do
 
   ## Examples
 
-      iex> create_message(%{field: value})
+      iex> create_message(%{content: "Hi from iex", sender_id: user.id, room_id: a_room.id})
       {:ok, %Message{}}
 
-      iex> create_message(%{field: bad_value})
+      iex> create_message(%{})
       {:error, %Ecto.Changeset{}}
 
   """
