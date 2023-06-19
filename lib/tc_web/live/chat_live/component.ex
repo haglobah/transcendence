@@ -16,6 +16,9 @@ defmodule TcWeb.ChatLive.Component do
         </.link>
       <% end %>
     </div>
+    <.link patch={~p"/chat/rooms/new"} phx-click={JS.push_focus()}>
+      <.button>+</.button>
+    </.link>
     """
   end
 end

@@ -10,16 +10,10 @@ defmodule TcWeb.ChatLive do
     ~H"""
     <div id="mobile-sidenav" class="fixed bg-white overflow-y-scroll block md:hidden z-50 inset-0">
       <.room_list rooms={ @rooms }/>
-      <.link patch={~p"/chat/rooms/new"} phx-click={JS.push_focus()}>
-        <.button>+</.button>
-      </.link>
     </div>
     <div class="flex">
       <aside class="h-[88vh] sticky top-14 w-52 overflow-y-scroll hidden md:block">
         <.room_list rooms={ @rooms }/>
-        <.link patch={~p"/chat/rooms/new"} phx-click={JS.push_focus()}>
-          <.button>+</.button>
-        </.link>
       </aside>
       <div>
         <.list_messages
@@ -49,15 +43,9 @@ defmodule TcWeb.ChatLive do
     ~H"""
     <div id="mobile-sidenav" class="fixed bg-white overflow-y-scroll block md:hidden z-50 inset-0">
       <.room_list rooms={ @rooms }/>
-      <.link patch={~p"/chat/rooms/new"} phx-click={JS.push_focus()}>
-        <.button>+</.button>
-      </.link>
     </div>
     <aside class="h-[88vh] sticky top-14 w-52 overflow-y-scroll hidden md:block">
       <.room_list rooms={ @rooms }/>
-      <.link patch={~p"/chat/rooms/new"} phx-click={JS.push_focus()}>
-        <.button>+</.button>
-      </.link>
     </aside>
 
     <.modal :if={@live_action in [:new]}
