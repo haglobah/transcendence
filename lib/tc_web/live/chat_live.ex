@@ -60,23 +60,24 @@ defmodule TcWeb.ChatLive do
   end
 
   def mount(%{"room_id" => room_id}, _session, socket) do
+    rooms = Chat.list_rooms_for(socket.assigns.current_user.id)
     messages = Chat.list_messages_for(room_id)
 
     {:ok,
     socket
     |> assign(page: 1, per_page: 20, start_of_messages?: false)
     |> assign(active_room: room_id)
-    |> assign(rooms: Chat.list_rooms())
+    |> assign(rooms: rooms)
     |> stream(:messages, messages)
     # |> paginate_logs(1)
     }
   end
 
   def mount(_params, _session, socket) do
-    # IO.inspect(socket.assigns)
+    rooms = Chat.list_rooms_for(socket.assigns.current_user.id)
     {:ok,
       socket
-      |> assign(rooms: Chat.list_rooms())
+      |> assign(rooms: rooms)
     }
   end
 
