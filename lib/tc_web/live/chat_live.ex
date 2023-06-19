@@ -16,6 +16,8 @@ defmodule TcWeb.ChatLive do
         <.room_list rooms={ @rooms }/>
       </aside>
       <div>
+        <.link>
+        </.link>
         <.list_messages
           messages={ @streams.messages }
           page={ @page }
