@@ -6,7 +6,7 @@ defmodule TcWeb.ChatLive do
   import TcWeb.ChatLive.Messages
   alias TcWeb.ChatLive
 
-  def render(%{live_action: :show} = assigns) do
+  def render(%{live_action: action} = assigns) when action in [:show, :edit, :new] do
     ~H"""
     <div id="mobile-sidenav" class="fixed bg-white overflow-y-scroll block md:hidden z-50 inset-0">
       <.room_list rooms={ @rooms }/>
@@ -16,27 +16,36 @@ defmodule TcWeb.ChatLive do
         <.room_list rooms={ @rooms }/>
       </aside>
       <div>
-        <.link>
+        <.link patch={~p"/chat/rooms/#{@active_room.id}/edit"}>
+          <.button>Edit</.button>
         </.link>
         <.list_messages
           messages={ @streams.messages }
           page={ @page }
           start_of_messages?={ @start_of_messages? }/>
         <.live_component module={ ChatLive.WriteForm }
-          room_id={ @active_room }
+          room_id={ @active_room.id }
           sender_id={ @current_user.id }
-          id={ "room-#{@active_room}-message-form" }
+          id={ "room-#{@active_room.id}-message-form" }
           />
       </div>
     </div>
 
     <.modal :if={@live_action in [:new]}
-            id="room-modal"
+            id="new-room-modal"
             show
             on_cancel={JS.patch(~p"/chat/rooms")}>
       <.live_component module={ChatLive.RoomForm}
                        owner_id={@current_user.id}
                        id={ "new-room-form" } />
+    </.modal>
+    <.modal :if={@live_action in [:edit]}
+            id="edit-room-modal"
+            show
+            on_cancel={JS.patch(~p"/chat/rooms/#{@active_room.id}")}>
+      <.live_component module={ChatLive.EditRoomForm}
+                       room={ @active_room }
+                       id={ "edit-#{@active_room.id}-form" } />
     </.modal>
     """
   end
@@ -51,7 +60,7 @@ defmodule TcWeb.ChatLive do
     </aside>
 
     <.modal :if={@live_action in [:new]}
-            id="room-modal"
+            id="new-room-modal"
             show
             on_cancel={JS.patch(~p"/chat/rooms")}>
       <.live_component module={ChatLive.RoomForm}
@@ -62,13 +71,14 @@ defmodule TcWeb.ChatLive do
   end
 
   def mount(%{"room_id" => room_id}, _session, socket) do
+    active_room = Chat.get_room!(room_id)
     rooms = Chat.list_rooms_for(socket.assigns.current_user.id)
     messages = Chat.list_messages_for(room_id)
 
     {:ok,
     socket
     |> assign(page: 1, per_page: 20, start_of_messages?: false)
-    |> assign(active_room: room_id)
+    |> assign(active_room: active_room)
     |> assign(rooms: rooms)
     |> stream(:messages, messages)
     # |> paginate_logs(1)
