@@ -60,7 +60,7 @@ defmodule TcWeb.ChatLive do
   end
 
   def mount(%{"room_id" => room_id}, _session, socket) do
-    messages = Chat.list_messages()
+    messages = Chat.list_messages_for(room_id)
 
     {:ok,
     socket
