@@ -55,10 +55,10 @@ defmodule Tc.Chat do
     |> Repo.insert()
   end
 
-  def insert_owner(%{owner_id: owner_id} = attrs) do
+  def insert_owner(%{"owner_id" => owner_id} = attrs) do
     attrs
-    |> Map.put(:admins, [owner_id])
-    |> Map.put(:members, [owner_id])
+    |> Map.put("admins", [owner_id])
+    |> Map.put("members", [owner_id])
   end
 
   @doc """

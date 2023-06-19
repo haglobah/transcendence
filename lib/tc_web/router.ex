@@ -56,6 +56,7 @@ defmodule TcWeb.Router do
         live "/game/:game_id/game_over", GameLive, :game_over
 
         live "/chat/rooms/", ChatLive, :index
+        live "/chat/rooms/new", ChatLive, :new
         live "/chat/rooms/:room_id", ChatLive, :show
 
         live "/:user_name", ProfileLive
