@@ -22,6 +22,12 @@ defmodule Tc.Chat do
     Repo.all(Room)
   end
 
+  def list_rooms_for(user_id) do
+    # Room.Query.for_user(user_id)
+    Room.Query.for_user(user_id)
+    |> Repo.all()
+  end
+
   @doc """
   Gets a single room.
 
