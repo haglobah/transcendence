@@ -7,6 +7,7 @@ defmodule Tc.Chat do
   alias Tc.Repo
 
   alias Tc.Chat.Room
+  alias Tc.Chat.Message
 
   @doc """
   Returns the list of rooms.
@@ -108,8 +109,6 @@ defmodule Tc.Chat do
     Room.changeset(room, attrs)
   end
 
-  alias Tc.Chat.Message
-
   @doc """
   Returns the list of messages.
 
@@ -121,6 +120,12 @@ defmodule Tc.Chat do
   """
   def list_messages do
     Repo.all(Message)
+  end
+
+  def list_messages_for(room_id) do
+    Message.Query.for_room(room_id)
+    |> Repo.all()
+    |> Repo.preload(:sender)
   end
 
   @doc """
