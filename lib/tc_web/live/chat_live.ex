@@ -52,6 +52,7 @@ defmodule TcWeb.ChatLive do
             on_cancel={JS.patch(~p"/chat/rooms/#{@active_room.id}")}>
       <.live_component module={ChatLive.EditRoomForm}
                        room={ @active_room }
+                       user={ @current_user }
                        id={ "edit-#{@active_room.id}-form" } />
     </.modal>
     """
