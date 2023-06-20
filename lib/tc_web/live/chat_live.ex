@@ -6,7 +6,7 @@ defmodule TcWeb.ChatLive do
   import TcWeb.ChatLive.Messages
   alias TcWeb.ChatLive
 
-  def render(%{live_action: action} = assigns) when action in [:show, :edit, :new] do
+  def render(%{live_action: action} = assigns) when action in [:show, :edit] do
     ~H"""
     <div id="mobile-sidenav" class="fixed bg-white overflow-y-scroll block md:hidden z-50 inset-0">
       <.room_list rooms={ @rooms }/>
