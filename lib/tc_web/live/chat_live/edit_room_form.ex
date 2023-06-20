@@ -54,11 +54,11 @@ defmodule TcWeb.ChatLive.EditRoomForm do
   end
 
   def add_room(
-    %{assigns: %{room: room}} = socket,
+    %{assigns: %{room: orig_room}} = socket,
     room_params
   ) do
-    case Chat.update_room(%Room{id: room.id}, room_params) do
-      {:ok, _room} ->
+    case Chat.update_room(%Room{id: orig_room.id}, room_params) do
+      {:ok, room} ->
         room = %Room{name: room.name, description: room.description}
         changeset = Chat.change_room(room)
 
