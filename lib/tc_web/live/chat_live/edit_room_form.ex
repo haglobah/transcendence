@@ -15,7 +15,7 @@ defmodule TcWeb.ChatLive.EditRoomForm do
     {:ok,
      socket
      |> assign(assigns)
-     |> assign(users: [])
+     |> assign(addable_users: [])
      |> assign(room: room)
      |> assign_form(changeset)}
   end
@@ -44,7 +44,7 @@ defmodule TcWeb.ChatLive.EditRoomForm do
             name="search[query]"
             class="flex-auto rounded-lg appearance-none bg-transparent pl-10 text-zinc-900 outline-none focus:outline-none border-slate-200 focus:border-slate-200 focus:ring-0 focus:shadow-none placeholder:text-zinc-500 focus:w-full focus:flex-none sm:text-sm [&::-webkit-search-cancel-button]:hidden [&::-webkit-search-decoration]:hidden [&::-webkit-search-results-button]:hidden [&::-webkit-search-results-decoration]:hidden pr-4"
             style={
-              @users != [] &&
+              @addable_users != [] &&
                 "border-bottom-left-radius: 0; border-bottom-right-radius: 0; border-bottom: none"
             }
             aria-autocomplete="both"
@@ -62,12 +62,12 @@ defmodule TcWeb.ChatLive.EditRoomForm do
         </div>
 
         <ul
-          :if={@users != []}
+          :if={@addable_users != []}
           class="divide-y divide-slate-200 overflow-y-auto rounded-b-lg border-t border-slate-200 text-sm leading-6"
           id="searchbox__results_list"
           role="listbox"
         >
-          <%= for user <- @users do %>
+          <%= for user <- @addable_users do %>
             <li id={"#{user.id}"}>
               <.button phx-click="add-user"
                        phx-value-room={@room.id}
@@ -112,23 +112,27 @@ defmodule TcWeb.ChatLive.EditRoomForm do
   end
 
   def handle_event("change", %{"search" => %{"query" => ""}}, socket) do
-    {:noreply, assign(socket, users: [])}
+    {:noreply, assign(socket, addable_users: [])}
   end
-  def handle_event("change", %{"search" => %{"query" => search_query}}, socket) do
-    users = Accounts.search_users(search_query)
-    {:noreply, assign(socket, users: users)}
+  def handle_event("change", %{"search" => %{"query" => search_query}}, %{assigns: %{room: room}} = socket) do
+    except =
+      case room.blocked do
+        nil -> room.members
+        _ -> room.members ++ room.blocked
+      end
+    addable_users = Accounts.search_addable_users(%{query: search_query, except: except})
+    {:noreply, assign(socket, addable_users: addable_users)}
   end
 
   def handle_event("add-user", %{"user" => user_id}, socket) do
-    case Chat.add_member(socket.assigns.room, user_id) do
+    socket = case Chat.add_member(socket.assigns.room, user_id) do
       {:ok, room} ->
-        {:noreply,
-        socket
-        |> assign(room: room)
-        }
+        assign(socket, room: room)
       {:error, %Ecto.Changeset{} = changeset} ->
         assign(socket, changeset: changeset)
     end
+
+    {:noreply, socket}
   end
 
   def edit_room(
