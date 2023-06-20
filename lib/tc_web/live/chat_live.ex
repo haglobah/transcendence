@@ -1,6 +1,7 @@
 defmodule TcWeb.ChatLive do
   use TcWeb, :live_view
   alias Tc.Chat
+  alias Tc.Accounts
 
   import TcWeb.ChatLive.Component
   import TcWeb.ChatLive.Messages
@@ -28,6 +29,7 @@ defmodule TcWeb.ChatLive do
         </.link>
         <.list_messages
           messages={ @streams.messages }
+          members={ @room_members }
           page={ @page }
           start_of_messages?={ @start_of_messages? }/>
         <.live_component module={ ChatLive.WriteForm }
@@ -53,6 +55,7 @@ defmodule TcWeb.ChatLive do
       <.live_component module={ChatLive.EditRoomForm}
                        room={ @active_room }
                        user={ @current_user }
+                       members={ @room_members }
                        id={ "edit-#{@active_room.id}-form" } />
     </.modal>
     """
@@ -80,6 +83,7 @@ defmodule TcWeb.ChatLive do
 
   def mount(%{"room_id" => room_id}, _session, socket) do
     active_room = Chat.get_room!(room_id)
+    members = Accounts.get_users(active_room.members)
     rooms = Chat.list_rooms_for(socket.assigns.current_user.id)
     messages = Chat.list_messages_for(room_id)
 
@@ -87,6 +91,7 @@ defmodule TcWeb.ChatLive do
     socket
     |> assign(page: 1, per_page: 20, start_of_messages?: false)
     |> assign(active_room: active_room)
+    |> assign(room_members: members)
     |> assign(rooms: rooms)
     |> stream(:messages, messages)
     # |> paginate_logs(1)

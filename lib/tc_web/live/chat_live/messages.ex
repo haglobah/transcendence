@@ -5,6 +5,7 @@ defmodule TcWeb.ChatLive.Messages do
   attr :messages, :any, required: true
   attr :page, :integer, required: true
   attr :start_of_messages?, :boolean, required: true
+  attr :members, :list, required: true
 
   def list_messages(assigns) do
     ~H"""
@@ -31,43 +32,33 @@ defmodule TcWeb.ChatLive.Messages do
       ]}
     >
       <li :for={{id, message} <- @messages} id={id}>
-        <.message message={message} />
+        <.message message={message} user={ get_member(message.sender_id, @members) }/>
       </li>
     </ul>
     """
   end
 
+  defp get_member(sender_id, members) do
+    [user] = Enum.filter(members, fn m -> sender_id == m.id end)
+    user
+  end
+
   def message(assigns) do
     ~H"""
-    <.message_meta message={@message} />
-    <.message_content message={@message} />
-    """
-  end
-
-  def message_meta(assigns) do
-    ~H"""
-    <dl class="-my-4 divide-y divide-zinc-100">
-      <div class="flex gap-4 py-4 sm:gap-2">
-        <%!-- <.user_icon /> --%>
-        <dt class="w-1/8 flex-none text-[0.9rem] leading-8 text-zinc-500">
-          <%= @message.sender_id %>
-          <span>[<%= @message.inserted_at %>]</span>
-          <%!-- <.delete_icon id={"message-#{@message.id}-buttons"} phx_click="delete_message" value={@message.id} /> --%>
-        </dt>
+    <div class="flex mx-2 py-2">
+      <div class="w-12">
+        <img class="rounded-full" src={@user.avatar_upload}/>
       </div>
-    </dl>
-    """
-  end
-
-  def message_content(assigns) do
-    ~H"""
-    <dl class="-my-4 divide-y divide-zinc-100">
-      <div class="flex gap-4 py-4 sm:gap-2">
-        <dd class="text-sm leading-10 text-zinc-700">
+      <div class="flex mx-3 flex-col">
+        <div class="flex my-2 items-center">
+          <h3 class="font-medium"><%= @user.name %></h3>
+          <span class="text-xs mx-2 text-zinc-500"><%= @message.inserted_at %></span>
+        </div>
+        <div class="text-sm text-zinc-700">
           <%= @message.content %>
-        </dd>
+        </div>
       </div>
-    </dl>
+    </div>
     """
   end
 end

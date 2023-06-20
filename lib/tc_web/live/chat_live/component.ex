@@ -25,18 +25,24 @@ defmodule TcWeb.ChatLive.Component do
   attr :users, :list
   def user_list(assigns) do
     ~H"""
-    <div class="">
+    <div class="bg-gray-100 my-2 rounded">
       <%= for user <- @users do %>
-        <div class="flex mx-2 my-2 items-center">
-          <%= if user.avatar_upload do %>
-            <div class="w-10 my-1 mx-2">
-              <img class="rounded-full" src={user.avatar_upload}/>
-            </div>
-          <% end %>
-          <h3 class="mx-2 text-lg"><%= user.name %></h3>
-          <h3 class="mx-2 text-sm"><%= user.email %></h3>
+        <.display_user user={user}/>
+      <% end %>
+    </div>
+    """
+  end
+
+  attr :user, :any
+  def display_user(assigns) do
+    ~H"""
+    <div class="flex mx-2 py-2 items-center">
+      <%= if @user.avatar_upload do %>
+        <div class="w-10 mx-2">
+          <img class="rounded-full" src={@user.avatar_upload}/>
         </div>
       <% end %>
+      <h3 class="mx-2 text-lg"><%= @user.name %></h3>
     </div>
     """
   end
