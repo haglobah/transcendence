@@ -80,7 +80,15 @@ defmodule Tc.Accounts do
   Search for a user via a loose pattern match.
   """
   def search_addable_users(%{query: search_query, except: exceptions}) do
-    User.Query.search(search_query, exceptions)
+    User.Query.search_addable_users(search_query, exceptions)
+    |> Repo.all()
+  end
+
+  @doc """
+  Get a list of Users in one take.
+  """
+  def get_users(user_id_list) do
+    User.Query.get_users(user_id_list)
     |> Repo.all()
   end
 
