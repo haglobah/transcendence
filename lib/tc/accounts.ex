@@ -76,6 +76,14 @@ defmodule Tc.Accounts do
   """
   def get_user!(id), do: Repo.get!(User, id)
 
+  @doc """
+  Search for a user via a loose pattern match.
+  """
+  def search_users(search_query) do
+    User.Query.search(search_query)
+    |> Repo.all()
+  end
+
   ## User registration
 
   @doc """
