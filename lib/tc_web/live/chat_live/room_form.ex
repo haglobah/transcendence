@@ -30,11 +30,13 @@ defmodule TcWeb.ChatLive.RoomForm do
           autocomplete="off"
           phx-keydown={show_modal("new_room")}
           phx-key="ArrowUp"
+          label="Room name"
           field={@form[:name]} type="text"/>
         <.input
           autocomplete="off"
           phx-keydown={show_modal("new_room")}
           phx-key="ArrowUp"
+          label="Room description"
           field={@form[:description]} type="text"/>
         <:actions>
           <.button phx-disable-with="Creating Room...">Create Room</.button>
