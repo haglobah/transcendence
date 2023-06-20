@@ -25,9 +25,10 @@ defmodule TcWeb.ChatLive.Component do
   attr :users, :list
   def user_list(assigns) do
     ~H"""
-    <div class="bg-gray-100 my-2 rounded">
+    <div class="bg-gray-100 my-2 rounded w-80">
       <%= for user <- @users do %>
         <.display_user user={user}/>
+        <.button class="inline" phx-click="to_admin" phx-value-user_id={user.id}>Make an admin</.button>
       <% end %>
     </div>
     """
