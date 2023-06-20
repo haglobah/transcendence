@@ -15,9 +15,16 @@ defmodule TcWeb.ChatLive do
       <aside class="h-[88vh] sticky top-14 w-52 overflow-y-scroll hidden md:block">
         <.room_list rooms={ @rooms }/>
       </aside>
-      <div>
+      <div class="mx-4 w-full">
         <.link patch={~p"/chat/rooms/#{@active_room.id}/edit"}>
-          <.button>Edit</.button>
+          <div class="text-center py-4 bg-gray-200">
+            <h3 class="text-xl">
+              <%= @active_room.name %>
+            </h3>
+            <h3 class="text-sm">
+              <%= @active_room.description %>
+            </h3>
+          </div>
         </.link>
         <.list_messages
           messages={ @streams.messages }
