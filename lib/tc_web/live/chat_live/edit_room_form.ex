@@ -1,6 +1,7 @@
 defmodule TcWeb.ChatLive.EditRoomForm do
   use TcWeb, :live_component
   import TcWeb.CoreComponents
+  import TcWeb.ChatLive.Component
   alias Tc.Chat
   alias Tc.Chat.Room
   alias Tc.Accounts
@@ -106,6 +107,7 @@ defmodule TcWeb.ChatLive.EditRoomForm do
           <.button phx-disable-with="Changing Room...">Change Room</.button>
         </:actions>
       </.simple_form>
+      <.user_list users={Accounts.get_users(@room.members)}/>
     </div>
     """
   end
