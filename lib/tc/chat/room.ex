@@ -25,4 +25,10 @@ defmodule Tc.Chat.Room do
     |> cast(attrs, [:name, :description, :owner_id, :admins, :members])
     |> validate_required([:name, :description, :owner_id])
   end
+
+  def change_members(room, attrs) do
+    room
+    |> cast(attrs, [:members])
+    |> validate_required([:members])
+  end
 end
