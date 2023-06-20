@@ -50,10 +50,10 @@ defmodule TcWeb.ChatLive.EditRoomForm do
   end
 
   def handle_event("save", %{"room" => room_params}, socket) do
-    {:noreply, add_room(socket, room_params)}
+    {:noreply, edit_room(socket, room_params)}
   end
 
-  def add_room(
+  def edit_room(
     %{assigns: %{room: orig_room}} = socket,
     room_params
   ) do
