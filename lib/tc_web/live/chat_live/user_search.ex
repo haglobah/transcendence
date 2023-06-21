@@ -1,6 +1,7 @@
 defmodule TcWeb.ChatLive.UserSearch do
   use TcWeb, :live_component
 
+  import TcWeb.ChatLive.Component
   alias Tc.Chat
   alias Tc.Accounts
 
@@ -52,23 +53,38 @@ defmodule TcWeb.ChatLive.UserSearch do
         />
       </div>
 
-      <ul
+      <div
         :if={@addable_users != []}
         class="divide-y divide-slate-200 overflow-y-auto rounded-b-lg border-t border-slate-200 text-sm leading-6"
         id="searchbox__results_list"
         role="listbox"
       >
         <%= for user <- @addable_users do %>
-          <li id={"#{user.id}"}>
-            <.button  phx-click="add-user"
-                      phx-value-room={@room.id}
-                      phx-value-user={user.id}
-                      phx-target={@myself}>
-              <%= user.name %>
-            </.button>
-          </li>
+          <.display_user user={user} >
+            <%= if is_blocked(@room, user) do %>
+              <.button  phx-click="unblock-user"
+                        phx-value-room={@room.id}
+                        phx-value-user={user.id}
+                        phx-target={@myself}>
+                        Unblock user
+              </.button>
+            <% else %>
+              <.button  phx-click="add-user"
+                        phx-value-room={@room.id}
+                        phx-value-user={user.id}
+                        phx-target={@myself}>
+                        Add to room
+              </.button>
+              <.button  phx-click="block-user"
+                        phx-value-room={@room.id}
+                        phx-value-user={user.id}
+                        phx-target={@myself}>
+                        Block from room
+              </.button>
+            <% end %>
+          </.display_user>
         <% end %>
-      </ul>
+      </div>
     </form>
     """
   end
@@ -79,23 +95,40 @@ defmodule TcWeb.ChatLive.UserSearch do
   def handle_event("change",
     %{"search" => %{"query" => search_query}},
     %{assigns: %{room: room}} = socket) do
-    except =
-      case room.blocked do
-        nil -> room.members
-        _ -> room.members ++ room.blocked
-      end
-    addable_users = Accounts.search_addable_users(%{query: search_query, except: except})
+
+    addable_users = Accounts.search_addable_users(%{query: search_query, except: room.members})
     {:noreply, assign(socket, addable_users: addable_users)}
   end
 
   def handle_event("add-user", %{"user" => user_id}, socket) do
-    socket = case Chat.add_member(socket.assigns.room, user_id) do
+    socket = change_room(&Chat.add_member/2, user_id, socket)
+    {:noreply, socket}
+  end
+
+  def handle_event("block-user", %{"user" => user_id}, socket) do
+    socket = change_room(&Chat.add_blocked/2, user_id, socket)
+    {:noreply, socket}
+  end
+
+  def handle_event("unblock-user", %{"user" => user_id}, socket) do
+    socket = change_room(&Chat.rm_blocked/2, user_id, socket)
+    {:noreply, socket}
+  end
+
+  defp change_room(change_fun, member_id, socket) do
+    case change_fun.(socket.assigns.room, member_id) do
       {:ok, room} ->
         assign(socket, room: room)
       {:error, %Ecto.Changeset{} = changeset} ->
         assign(socket, changeset: changeset)
     end
+  end
 
-    {:noreply, socket}
+  defp is_blocked(room, user) do
+    case room.blocked do
+      nil -> false
+      [] -> false
+      [_ | _] -> user.id in room.blocked
+    end
   end
 end

@@ -119,7 +119,10 @@ defmodule Tc.Chat do
   end
 
   def add_blocked(%Room{blocked: blocked} = room, user_id) do
-    attrs = %{blocked: [user_id | blocked]}
+    attrs = case blocked do
+      nil -> %{blocked: [user_id]}
+      _ -> %{blocked: [user_id | blocked]}
+    end
 
     room
     |> Room.change_blocked(attrs)
