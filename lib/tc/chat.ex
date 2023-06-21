@@ -118,6 +118,22 @@ defmodule Tc.Chat do
     |> Repo.update()
   end
 
+  def add_blocked(%Room{blocked: blocked} = room, user_id) do
+    attrs = %{blocked: [user_id | blocked]}
+
+    room
+    |> Room.change_blocked(attrs)
+    |> Repo.update()
+  end
+
+  def rm_blocked(%Room{blocked: blocked} = room, user_id) do
+    attrs = %{blocked: blocked -- [user_id]}
+
+    room
+    |> Room.change_blocked(attrs)
+    |> Repo.update()
+  end
+
   @doc """
   Deletes a room.
 
