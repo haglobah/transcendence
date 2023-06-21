@@ -1,10 +1,11 @@
 defmodule TcWeb.ChatLive.EditRoomForm do
   use TcWeb, :live_component
   import TcWeb.CoreComponents
-  import TcWeb.ChatLive.Component
+
   alias Tc.Chat
   alias Tc.Chat.Room
   alias Tc.Accounts
+  alias TcWeb.ChatLive
 
   def update(
     %{room: %{owner_id: owner_id, name: name, description: description} = room, user: user} = assigns,
@@ -107,7 +108,10 @@ defmodule TcWeb.ChatLive.EditRoomForm do
           <.button phx-disable-with="Changing Room...">Change Room</.button>
         </:actions>
       </.simple_form>
-      <.user_list users={Accounts.get_users(@room.members)}/>
+      <.live_component module={ChatLive.MemberList}
+                       room={@room}
+                       user={@user}
+                       id={"room-#{@room.id}-member-list"} />
     </div>
     """
   end

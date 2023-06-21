@@ -23,27 +23,36 @@ defmodule TcWeb.ChatLive.Component do
   end
 
   attr :users, :list
-  def user_list(assigns) do
+  attr :is_admin, :boolean
+  slot :inner_block
+  def member_list(assigns) do
     ~H"""
     <div class="bg-gray-100 my-2 rounded w-80">
       <%= for user <- @users do %>
-        <.display_user user={user}/>
-        <.button class="inline" phx-click="to_admin" phx-value-user_id={user.id}>Make an admin</.button>
+        <.display_user user={user}>
+          <%= render_slot(@inner_block) %>
+        </.display_user>
       <% end %>
     </div>
     """
   end
 
   attr :user, :any
+  slot :inner_block
   def display_user(assigns) do
     ~H"""
-    <div class="flex mx-2 py-2 items-center">
-      <%= if @user.avatar_upload do %>
-        <div class="w-10 mx-2">
-          <img class="rounded-full" src={@user.avatar_upload}/>
-        </div>
-      <% end %>
-      <h3 class="mx-2 text-lg"><%= @user.name %></h3>
+    <div class="flex mx-2 py-2 justify-between">
+      <div class="flex items-center">
+        <%= if @user.avatar_upload do %>
+          <div class="w-10 mx-2">
+            <img class="rounded-full" src={@user.avatar_upload}/>
+          </div>
+        <% end %>
+        <h3 class="mx-2 text-lg"><%= @user.name %></h3>
+      </div>
+      <div>
+        <%= render_slot(@inner_block) %>
+      </div>
     </div>
     """
   end
