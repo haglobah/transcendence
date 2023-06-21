@@ -32,26 +32,21 @@ defmodule TcWeb.ChatLive.Messages do
       ]}
     >
       <li :for={{id, message} <- @messages} id={id}>
-        <.message message={message} user={ get_member(message.sender_id, @members) }/>
+        <.message message={message}/>
       </li>
     </ul>
     """
-  end
-
-  defp get_member(sender_id, members) do
-    [user] = Enum.filter(members, fn m -> sender_id == m.id end)
-    user
   end
 
   def message(assigns) do
     ~H"""
     <div class="flex mx-2 py-2">
       <div class="w-12">
-        <img class="rounded-full" src={@user.avatar_upload}/>
+        <img class="rounded-full" src={@message.sender.avatar_upload}/>
       </div>
       <div class="flex mx-3 flex-col">
         <div class="flex my-2 items-center">
-          <h3 class="font-medium"><%= @user.name %></h3>
+          <h3 class="font-medium"><%= @message.sender.name %></h3>
           <span class="text-xs mx-2 text-zinc-500"><%= @message.inserted_at %></span>
         </div>
         <div class="text-sm text-zinc-700">
