@@ -49,8 +49,9 @@ defmodule TcWeb.ChatLive.Component do
           </div>
         <% end %>
         <h3 class="mx-2 text-lg"><%= @user.name %></h3>
+        <p class="text-xs"><%= @user.id %></p>
       </div>
-      <div>
+      <div class="flex">
         <%= render_slot(@inner_block) %>
       </div>
     </div>
