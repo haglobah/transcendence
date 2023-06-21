@@ -94,6 +94,30 @@ defmodule Tc.Chat do
     |> Repo.update()
   end
 
+  def rm_member(%Room{members: members} = room, user_id) do
+    attrs = %{members: members -- [user_id]}
+
+    room
+    |> Room.change_members(attrs)
+    |> Repo.update()
+  end
+
+  def add_admin(%Room{admins: admins} = room, user_id) do
+    attrs = %{admins: [user_id | admins]}
+
+    room
+    |> Room.change_admins(attrs)
+    |> Repo.update()
+  end
+
+  def rm_admin(%Room{admins: admins} = room, user_id) do
+    attrs = %{admins: admins -- [user_id]}
+
+    room
+    |> Room.change_admins(attrs)
+    |> Repo.update()
+  end
+
   @doc """
   Deletes a room.
 

@@ -3,34 +3,43 @@ defmodule TcWeb.ChatLive.MemberList do
 
   import TcWeb.ChatLive.Component
   alias Tc.Accounts
+  alias Tc.Chat
 
-  def update(%{room: _room, user: _user} = assigns, socket) do
+  def update(%{room: room, user: user} = assigns, socket) do
 
     {:ok,
       socket
-      |> assign(assigns)}
+      |> assign(assigns)
+      |> assign(room: room)
+      |> assign(user: user)
+    }
   end
 
   def render(assigns) do
     ~H"""
       <div class="bg-gray-100 my-2 rounded w-120">
-        <%= for user <- Accounts.get_users(@room.members) do %>
-          <.display_user user={user}>
+        <%= for member <- Accounts.get_users(@room.members) do %>
+          <.display_user user={member}>
             <%= if is_admin(@room, @user) do %>
-              <.button :if={!is_admin(@room, user) && @user.id == user.id}
+              <.button :if={is_admin(@room, member) && @user.id != member.id}
                 phx-target={@myself}
-                phx-click="rm-admin" phx-value-user-id={user.id}>
+                phx-click="rm-admin" phx-value-member-id={member.id}>
                 Remove Admin rights
               </.button>
-              <.button :if={is_admin(@room, user)}
+              <.button :if={!is_admin(@room, member)}
                 phx-target={@myself}
-                phx-click="to-admin" phx-value-user-id={user.id}>
+                phx-click="make-admin" phx-value-member-id={member.id}>
                 Make an admin
               </.button>
-              <.button :if={true}
+              <.button :if={@user.id != member.id}
                 phx-target={@myself}
-                phx-click="kick" phx-value-user-id={user.id}>
+                phx-click="kick" phx-value-member-id={member.id}>
                 Kick from room
+              </.button>
+              <.button :if={@user.id == member.id}
+                phx-target={@myself}
+                phx-click="kick" phx-value-member-id={member.id}>
+                Leave room
               </.button>
             <% end %>
           </.display_user>
@@ -39,16 +48,31 @@ defmodule TcWeb.ChatLive.MemberList do
     """
   end
 
-  def handle_event("to-admin", %{"user-id" => _user_id}, socket) do
-    new_room = socket.assigns.room
+  def handle_event("make-admin", %{"member-id" => member_id}, socket) do
+    socket = change_room(&Chat.add_admin/2, member_id, socket)
 
-    {:noreply, assign(socket, room: new_room)}
+    {:noreply, socket}
   end
 
-  def handle_event("kick", %{"user-id" => _user_id}, socket) do
-    new_room = socket.assigns.room
+  def handle_event("rm-admin", %{"member-id" => member_id}, socket) do
+    socket = change_room(&Chat.rm_admin/2, member_id, socket)
 
-    {:noreply, assign(socket, room: new_room)}
+    {:noreply, socket}
+  end
+
+  def handle_event("kick", %{"member-id" => member_id}, socket) do
+    socket = change_room(&Chat.rm_member/2, member_id, socket)
+
+    {:noreply, socket}
+  end
+
+  defp change_room(change_fun, member_id, socket) do
+    case change_fun.(socket.assigns.room, member_id) do
+      {:ok, room} ->
+        assign(socket, room: room)
+      {:error, %Ecto.Changeset{} = changeset} ->
+        assign(socket, changeset: changeset)
+    end
   end
 
   defp is_admin(room, user) do

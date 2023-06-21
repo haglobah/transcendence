@@ -31,4 +31,10 @@ defmodule Tc.Chat.Room do
     |> cast(attrs, [:members])
     |> validate_required([:members])
   end
+
+  def change_admins(room, attrs) do
+    room
+    |> cast(attrs, [:admins])
+    |> validate_required([:admins])
+  end
 end
