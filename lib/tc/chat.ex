@@ -9,6 +9,17 @@ defmodule Tc.Chat do
   alias Tc.Chat.Room
   alias Tc.Chat.Message
 
+
+  def rooms_topic() do
+    "chat:rooms"
+  end
+  def edit_topic(room_id) do
+    "chat:#{room_id}:edit"
+  end
+  def msg_topic(room_id) do
+    "chat:#{room_id}:msg"
+  end
+
   @doc """
   Returns the list of rooms.
 
