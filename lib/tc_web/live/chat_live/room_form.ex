@@ -6,8 +6,10 @@ defmodule TcWeb.ChatLive.RoomForm do
   alias Tc.Chat.Room
   alias Phoenix.PubSub
 
-  def update(%{owner_id: owner_id} = assigns, socket) do
-    room = %Room{owner_id: owner_id}
+  alias TcWeb.ChatLive
+
+  def update(%{current_user: current_user} = assigns, socket) do
+    room = %Room{owner_id: current_user.id}
     changeset = Chat.change_room(room)
 
     {:ok,
@@ -20,6 +22,9 @@ defmodule TcWeb.ChatLive.RoomForm do
   def render(assigns) do
     ~H"""
     <div>
+      <.live_component module={ ChatLive.PrivChatSearch }
+                       current_user={ @current_user }
+                       id={ "new-chat-form" }/>
       <.simple_form
         for={@form}
         phx-submit="save"

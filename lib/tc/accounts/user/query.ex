@@ -6,7 +6,7 @@ defmodule Tc.Accounts.User.Query do
     User
   end
 
-  def search_addable_users(query \\ base(), search_query, exceptions) do
+  def search_users_except(query \\ base(), search_query, exceptions) do
     search_query = "%#{search_query}%"
     exceptions = to_binary(exceptions)
 
