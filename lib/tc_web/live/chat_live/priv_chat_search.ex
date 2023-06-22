@@ -64,20 +64,17 @@ defmodule TcWeb.ChatLive.PrivChatSearch do
           <.display_user user={user} >
             <%= if is_blocked(@current_user, user) do %>
               <.button  phx-click="unblock-user"
-                        phx-value-current={@current_user.id}
                         phx-value-other={user.id}
                         phx-target={@myself}>
                         Unblock user
               </.button>
             <% else %>
               <.button  phx-click="start-chat"
-                        phx-value-current={@current_user.id}
                         phx-value-other={user.id}
                         phx-target={@myself}>
                         Start Chat
               </.button>
               <.button  phx-click="block-user"
-                        phx-value-current={@current_user.id}
                         phx-value-other={user.id}
                         phx-target={@myself}>
                         Block from chatting
@@ -95,37 +92,43 @@ defmodule TcWeb.ChatLive.PrivChatSearch do
   end
   def handle_event("change",
     %{"search" => %{"query" => search_query}},
-    %{assigns: %{current_user: _current_user}} = socket) do
+    %{assigns: %{current_user: current_user}} = socket) do
 
-    except = [] # current_user.blocked
+    except = [current_user.id] #| current_user.blocked]
     chattable_users = Accounts.search_users_except(%{query: search_query, except: except})
     {:noreply, assign(socket, chattable_users: chattable_users)}
   end
 
-  def handle_event("add-user", %{"current" => user_id}, socket) do
-    # socket = change_relation(&Chat.add_member/2, user_id, socket)
-    {:noreply, socket}
-  end
-
-  def handle_event("block-user", %{"current" => user_id}, socket) do
-    # socket = change_relation(&Chat.add_blocked/2, user_id, socket)
-    {:noreply, socket}
-  end
-
-  def handle_event("unblock-user", %{"current" => user_id}, socket) do
-    # socket = change_relation(&Chat.rm_blocked/2, user_id, socket)
-    {:noreply, socket}
-  end
-
-  defp change_room(change_fun, member_id, socket) do
-    case change_fun.(socket.assigns.room, member_id) do
+  def handle_event("start-chat", %{"other" => other}, socket) do
+    socket = case Chat.create_privchat(%{"members" => [socket.assigns.current_user, other]}) do
       {:ok, room} ->
-        PubSub.broadcast(Tc.PubSub, Chat.rooms_topic(), {:edit_room})
-        assign(socket, room: room)
-      {:error, %Ecto.Changeset{} = changeset} ->
-        assign(socket, changeset: changeset)
+        PubSub.broadcast(Tc.PubSub, Chat.rooms_topic(), {:chat_rooms, room})
+        :timer.sleep(1000)
+        socket
+      {:error, %Ecto.Changeset{} = changeset} -> assign(socket, changeset: changeset)
     end
+    {:noreply, socket}
   end
+
+  def handle_event("block-user", %{"current" => _user_id}, socket) do
+    # socket = change_relation(&Chat.block_user/2, user_id, socket)
+    {:noreply, socket}
+  end
+
+  def handle_event("unblock-user", %{"current" => _user_id}, socket) do
+    # socket = change_relation(&Chat.unblock_user/2, user_id, socket)
+    {:noreply, socket}
+  end
+
+  # defp change_relation(change_fun, member_id, socket) do
+  #   case change_fun.(socket.assigns.room, member_id) do
+  #     {:ok, room} ->
+  #       PubSub.broadcast(Tc.PubSub, Chat.rooms_topic(), {:edit_room})
+  #       assign(socket, room: room)
+  #     {:error, %Ecto.Changeset{} = changeset} ->
+  #       assign(socket, changeset: changeset)
+  #   end
+  # end
 
   defp is_blocked(_current_user, _user) do
     # case current_user.blocked do
