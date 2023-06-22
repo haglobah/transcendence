@@ -2,24 +2,46 @@ defmodule TcWeb.ChatLive.Component do
   use Phoenix.Component
   use TcWeb, :html
 
+  alias Tc.Accounts
+
   attr :rooms, :list
+  attr :user, :any
   def room_list(assigns) do
     ~H"""
     <div class="bg-sky-200">
       <%= for room <- @rooms do %>
-        <.link navigate={~p"/chat/rooms/#{room.id}"}
-               class={"flex items-center p-2"}
-        >
-          <%!-- <.chat_icon /> --%>
-          <h3 class="ml-3"><%= room.name %></h3>
-          <p class="text-sm ml-3"><%= room.description %></p>
-        </.link>
+        <.display_chat room={room} user={@user}/>
       <% end %>
     </div>
     <.link patch={~p"/chat/rooms/new"} phx-click={JS.push_focus()}>
       <.button>+</.button>
     </.link>
     """
+  end
+
+  attr :room, :any
+  attr :user, :any
+  def display_chat(assigns) do
+    ~H"""
+    <.link navigate={~p"/chat/rooms/#{@room.id}"}
+               class={"flex items-center p-2"}>
+      <%= if @room.name == nil do %>
+        <% other_user = get_other(@room.members, @user) %>
+        <.display_user user={other_user} />
+      <% else %>
+        <h3 class="ml-3"><%= @room.name %></h3>
+        <p class="text-sm ml-3"><%= @room.description %></p>
+      <% end %>
+    </.link>
+    """
+  end
+
+  defp get_other(members, user) do
+    [first, second] = Accounts.get_users(members)
+    case first do
+      ^user -> second
+      _ -> first
+    end
   end
 
   attr :users, :list
