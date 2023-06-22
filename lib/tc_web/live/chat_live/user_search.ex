@@ -4,6 +4,7 @@ defmodule TcWeb.ChatLive.UserSearch do
   import TcWeb.ChatLive.Component
   alias Tc.Chat
   alias Tc.Accounts
+  alias Phoenix.PubSub
 
   def update(assigns, socket) do
     {:ok,
@@ -118,6 +119,7 @@ defmodule TcWeb.ChatLive.UserSearch do
   defp change_room(change_fun, member_id, socket) do
     case change_fun.(socket.assigns.room, member_id) do
       {:ok, room} ->
+        PubSub.broadcast(Tc.PubSub, Chat.rooms_topic(), {:edit_room})
         assign(socket, room: room)
       {:error, %Ecto.Changeset{} = changeset} ->
         assign(socket, changeset: changeset)

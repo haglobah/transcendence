@@ -4,6 +4,7 @@ defmodule TcWeb.ChatLive.MemberList do
   import TcWeb.ChatLive.Component
   alias Tc.Accounts
   alias Tc.Chat
+  alias Phoenix.PubSub
 
   def update(%{room: room, user: user} = assigns, socket) do
 
@@ -69,6 +70,7 @@ defmodule TcWeb.ChatLive.MemberList do
   defp change_room(change_fun, member_id, socket) do
     case change_fun.(socket.assigns.room, member_id) do
       {:ok, room} ->
+        PubSub.broadcast(Tc.PubSub, Chat.rooms_topic(), {:edit_room})
         assign(socket, room: room)
       {:error, %Ecto.Changeset{} = changeset} ->
         assign(socket, changeset: changeset)

@@ -122,8 +122,23 @@ defmodule TcWeb.ChatLive do
     {:noreply, assign(socket, rooms: [new_room | socket.assigns.rooms])}
   end
 
-  def handle_info({:edit_room}, %{assigns: %{active_room: active_room}} = socket) do
-    {:noreply, push_navigate(socket, to: ~p"/chat/rooms/#{active_room.id}", replace: true)}
+  def handle_info({:edit_room},
+    %{assigns: %{active_room: active_room, live_action: action}} = socket
+  ) do
+    case action do
+      :index -> {:noreply, push_navigate(socket,
+                              to: ~p"/chat/rooms/",
+                              replace: true)}
+      :new -> {:noreply, push_navigate(socket,
+                              to: ~p"/chat/rooms/new",
+                              replace: true)}
+      :show -> {:noreply, push_navigate(socket,
+                              to: ~p"/chat/rooms/#{active_room.id}",
+                              replace: true)}
+      :edit -> {:noreply, push_navigate(socket,
+                              to: ~p"/chat/rooms/#{active_room.id}/edit",
+                              replace: true)}
+    end
   end
 
   # defp paginate_msgs(socket, new_page) when new_page >= 1 do
