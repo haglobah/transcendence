@@ -79,8 +79,8 @@ defmodule Tc.Accounts do
   @doc """
   Search for a user via a loose pattern match.
   """
-  def search_addable_users(%{query: search_query, except: exceptions}) do
-    User.Query.search_addable_users(search_query, exceptions)
+  def search_users_except(%{query: search_query, except: exceptions}) do
+    User.Query.search_users_except(search_query, exceptions)
     |> Repo.all()
   end
 

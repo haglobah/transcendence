@@ -1,4 +1,4 @@
-defmodule TcWeb.ChatLive.UserSearch do
+defmodule TcWeb.ChatLive.PrivChatSearch do
   use TcWeb, :live_component
 
   import TcWeb.ChatLive.Component
@@ -10,7 +10,7 @@ defmodule TcWeb.ChatLive.UserSearch do
     {:ok,
       socket
       |> assign(assigns)
-      |> assign(addable_users: [])
+      |> assign(chattable_users: [])
     }
   end
 
@@ -37,7 +37,7 @@ defmodule TcWeb.ChatLive.UserSearch do
           name="search[query]"
           class="flex-auto rounded-lg appearance-none bg-transparent pl-10 text-zinc-900 outline-none focus:outline-none border-slate-200 focus:border-slate-200 focus:ring-0 focus:shadow-none placeholder:text-zinc-500 focus:w-full focus:flex-none sm:text-sm [&::-webkit-search-cancel-button]:hidden [&::-webkit-search-decoration]:hidden [&::-webkit-search-results-button]:hidden [&::-webkit-search-results-decoration]:hidden pr-4"
           style={
-            @addable_users != [] &&
+            @chattable_users != [] &&
               "border-bottom-left-radius: 0; border-bottom-right-radius: 0; border-bottom: none"
           }
           aria-autocomplete="both"
@@ -47,7 +47,7 @@ defmodule TcWeb.ChatLive.UserSearch do
           autocapitalize="off"
           enterkeyhint="search"
           spellcheck="false"
-          placeholder="Add a member..."
+          placeholder="Search for a user to chat with..."
           type="search"
           value=""
           tabindex="0"
@@ -55,32 +55,32 @@ defmodule TcWeb.ChatLive.UserSearch do
       </div>
 
       <div
-        :if={@addable_users != []}
+        :if={@chattable_users != []}
         class="divide-y divide-slate-200 overflow-y-auto rounded-b-lg border-t border-slate-200 text-sm leading-6"
         id="searchbox__results_list"
         role="listbox"
       >
-        <%= for user <- @addable_users do %>
+        <%= for user <- @chattable_users do %>
           <.display_user user={user} >
-            <%= if is_blocked(@room, user) do %>
+            <%= if is_blocked(@current_user, user) do %>
               <.button  phx-click="unblock-user"
-                        phx-value-room={@room.id}
-                        phx-value-user={user.id}
+                        phx-value-current={@current_user.id}
+                        phx-value-other={user.id}
                         phx-target={@myself}>
                         Unblock user
               </.button>
             <% else %>
-              <.button  phx-click="add-user"
-                        phx-value-room={@room.id}
-                        phx-value-user={user.id}
+              <.button  phx-click="start-chat"
+                        phx-value-current={@current_user.id}
+                        phx-value-other={user.id}
                         phx-target={@myself}>
-                        Add to room
+                        Start Chat
               </.button>
               <.button  phx-click="block-user"
-                        phx-value-room={@room.id}
-                        phx-value-user={user.id}
+                        phx-value-current={@current_user.id}
+                        phx-value-other={user.id}
                         phx-target={@myself}>
-                        Block from room
+                        Block from chatting
               </.button>
             <% end %>
           </.display_user>
@@ -91,28 +91,29 @@ defmodule TcWeb.ChatLive.UserSearch do
   end
 
   def handle_event("change", %{"search" => %{"query" => ""}}, socket) do
-    {:noreply, assign(socket, addable_users: [])}
+    {:noreply, assign(socket, chattable_users: [])}
   end
   def handle_event("change",
     %{"search" => %{"query" => search_query}},
-    %{assigns: %{room: room}} = socket) do
+    %{assigns: %{current_user: _current_user}} = socket) do
 
-    addable_users = Accounts.search_users_except(%{query: search_query, except: room.members})
-    {:noreply, assign(socket, addable_users: addable_users)}
+    except = [] # current_user.blocked
+    chattable_users = Accounts.search_users_except(%{query: search_query, except: except})
+    {:noreply, assign(socket, chattable_users: chattable_users)}
   end
 
-  def handle_event("add-user", %{"user" => user_id}, socket) do
-    socket = change_room(&Chat.add_member/2, user_id, socket)
+  def handle_event("add-user", %{"current" => user_id}, socket) do
+    # socket = change_relation(&Chat.add_member/2, user_id, socket)
     {:noreply, socket}
   end
 
-  def handle_event("block-user", %{"user" => user_id}, socket) do
-    socket = change_room(&Chat.add_blocked/2, user_id, socket)
+  def handle_event("block-user", %{"current" => user_id}, socket) do
+    # socket = change_relation(&Chat.add_blocked/2, user_id, socket)
     {:noreply, socket}
   end
 
-  def handle_event("unblock-user", %{"user" => user_id}, socket) do
-    socket = change_room(&Chat.rm_blocked/2, user_id, socket)
+  def handle_event("unblock-user", %{"current" => user_id}, socket) do
+    # socket = change_relation(&Chat.rm_blocked/2, user_id, socket)
     {:noreply, socket}
   end
 
@@ -126,11 +127,12 @@ defmodule TcWeb.ChatLive.UserSearch do
     end
   end
 
-  defp is_blocked(room, user) do
-    case room.blocked do
-      nil -> false
-      [] -> false
-      [_ | _] -> user.id in room.blocked
-    end
+  defp is_blocked(_current_user, _user) do
+    # case current_user.blocked do
+    #   nil -> false
+    #   [] -> false
+    #   [_ | _] -> user.id in current_user.blocked
+    # end
+    false
   end
 end
