@@ -76,6 +76,12 @@ defmodule Tc.Chat do
     |> Map.put("members", [owner_id])
   end
 
+  def create_priv_chat(%{"members" => members} = attrs) do
+    %Room{}
+    |> Room.change_chat(attrs |> Map.put("owner_id", hd(members)))
+    |> Repo.insert()
+  end
+
   @doc """
   Updates a room.
 
