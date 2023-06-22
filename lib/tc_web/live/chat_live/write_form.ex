@@ -3,6 +3,7 @@ defmodule TcWeb.ChatLive.WriteForm do
   import TcWeb.CoreComponents
   alias Tc.Chat
   alias Tc.Chat.Message
+  alias Phoenix.PubSub
 
   def update(%{sender_id: sender_id, room_id: room_id} = assigns, socket) do
     msg = %Message{sender_id: sender_id, room_id: room_id}
@@ -49,7 +50,9 @@ defmodule TcWeb.ChatLive.WriteForm do
     message_params
     ) do
     case Chat.create_message(message_params) do
-      {:ok, _message} ->
+      {:ok, message} ->
+        PubSub.broadcast(Tc.PubSub, Chat.msg_topic(room_id), {:chat_msg, message})
+
         msg = %Message{sender_id: sender_id, room_id: room_id, content: ""}
         changeset = Chat.change_message(msg)
 
