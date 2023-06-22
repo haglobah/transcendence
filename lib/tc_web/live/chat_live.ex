@@ -11,11 +11,11 @@ defmodule TcWeb.ChatLive do
   def render(%{live_action: action} = assigns) when action in [:show, :edit] do
     ~H"""
     <div id="mobile-sidenav" class="fixed bg-white overflow-y-scroll block md:hidden z-50 inset-0">
-      <.room_list rooms={ @rooms }/>
+      <.room_list rooms={ @rooms } user={@current_user} />
     </div>
     <div class="flex">
       <aside class="h-[88vh] sticky top-14 w-52 overflow-y-scroll hidden md:block">
-        <.room_list rooms={ @rooms }/>
+        <.room_list rooms={ @rooms } user={@current_user} />
       </aside>
       <div class="mx-4 w-full">
         <.link patch={~p"/chat/rooms/#{@active_room.id}/edit"}>
@@ -65,10 +65,10 @@ defmodule TcWeb.ChatLive do
   def render(assigns) do
     ~H"""
     <div id="mobile-sidenav" class="fixed bg-white overflow-y-scroll block md:hidden z-50 inset-0">
-      <.room_list rooms={ @rooms }/>
+      <.room_list rooms={ @rooms } user={@current_user} />
     </div>
     <aside class="h-[88vh] sticky top-14 w-52 overflow-y-scroll hidden md:block">
-      <.room_list rooms={ @rooms }/>
+      <.room_list rooms={ @rooms } user={@current_user} />
     </aside>
 
     <.modal :if={@live_action in [:new]}
