@@ -88,8 +88,13 @@ defmodule Tc.Accounts do
   Get a list of Users in one take.
   """
   def get_users(user_id_list) do
-    User.Query.get_users(user_id_list)
-    |> Repo.all()
+    case user_id_list do
+      nil -> []
+      [] -> []
+      _ ->
+        User.Query.get_users(user_id_list)
+        |> Repo.all()
+    end
   end
 
   ## User registration
