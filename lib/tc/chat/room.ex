@@ -43,4 +43,10 @@ defmodule Tc.Chat.Room do
     |> cast(attrs, [:blocked])
     |> validate_required([:blocked])
   end
+
+  def change_chat(room, attrs) do
+    room
+    |> cast(attrs, [:owner_id, :members])
+    |> validate_required([:owner_id, :members])
+  end
 end
