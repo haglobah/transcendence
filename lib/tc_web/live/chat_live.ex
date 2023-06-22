@@ -85,7 +85,6 @@ defmodule TcWeb.ChatLive do
   def mount(%{"room_id" => room_id}, _session, socket) do
     if connected?(socket) do
       Endpoint.subscribe(Chat.rooms_topic())
-      Endpoint.subscribe(Chat.edit_topic(room_id))
       Endpoint.subscribe(Chat.msg_topic(room_id))
     end
 
@@ -121,6 +120,10 @@ defmodule TcWeb.ChatLive do
 
   def handle_info({:chat_rooms, new_room}, socket) do
     {:noreply, assign(socket, rooms: [new_room | socket.assigns.rooms])}
+  end
+
+  def handle_info({:edit_room}, %{assigns: %{active_room: active_room}} = socket) do
+    {:noreply, push_navigate(socket, to: ~p"/chat/rooms/#{active_room.id}", replace: true)}
   end
 
   # defp paginate_msgs(socket, new_page) when new_page >= 1 do

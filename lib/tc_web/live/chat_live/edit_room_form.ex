@@ -4,6 +4,8 @@ defmodule TcWeb.ChatLive.EditRoomForm do
 
   alias Tc.Chat
   alias Tc.Chat.Room
+  alias Phoenix.PubSub
+
   alias TcWeb.ChatLive
 
   def update(
@@ -24,7 +26,7 @@ defmodule TcWeb.ChatLive.EditRoomForm do
   def render(assigns) do
     ~H"""
     <div>
-      <%= if @user.id in @room.admins do %>
+      <%= if is_admin(@room, @user) do %>
         <.live_component  module={ChatLive.UserSearch}
                           room={@room}
                           id={"room-#{@room.id}-user-search"} />
@@ -70,8 +72,9 @@ defmodule TcWeb.ChatLive.EditRoomForm do
     room_params
   ) do
     case Chat.update_room(orig_room, room_params) do
-      {:ok, room} ->
-        room = %Room{name: room.name, description: room.description}
+      {:ok, new_room} ->
+        PubSub.broadcast(Tc.PubSub, Chat.rooms_topic(), {:edit_room})
+        room = %Room{name: new_room.name, description: new_room.description}
         changeset = Chat.change_room(room)
 
         socket
@@ -90,6 +93,13 @@ defmodule TcWeb.ChatLive.EditRoomForm do
       assign(socket, form: form, check_errors: false)
     else
       assign(socket, form: form)
+    end
+  end
+
+  defp is_admin(room, user) do
+    case room.admins do
+      nil -> false
+      _ -> user.id in room.admins
     end
   end
 end
