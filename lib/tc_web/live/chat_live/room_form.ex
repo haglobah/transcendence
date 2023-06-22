@@ -1,8 +1,10 @@
 defmodule TcWeb.ChatLive.RoomForm do
   use TcWeb, :live_component
   import TcWeb.CoreComponents
+
   alias Tc.Chat
   alias Tc.Chat.Room
+  alias Phoenix.PubSub
 
   def update(%{owner_id: owner_id} = assigns, socket) do
     room = %Room{owner_id: owner_id}
@@ -55,7 +57,13 @@ defmodule TcWeb.ChatLive.RoomForm do
     room_params
   ) do
     case Chat.create_room(room_params) do
-      {:ok, _room} ->
+      {:ok, new_room} ->
+        PubSub.broadcast(
+          Tc.PubSub,
+          Chat.rooms_topic(),
+          {:chat_rooms, new_room}
+        )
+
         room = %Room{owner_id: owner_id, name: "", description: ""}
         changeset = Chat.change_room(room)
 

@@ -2,6 +2,7 @@ defmodule TcWeb.ChatLive do
   use TcWeb, :live_view
   alias Tc.Chat
   alias Tc.Accounts
+  alias TcWeb.Endpoint
 
   import TcWeb.ChatLive.Component
   import TcWeb.ChatLive.Messages
@@ -82,6 +83,12 @@ defmodule TcWeb.ChatLive do
   end
 
   def mount(%{"room_id" => room_id}, _session, socket) do
+    if connected?(socket) do
+      Endpoint.subscribe(Chat.rooms_topic())
+      Endpoint.subscribe(Chat.edit_topic(room_id))
+      Endpoint.subscribe(Chat.msg_topic(room_id))
+    end
+
     active_room = Chat.get_room!(room_id)
     members = Accounts.get_users(active_room.members)
     rooms = Chat.list_rooms_for(socket.assigns.current_user.id)
@@ -99,6 +106,10 @@ defmodule TcWeb.ChatLive do
   end
 
   def mount(_params, _session, socket) do
+    if connected?(socket) do
+      Endpoint.subscribe(Chat.rooms_topic())
+    end
+
     rooms = Chat.list_rooms_for(socket.assigns.current_user.id)
     {:ok,
       socket
@@ -107,6 +118,10 @@ defmodule TcWeb.ChatLive do
   end
 
   def handle_params(_params, _session, socket), do: {:noreply, socket}
+
+  def handle_info({:chat_rooms, new_room}, socket) do
+    {:noreply, assign(socket, rooms: [new_room | socket.assigns.rooms])}
+  end
 
   # defp paginate_msgs(socket, new_page) when new_page >= 1 do
   #   %{active_room: room, per_page: per_page, page: cur_page} = socket.assigns
