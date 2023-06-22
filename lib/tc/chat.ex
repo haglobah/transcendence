@@ -13,9 +13,6 @@ defmodule Tc.Chat do
   def rooms_topic() do
     "chat:rooms"
   end
-  def edit_topic(room_id) do
-    "chat:#{room_id}:edit"
-  end
   def msg_topic(room_id) do
     "chat:#{room_id}:msg"
   end
@@ -230,6 +227,9 @@ defmodule Tc.Chat do
     |> Repo.insert()
   end
 
+  def preload(msg, :sender) do
+    Repo.preload(msg, :sender)
+  end
   @doc """
   Updates a message.
 

@@ -141,6 +141,10 @@ defmodule TcWeb.ChatLive do
     end
   end
 
+  def handle_info({:chat_msg, message}, socket) do
+    {:noreply, stream_insert(socket, :messages, Chat.preload(message, :sender))}
+  end
+
   # defp paginate_msgs(socket, new_page) when new_page >= 1 do
   #   %{active_room: room, per_page: per_page, page: cur_page} = socket.assigns
   #   msgs = Chat.list_msgs(
