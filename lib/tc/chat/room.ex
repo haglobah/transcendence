@@ -25,8 +25,33 @@ defmodule Tc.Chat.Room do
   @doc false
   def changeset(room, attrs) do
     room
-    |> cast(attrs, [:name, :description, :owner_id, :admins, :members])
-    |> validate_required([:name, :description, :owner_id])
+    |> cast(attrs, [:name, :description, :owner_id, :admins, :members, :access, :password])
+    |> validate_required([:name, :description, :owner_id, :access])
+    |> validate_password()
+  end
+
+  defp maybe_validate_password(changeset) do
+    case get_change(changeset, :access) do
+      :protected ->
+        changeset
+        |> validate_required([:password])
+        |> hash_password()
+
+      _ -> changeset
+    end
+  end
+
+  defp hash_password(changeset) do
+    password = get_change(changeset, :password)
+
+    if password && changeset.valid? do
+      changeset
+      |> validate_length(:password, max: 72, count: :bytes)
+      |> put_change(:hashed_password, Bcrypt.hash_pwd_salt(password))
+      |> delete_change(:password)
+    else
+      changeset
+    end
   end
 
   def change_members(room, attrs) do
