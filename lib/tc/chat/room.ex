@@ -11,6 +11,9 @@ defmodule Tc.Chat.Room do
     field :description, :string
     field :name, :string
     belongs_to :owner, User
+    field :access, Ecto.Enum, values: [:public, :protected, :private]
+    field :password, :string, virtual: true, redact: :true
+    field :hashed_password, :string, redact: :true
     field :admins, {:array, :binary_id}
     field :members, {:array, :binary_id}
     field :blocked, {:array, :binary_id}
