@@ -27,7 +27,7 @@ defmodule Tc.Chat.Room do
     room
     |> cast(attrs, [:name, :description, :owner_id, :admins, :members, :access, :password])
     |> validate_required([:name, :description, :owner_id, :access])
-    |> validate_password()
+    |> maybe_validate_password()
   end
 
   defp maybe_validate_password(changeset) do
