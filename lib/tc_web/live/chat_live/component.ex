@@ -36,7 +36,7 @@ defmodule TcWeb.ChatLive.Component do
     """
   end
 
-  defp get_other(members, user) do
+  def get_other(members, user) do
     [first, second] = Accounts.get_users(members)
     case first do
       ^user -> second
