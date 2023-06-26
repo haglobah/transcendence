@@ -119,7 +119,12 @@ defmodule TcWeb.ChatLive do
   def handle_params(_params, _session, socket), do: {:noreply, socket}
 
   def handle_info({:chat_rooms, new_room}, socket) do
-    {:noreply, assign(socket, rooms: [new_room | socket.assigns.rooms])}
+    socket =
+      case socket.assigns.current_user.id in new_room.members do
+        true -> assign(socket, rooms: [new_room | socket.assigns.rooms])
+        false -> socket
+      end
+    {:noreply, socket}
   end
 
   def handle_info({:edit_room},

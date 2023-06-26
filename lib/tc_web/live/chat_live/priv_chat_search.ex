@@ -100,10 +100,9 @@ defmodule TcWeb.ChatLive.PrivChatSearch do
   end
 
   def handle_event("start-chat", %{"other" => other}, socket) do
-    socket = case Chat.create_privchat(%{"members" => [socket.assigns.current_user, other]}) do
+    socket = case Chat.create_privchat(%{"members" => [socket.assigns.current_user.id, other]}) do
       {:ok, room} ->
         PubSub.broadcast(Tc.PubSub, Chat.rooms_topic(), {:chat_rooms, room})
-        :timer.sleep(1000)
         socket
       {:error, %Ecto.Changeset{} = changeset} -> assign(socket, changeset: changeset)
     end
