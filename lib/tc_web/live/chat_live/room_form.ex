@@ -58,7 +58,7 @@ defmodule TcWeb.ChatLive.RoomForm do
   end
 
   def add_room(
-    %{assigns: %{owner_id: owner_id}} = socket,
+    %{assigns: %{current_user: %{id: owner_id}}} = socket,
     room_params
   ) do
     case Chat.create_room(room_params) do
