@@ -18,16 +18,25 @@ defmodule TcWeb.ChatLive do
         <.room_list rooms={ @rooms } user={@current_user} />
       </aside>
       <div class="mx-4 w-full">
-        <.link patch={~p"/chat/rooms/#{@active_room.id}/edit"}>
-          <div class="text-center py-4 bg-gray-200">
-            <h3 class="text-xl">
-              <%= @active_room.name %>
-            </h3>
-            <h3 class="text-sm">
-              <%= @active_room.description %>
-            </h3>
-          </div>
-        </.link>
+        <%= if @active_room.name != nil do %>
+          <.link patch={~p"/chat/rooms/#{@active_room.id}/edit"}>
+            <div class="text-center py-4 bg-gray-200">
+              <h3 class="text-xl">
+                <%= @active_room.name %>
+              </h3>
+              <h3 class="text-sm">
+                <%= @active_room.description %>
+              </h3>
+            </div>
+          </.link>
+        <% else %>
+          <% other_user = get_other(@active_room.members, @current_user) %>
+          <.link navigate={~p"/#{other_user.name}"}>
+            <div class="text-center py-4 bg-gray-200">
+              <.display_user user={other_user} />
+            </div>
+          </.link>
+        <% end %>
         <.list_messages
           messages={ @streams.messages }
           members={ @room_members }
