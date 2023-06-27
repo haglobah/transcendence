@@ -9,10 +9,12 @@ defmodule TcWeb.ChatLive.EditRoomForm do
   alias TcWeb.ChatLive
 
   def update(
-    %{room: %{owner_id: owner_id, name: name, description: description} = room, user: user} = assigns,
+    %{room:
+      %{owner_id: owner_id, name: name, description: description, access: access} = room,
+      user: user} = assigns,
     socket
   ) do
-    for_room_form = %Room{owner_id: owner_id, name: name, description: description}
+    for_room_form = %Room{owner_id: owner_id, name: name, description: description, access: access}
     changeset = Chat.change_room(for_room_form)
 
     {:ok,
@@ -20,6 +22,7 @@ defmodule TcWeb.ChatLive.EditRoomForm do
      |> assign(assigns)
      |> assign(room: room)
      |> assign(user: user)
+     |> assign(show_password: access == :protected)
      |> assign_form(changeset)}
   end
 
@@ -34,6 +37,7 @@ defmodule TcWeb.ChatLive.EditRoomForm do
       <.simple_form
         for={@form}
         phx-submit="save"
+        phx-change="change"
         phx-target={@myself}
         id={@id}
       >
@@ -51,6 +55,10 @@ defmodule TcWeb.ChatLive.EditRoomForm do
           phx-key="ArrowUp"
           label="Room description"
           field={@form[:description]} type="text"/>
+        <.input field={@form[:access]} type="select" options={["private", "protected", "public"]}/>
+        <%= if @show_password do %>
+          <.input field={@form[:password]} type="password" label="Password"/>
+        <% end %>
         <:actions>
           <.button phx-disable-with="Changing Room...">Change Room</.button>
         </:actions>
@@ -61,6 +69,15 @@ defmodule TcWeb.ChatLive.EditRoomForm do
                        id={"room-#{@room.id}-member-list"} />
     </div>
     """
+  end
+
+  def handle_event("change", %{"room" => %{"access" => access}}, socket) do
+    socket = case access do
+      "protected" -> assign(socket, show_password: true)
+      _ -> assign(socket, show_password: false)
+    end
+
+    {:noreply, socket}
   end
 
   def handle_event("save", %{"room" => room_params}, socket) do
@@ -74,7 +91,7 @@ defmodule TcWeb.ChatLive.EditRoomForm do
     case Chat.update_room(orig_room, room_params) do
       {:ok, new_room} ->
         PubSub.broadcast(Tc.PubSub, Chat.rooms_topic(), {:edit_room})
-        room = %Room{name: new_room.name, description: new_room.description}
+        room = %Room{name: new_room.name, description: new_room.description, access: new_room.access}
         changeset = Chat.change_room(room)
 
         socket
