@@ -9,13 +9,14 @@ defmodule TcWeb.ChatLive.RoomForm do
   alias TcWeb.ChatLive
 
   def update(%{current_user: current_user} = assigns, socket) do
-    room = %Room{owner_id: current_user.id}
+    room = %Room{owner_id: current_user.id, access: :private, password: nil}
     changeset = Chat.change_room(room)
 
     {:ok,
      socket
      |> assign(assigns)
      |> assign(room: room)
+     |> assign(show_password: false)
      |> assign_form(changeset)}
   end
 
@@ -28,6 +29,7 @@ defmodule TcWeb.ChatLive.RoomForm do
       <.simple_form
         for={@form}
         phx-submit="save"
+        phx-change="change"
         phx-target={@myself}
         id={@id}
       >
@@ -45,6 +47,10 @@ defmodule TcWeb.ChatLive.RoomForm do
           phx-key="ArrowUp"
           label="Room description"
           field={@form[:description]} type="text"/>
+        <.input field={@form[:access]} type="select" options={["private", "protected", "public"]}/>
+        <%= if @show_password do %>
+          <.input field={@form[:password]} type="password" label="Password"/>
+        <% end %>
         <:actions>
           <.button phx-disable-with="Creating Room...">Create Room</.button>
         </:actions>
@@ -55,6 +61,15 @@ defmodule TcWeb.ChatLive.RoomForm do
 
   def handle_event("save", %{"room" => room_params}, socket) do
     {:noreply, add_room(socket, room_params)}
+  end
+
+  def handle_event("change", %{"room" => %{"access" => access}}, socket) do
+    socket = case access do
+      "protected" -> assign(socket, show_password: true)
+      _ -> assign(socket, show_password: false)
+    end
+
+    {:noreply, socket}
   end
 
   def add_room(
@@ -69,7 +84,7 @@ defmodule TcWeb.ChatLive.RoomForm do
           {:chat_rooms, new_room}
         )
 
-        room = %Room{owner_id: owner_id, name: "", description: ""}
+        room = %Room{owner_id: owner_id, name: "", description: "", access: :private}
         changeset = Chat.change_room(room)
 
         socket
