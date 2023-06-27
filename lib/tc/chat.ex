@@ -3,7 +3,7 @@ defmodule Tc.Chat do
   The Chat context.
   """
 
-  import Ecto.Query, warn: false
+  alias Ecto.Changeset
   alias Tc.Repo
 
   alias Tc.Chat.Room
@@ -103,6 +103,28 @@ defmodule Tc.Chat do
     |> Room.changeset(attrs)
     |> Repo.update()
   end
+
+  def join_room(%Room{} = room, user_id) do
+    add_member(room, user_id)
+  end
+
+  def join_room(%Room{} = room, user_id, password) do
+    case valid_password?(room, password) do
+      true -> add_member(room, user_id)
+      false -> %Ecto.Changeset{} |> Changeset.add_error(:password, "is not valid")
+    end
+  end
+
+  def valid_password?(%Room{hashed_password: hashed_password}, password)
+    when is_binary(hashed_password) and byte_size(password) > 0 do
+      Bcrypt.verify_pass(password, hashed_password)
+  end
+
+  def valid_password?(_, _) do
+    Bcrypt.no_user_verify()
+    false
+  end
+
 
   def add_member(%Room{members: members} = room, user_id) do
     attrs = %{members: [user_id | members]}

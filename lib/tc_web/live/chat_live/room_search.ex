@@ -71,7 +71,7 @@ defmodule TcWeb.ChatLive.RoomSearch do
               <.button phx-click="try-join-room"
                       phx-value-room={room.id}
                       phx-target={@myself}>
-                      Join Room (password needed)
+                      Join Room (with password)
               </.button>
             <% end %>
           </.display_room>
@@ -96,7 +96,19 @@ defmodule TcWeb.ChatLive.RoomSearch do
   end
 
   def handle_event("join-room", %{"room" => room_id}, socket) do
-    socket = case Chat.join_room(%{"room" => room_id, "user" => socket.assigns.current_user.id}) do
+    room = Chat.get_room!(room_id)
+    socket = case Chat.join_room(room, socket.assigns.current_user.id) do
+      {:ok, room} ->
+        PubSub.broadcast(Tc.PubSub, Chat.rooms_topic(), {:chat_rooms, room})
+        socket
+      {:error, %Ecto.Changeset{} = changeset} -> assign(socket, changeset: changeset)
+    end
+    {:noreply, socket}
+  end
+
+  def handle_event("try-join-room", %{"room" => room_id, "password" => password}, socket) do
+    room = Chat.get_room!(room_id)
+    socket = case Chat.join_room(room, socket.assigns.current_user.id, password) do
       {:ok, room} ->
         PubSub.broadcast(Tc.PubSub, Chat.rooms_topic(), {:chat_rooms, room})
         socket
