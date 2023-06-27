@@ -206,6 +206,10 @@ defmodule Tc.Chat do
     Room.changeset(room, attrs)
   end
 
+  def change_join_room(%Room{} = room, attrs \\ %{}) do
+    Room.change_join(room, attrs)
+  end
+
   @doc """
   Returns the list of messages.
 

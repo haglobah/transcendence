@@ -77,4 +77,10 @@ defmodule Tc.Chat.Room do
     |> cast(attrs, [:owner_id, :members])
     |> validate_required([:owner_id, :members])
   end
+
+  def change_join(room, attrs) do
+    room
+    |> cast(attrs, [:members, :password])
+    |> validate_required([:members, :password])
+  end
 end
