@@ -6,10 +6,13 @@ defmodule TcWeb.ChatLive.RoomSearch do
   alias Phoenix.PubSub
 
   def update(assigns, socket) do
+    changeset = Chat.change_join_room(%Chat.Room{})
+
     {:ok,
       socket
       |> assign(assigns)
       |> assign(joinable_rooms: [])
+      |> assign_form(changeset)
     }
   end
 
@@ -68,11 +71,21 @@ defmodule TcWeb.ChatLive.RoomSearch do
                       Join Room
               </.button>
             <% else %>
-              <.button phx-click="try-join-room"
-                      phx-value-room={room.id}
-                      phx-target={@myself}>
-                      Join Room (with password)
-              </.button>
+              <.simple_form
+                for={@form}
+                phx-submit="try-join-room"
+                phx-target={@myself}
+                id="try-join-#{room.id}">
+
+                <.input label="Room password" type="password"
+                  field={@form[:password]}/>
+
+                <:actions>
+                  <.button phx-disable-with="try-join-room">
+                          Join Room (with password)
+                  </.button>
+                </:actions>
+              </.simple_form>
             <% end %>
           </.display_room>
         <% end %>
@@ -115,5 +128,15 @@ defmodule TcWeb.ChatLive.RoomSearch do
       {:error, %Ecto.Changeset{} = changeset} -> assign(socket, changeset: changeset)
     end
     {:noreply, socket}
+  end
+
+  defp assign_form(socket, %Ecto.Changeset{} = changeset) do
+    form = to_form(changeset, as: "join-room")
+
+    if changeset.valid? do
+      assign(socket, form: form, check_errors: false)
+    else
+      assign(socket, form: form)
+    end
   end
 end
