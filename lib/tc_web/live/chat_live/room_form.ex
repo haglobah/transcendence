@@ -26,6 +26,9 @@ defmodule TcWeb.ChatLive.RoomForm do
       <.live_component module={ ChatLive.PrivChatSearch }
                        current_user={ @current_user }
                        id={ "new-chat-form" }/>
+      <.live_component module={ ChatLive.RoomSearch }
+                       current_user={ @current_user }
+                       id={ "search-room-form" }/>
       <.simple_form
         for={@form}
         phx-submit="save"
