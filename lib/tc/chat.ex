@@ -36,6 +36,10 @@ defmodule Tc.Chat do
     |> Repo.all()
   end
 
+  def search_rooms(%{query: search_query, except: except}) do
+    Room.Query.room_search(search_query, except)
+    |> Repo.all()
+  end
   @doc """
   Gets a single room.
 

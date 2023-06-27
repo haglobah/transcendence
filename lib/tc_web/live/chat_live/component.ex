@@ -44,6 +44,22 @@ defmodule TcWeb.ChatLive.Component do
     end
   end
 
+  attr :room, :any
+  slot :inner_block
+  def display_room(assigns) do
+    ~H"""
+    <div class="flex justify-between bg-gray-200">
+      <div class="flex items-center p-2">
+        <h3 class="ml-3"><%= @room.name %></h3>
+        <p class="text-sm ml-3"><%= @room.description %></p>
+      </div>
+      <div class="flex justify-end">
+        <%= render_slot(@inner_block) %>
+      </div>
+    </div>
+    """
+  end
+
   attr :users, :list
   attr :is_admin, :boolean
   slot :inner_block
