@@ -140,17 +140,24 @@ defmodule TcWeb.ChatLive do
     %{assigns: %{active_room: active_room, live_action: action}} = socket
   ) do
     case action do
-      :index -> {:noreply, push_navigate(socket,
-                              to: ~p"/chat/rooms/",
-                              replace: true)}
-      :new -> {:noreply, push_navigate(socket,
-                              to: ~p"/chat/rooms/new",
-                              replace: true)}
       :show -> {:noreply, push_navigate(socket,
                               to: ~p"/chat/rooms/#{active_room.id}",
                               replace: true)}
       :edit -> {:noreply, push_navigate(socket,
                               to: ~p"/chat/rooms/#{active_room.id}/edit",
+                              replace: true)}
+    end
+  end
+
+  def handle_info({:edit_room},
+    %{assigns: %{live_action: action}} = socket
+  ) do
+    case action do
+      :index -> {:noreply, push_navigate(socket,
+                              to: ~p"/chat/rooms/",
+                              replace: true)}
+      :new -> {:noreply, push_navigate(socket,
+                              to: ~p"/chat/rooms/new",
                               replace: true)}
     end
   end
