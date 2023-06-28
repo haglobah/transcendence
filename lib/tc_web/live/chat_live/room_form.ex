@@ -7,7 +7,7 @@ defmodule TcWeb.ChatLive.RoomForm do
 
   alias TcWeb.ChatLive
 
-  def update(%{current_user: current_user, room: room} = assigns, socket) do
+  def update(%{current_user: _current_user, room: room} = assigns, socket) do
     changeset = Chat.change_room(room)
 
     {:ok,
