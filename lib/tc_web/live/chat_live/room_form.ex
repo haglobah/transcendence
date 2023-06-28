@@ -1,6 +1,5 @@
 defmodule TcWeb.ChatLive.RoomForm do
   use TcWeb, :live_component
-  import TcWeb.CoreComponents
 
   alias Tc.Chat
   alias Tc.Chat.Room
@@ -38,6 +37,10 @@ defmodule TcWeb.ChatLive.RoomForm do
       >
 
         <.input field={@form[:owner_id]} type="hidden"/>
+        <.input field={@form[:access]} type="select" options={["private", "protected", "public"]}/>
+        <%= if @show_password do %>
+          <.input field={@form[:password]} type="password" label="Password"/>
+        <% end %>
         <.input
           autocomplete="off"
           phx-keydown={show_modal("new_room")}
@@ -50,10 +53,6 @@ defmodule TcWeb.ChatLive.RoomForm do
           phx-key="ArrowUp"
           label="Room description"
           field={@form[:description]} type="text"/>
-        <.input field={@form[:access]} type="select" options={["private", "protected", "public"]}/>
-        <%= if @show_password do %>
-          <.input field={@form[:password]} type="password" label="Password"/>
-        <% end %>
         <:actions>
           <.button phx-disable-with="Creating Room...">Create Room</.button>
         </:actions>
@@ -68,7 +67,7 @@ defmodule TcWeb.ChatLive.RoomForm do
 
   def handle_event("change", %{"room" => %{"access" => access}}, socket) do
     socket = case access do
-      "protected" -> assign(socket, show_password: true)
+      "protected" -> assign(socket, show_password: true) #TODO: assign the room, too. That should work.
       _ -> assign(socket, show_password: false)
     end
 
