@@ -55,7 +55,8 @@ defmodule TcWeb.ChatLive do
             show
             on_cancel={JS.patch(~p"/chat/rooms")}>
       <.live_component module={ChatLive.RoomForm}
-                       current_user={@current_user}
+                       current_user={ @current_user }
+                       room={%Chat.Room{owner_id: @current_user.id, access: :private, password: nil}}
                        id={ "new-room-form" } />
     </.modal>
     <.modal :if={@live_action in [:edit]}
@@ -94,7 +95,8 @@ defmodule TcWeb.ChatLive do
             show
             on_cancel={JS.patch(~p"/chat/rooms")}>
       <.live_component module={ChatLive.RoomForm}
-                       current_user={@current_user}
+                       current_user={ @current_user }
+                       room={%Chat.Room{owner_id: @current_user.id, access: :private, password: nil}}
                        id={ "new-room-form" } />
     </.modal>
     """

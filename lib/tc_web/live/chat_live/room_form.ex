@@ -7,14 +7,12 @@ defmodule TcWeb.ChatLive.RoomForm do
 
   alias TcWeb.ChatLive
 
-  def update(%{current_user: current_user} = assigns, socket) do
-    room = %Room{owner_id: current_user.id, access: :private, password: nil}
+  def update(%{current_user: current_user, room: room} = assigns, socket) do
     changeset = Chat.change_room(room)
 
     {:ok,
      socket
      |> assign(assigns)
-     |> assign(room: room)
      |> assign(show_password: false)
      |> assign_form(changeset)}
   end
@@ -67,7 +65,7 @@ defmodule TcWeb.ChatLive.RoomForm do
 
   def handle_event("change", %{"room" => %{"access" => access}}, socket) do
     socket = case access do
-      "protected" -> assign(socket, show_password: true) #TODO: assign the room, too. That should work. Even better: Use mount, too.
+      "protected" -> assign(socket, show_password: true)
       _ -> assign(socket, show_password: false)
     end
 
