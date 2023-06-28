@@ -134,11 +134,7 @@ defmodule TcWeb.ChatLive do
     }
   end
 
-  def handle_params(params, session, socket) do
-    IO.puts("PARAMS:")
-    IO.inspect(params)
-    IO.puts("SESSION:")
-    IO.inspect(session)
+  def handle_params(_params, _session, socket) do
     {:noreply, socket}
   end
 
