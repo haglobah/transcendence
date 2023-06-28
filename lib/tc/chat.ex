@@ -111,7 +111,7 @@ defmodule Tc.Chat do
   def join_room(%Room{} = room, user_id, password) do
     case valid_password?(room, password) do
       true -> add_member(room, user_id)
-      false -> %Ecto.Changeset{} |> Changeset.add_error(:password, "is not valid")
+      false -> {:error, %Ecto.Changeset{} |> Changeset.add_error(:password, "is not valid")}
     end
   end
 
