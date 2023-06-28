@@ -67,7 +67,7 @@ defmodule TcWeb.ChatLive.RoomForm do
 
   def handle_event("change", %{"room" => %{"access" => access}}, socket) do
     socket = case access do
-      "protected" -> assign(socket, show_password: true) #TODO: assign the room, too. That should work.
+      "protected" -> assign(socket, show_password: true) #TODO: assign the room, too. That should work. Even better: Use mount, too.
       _ -> assign(socket, show_password: false)
     end
 
