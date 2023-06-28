@@ -8,7 +8,7 @@ defmodule TcWeb.ChatLive do
   import TcWeb.ChatLive.Messages
   alias TcWeb.ChatLive
 
-  def render(%{live_action: action} = assigns) when action in [:show, :edit] do
+  def render(%{live_action: action} = assigns) when action in [:show, :edit, :join] do
     ~H"""
     <div id="mobile-sidenav" class="fixed bg-white overflow-y-scroll block md:hidden z-50 inset-0">
       <.room_list rooms={ @rooms } user={@current_user} />
@@ -67,6 +67,15 @@ defmodule TcWeb.ChatLive do
                        user={ @current_user }
                        members={ @room_members }
                        id={ "edit-#{@active_room.id}-form" } />
+    </.modal>
+    <.modal :if={@live_action in [:join]}
+            id="join-room-modal"
+            show
+            on_cancel={JS.patch(~p"/chat/rooms/new")}>
+            <.live_component module={ ChatLive.JoinRoomForm }
+                              room={ @active_room }
+                              current_user={ @current_user }
+                              id={"join-room-#{@active_room.id}"}/>
     </.modal>
     """
   end

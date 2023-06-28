@@ -59,6 +59,7 @@ defmodule TcWeb.Router do
         live "/chat/rooms/new", ChatLive, :new
         live "/chat/rooms/:room_id", ChatLive, :show
         live "/chat/rooms/:room_id/edit", ChatLive, :edit
+        live "/chat/rooms/:room_id/join", ChatLive, :join
 
         live "/:user_name", ProfileLive
     end

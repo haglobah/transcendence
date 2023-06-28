@@ -1,18 +1,16 @@
 defmodule TcWeb.ChatLive.RoomSearch do
   use TcWeb, :live_component
 
-  import TcWeb.ChatLive.Component
   alias Tc.Chat
   alias Phoenix.PubSub
 
-  def update(assigns, socket) do
-    changeset = Chat.change_join_room(%Chat.Room{})
+  import TcWeb.ChatLive.Component
 
+  def update(assigns, socket) do
     {:ok,
       socket
       |> assign(assigns)
       |> assign(joinable_rooms: [])
-      |> assign_form(changeset)
     }
   end
 
@@ -71,21 +69,9 @@ defmodule TcWeb.ChatLive.RoomSearch do
                       Join Room
               </.button>
             <% else %>
-              <.simple_form
-                for={@form}
-                phx-submit="try-join-room"
-                phx-target={@myself}
-                id="try-join-#{room.id}">
-
-                <.input label="Room password" type="password"
-                  field={@form[:password]}/>
-
-                <:actions>
-                  <.button phx-disable-with="try-join-room">
-                          Join Room (with password)
-                  </.button>
-                </:actions>
-              </.simple_form>
+              <.link navigate={~p"/chat/rooms/#{room.id}/join"} phx-click={JS.push_focus()}>
+                <.button>Join room with password</.button>
+              </.link>
             <% end %>
           </.display_room>
         <% end %>
@@ -111,32 +97,11 @@ defmodule TcWeb.ChatLive.RoomSearch do
   def handle_event("join-room", %{"room" => room_id}, socket) do
     room = Chat.get_room!(room_id)
     socket = case Chat.join_room(room, socket.assigns.current_user.id) do
-      {:ok, room} ->
-        PubSub.broadcast(Tc.PubSub, Chat.rooms_topic(), {:chat_rooms, room})
+      {:ok, _room} ->
+        PubSub.broadcast(Tc.PubSub, Chat.rooms_topic(), {:edit_room})
         socket
       {:error, %Ecto.Changeset{} = changeset} -> assign(socket, changeset: changeset)
     end
     {:noreply, socket}
-  end
-
-  def handle_event("try-join-room", %{"room" => room_id, "password" => password}, socket) do
-    room = Chat.get_room!(room_id)
-    socket = case Chat.join_room(room, socket.assigns.current_user.id, password) do
-      {:ok, room} ->
-        PubSub.broadcast(Tc.PubSub, Chat.rooms_topic(), {:chat_rooms, room})
-        socket
-      {:error, %Ecto.Changeset{} = changeset} -> assign(socket, changeset: changeset)
-    end
-    {:noreply, socket}
-  end
-
-  defp assign_form(socket, %Ecto.Changeset{} = changeset) do
-    form = to_form(changeset, as: "join-room")
-
-    if changeset.valid? do
-      assign(socket, form: form, check_errors: false)
-    else
-      assign(socket, form: form)
-    end
   end
 end
