@@ -50,7 +50,7 @@ defmodule TcWeb.ChatLive.JoinRoomForm do
       {:ok, _room} ->
         PubSub.broadcast(Tc.PubSub, Chat.rooms_topic(), {:edit_room})
         socket
-      {:error, %Ecto.Changeset{} = changeset} -> assign(socket, changeset: changeset)
+      {:error, %Ecto.Changeset{} = changeset} -> assign(socket, changeset: changeset) #TODO: show that password was incorrect.
     end
     {:noreply, socket}
   end
