@@ -125,7 +125,13 @@ defmodule TcWeb.ChatLive do
     }
   end
 
-  def handle_params(_params, _session, socket), do: {:noreply, socket}
+  def handle_params(params, session, socket) do
+    IO.puts("PARAMS:")
+    IO.inspect(params)
+    IO.puts("SESSION:")
+    IO.inspect(session)
+    {:noreply, socket}
+  end
 
   def handle_info({:chat_rooms, new_room}, socket) do
     socket =
@@ -140,11 +146,11 @@ defmodule TcWeb.ChatLive do
     %{assigns: %{active_room: active_room, live_action: action}} = socket
   ) do
     case action do
-      :show -> {:noreply, push_navigate(socket,
-                              to: ~p"/chat/rooms/#{active_room.id}",
-                              replace: true)}
       :edit -> {:noreply, push_navigate(socket,
                               to: ~p"/chat/rooms/#{active_room.id}/edit",
+                              replace: true)}
+      _ -> {:noreply, push_navigate(socket,
+                              to: ~p"/chat/rooms/#{active_room.id}",
                               replace: true)}
     end
   end
