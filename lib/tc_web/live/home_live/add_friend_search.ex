@@ -99,22 +99,22 @@ defmodule TcWeb.HomeLive.AddFriendSearch do
   end
 
   def handle_event("befriend-user", %{"user" => user_id}, socket) do
-    socket = change_room(&Network.send_friend_request/2, user_id, socket)
+    socket = change_relation(&Network.send_friend_request/2, user_id, socket)
     {:noreply, socket}
   end
 
   def handle_event("block-user", %{"user" => user_id}, socket) do
-    socket = change_room(&Network.block_user/2, user_id, socket)
+    socket = change_relation(&Network.block_user/2, user_id, socket)
     {:noreply, socket}
   end
 
   def handle_event("unblock-user", %{"user" => user_id}, socket) do
-    socket = change_room(&Network.unblock_user/2, user_id, socket)
+    socket = change_relation(&Network.unblock_user/2, user_id, socket)
     {:noreply, socket}
   end
 
-  defp change_room(change_fun, member_id, socket) do
-    case change_fun.(socket.assigns.room, member_id) do
+  defp change_relation(change_fun, other_user_id, socket) do
+    case change_fun.(socket.assigns.current_user.id, other_user_id) do
       {:ok, relation} ->
         PubSub.broadcast(Tc.PubSub, Network.relation_topic(), {:change_relation})
         socket

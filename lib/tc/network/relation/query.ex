@@ -8,6 +8,22 @@ defmodule Tc.Network.Relation.Query do
     Relation
   end
 
+  def get(query \\ base(), from_user_id, other_user_id) do
+    from = Ecto.UUID.dump!(from_user_id)
+    other = Ecto.UUID.dump!(other_user_id)
+
+    query
+    |> where([r], ^from in [r.requester_id, r.receiver_id]
+              and ^other in [r.requester_id, r.receiver_id])
+  end
+
+  def list_for(query \\ base(), user_id) do
+    uid = Ecto.UUID.dump!(user_id)
+
+    query
+    |> where([r], ^uid in [r.requester_id, r.receiver_id])
+  end
+
   def list_filter_status(query \\ base(), user_id, status) do
     uid = Ecto.UUID.dump!(user_id)
 

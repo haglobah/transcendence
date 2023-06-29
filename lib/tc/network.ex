@@ -25,16 +25,21 @@ defmodule Tc.Network do
     Repo.all(Relation)
   end
 
+  def list_relations_for(user_id) do
+    Relation.Query.list_for(user_id)
+    |> Repo.all()
+  end
+
   def list_relations_with_status_for(user_id, status) do
     Relation.Query.list_filter_status(user_id, status)
     |> Repo.all()
     |> Enum.map(fn {u1, u2} -> if u1.id == user_id do u2 else u1 end end)
   end
 
-  def list_blocked_for(user_id), do: list_relations_with_status_for(user_id, :blocked)
   def list_friends_for(user_id), do: list_relations_with_status_for(user_id, :accepted)
   def list_pending_for(user_id), do: list_relations_with_status_for(user_id, :pending)
   def list_declined_for(user_id), do: list_relations_with_status_for(user_id, :declined)
+  def list_blocked_for(user_id), do: list_relations_with_status_for(user_id, :blocked)
 
   @doc """
   Gets a single relation.
@@ -51,6 +56,11 @@ defmodule Tc.Network do
 
   """
   def get_relation!(id), do: Repo.get!(Relation, id)
+
+  def get_relation(from_user_id, other_user_id) do
+    Relation.Query.get(from_user_id, other_user_id)
+    |> Repo.one()
+  end
 
   def is_blocked(from_user, user) do
     user.id in list_blocked_for(from_user.id)
@@ -90,6 +100,18 @@ defmodule Tc.Network do
     relation
     |> Relation.changeset(attrs)
     |> Repo.update()
+  end
+
+  def send_friend_request(from_user, other_user) do
+    %Relation{}
+  end
+
+  def block_user(from_user, other_user) do
+    %Relation{}
+  end
+
+  def unblock_user(from_user, other_user) do
+    %Relation{}
   end
 
   @doc """
