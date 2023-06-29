@@ -5,7 +5,7 @@ defmodule Tc.Network.Relation do
   @primary_key {:id, :binary_id, autogenerate: true}
   @foreign_key_type :binary_id
   schema "relations" do
-    field :status, :string
+    field :status, Ecto.Enum, values: [:pending, :accepted, :denied, :blocked]
     field :requester_id, :binary_id
     field :receiver_id, :binary_id
 
