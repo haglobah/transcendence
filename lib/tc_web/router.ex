@@ -53,7 +53,6 @@ defmodule TcWeb.Router do
 
         live "/home", HomeLive
         live "/friend/new", HomeLive, :new
-        live "/friend/accept", HomeLive, :accept
         live "/game/:game_id", GameLive
         live "/game/:game_id/game_over", GameLive, :game_over
 

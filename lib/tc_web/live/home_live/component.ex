@@ -27,8 +27,11 @@ defmodule TcWeb.HomeLive.Component do
           </.display_user>
         <% else %>
           <.display_user user={req}>
-            <.link class="mx-1" patch={~p"/friend/accept"} phx-click={JS.push_focus()}>
+            <.link class="mx-1" phx-click="accept-friend" phx-value-requester-id={req.id}>
               <.button>Accept friend request</.button>
+            </.link>
+            <.link class="mx-1" phx-click="decline-friend" phx-value-requester-id={req.id}>
+              <.button>Decline friend request</.button>
             </.link>
           </.display_user>
         <% end %>

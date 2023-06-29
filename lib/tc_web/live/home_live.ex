@@ -4,6 +4,7 @@ defmodule TcWeb.HomeLive do
   alias TcWeb.HomeLive
   alias Tc.Network
   alias TcWeb.Endpoint
+  alias Phoenix.PubSub
 
   import TcWeb.HomeLive.Component
 
@@ -49,6 +50,30 @@ defmodule TcWeb.HomeLive do
   end
 
   def handle_params(_params, _uri, socket) do
+    {:noreply, socket}
+  end
+
+  def handle_event("accept-friend", %{"requester-id" => req_id}, socket) do
+    answer_attrs = %{requester_id: req_id, receiver_id: socket.assigns.current_user.id}
+
+    socket = case Network.accept_friend_request(answer_attrs) do
+      {:ok, _rel} ->
+        PubSub.broadcast(Tc.PubSub, Network.relation_topic(), {:change_relation})
+        socket
+      {:error, changeset} -> assign(socket, changeset: changeset)
+    end
+    {:noreply, socket}
+  end
+
+  def handle_event("decline-friend", %{"requester-id" => req_id}, socket) do
+    answer_attrs = %{requester_id: req_id, receiver_id: socket.assigns.current_user.id}
+
+    socket = case Network.decline_friend_request(answer_attrs) do
+      {:ok, _rel} ->
+        PubSub.broadcast(Tc.PubSub, Network.relation_topic(), {:change_relation})
+        socket
+      {:error, changeset} -> assign(socket, changeset: changeset)
+    end
     {:noreply, socket}
   end
 
