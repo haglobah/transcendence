@@ -64,20 +64,17 @@ defmodule TcWeb.HomeLive.AddFriendSearch do
           <.display_user user={user} >
             <%= if Network.is_blocked(@current_user, user) do %>
               <.button  phx-click="unblock-user"
-                        phx-value-current-user={@current_user.id}
                         phx-value-user={user.id}
                         phx-target={@myself}>
                         Unblock user
               </.button>
             <% else %>
               <.button  phx-click="befriend-user"
-                        phx-value-room={@room.id}
                         phx-value-user={user.id}
                         phx-target={@myself}>
                         Send friend request
               </.button>
               <.button  phx-click="block-user"
-                        phx-value-room={@room.id}
                         phx-value-user={user.id}
                         phx-target={@myself}>
                         Block User
@@ -102,25 +99,25 @@ defmodule TcWeb.HomeLive.AddFriendSearch do
   end
 
   def handle_event("befriend-user", %{"user" => user_id}, socket) do
-    socket = change_room(&Chat.add_member/2, user_id, socket)
+    socket = change_room(&Network.send_friend_request/2, user_id, socket)
     {:noreply, socket}
   end
 
   def handle_event("block-user", %{"user" => user_id}, socket) do
-    socket = change_room(&Chat.add_blocked/2, user_id, socket)
+    socket = change_room(&Network.block_user/2, user_id, socket)
     {:noreply, socket}
   end
 
   def handle_event("unblock-user", %{"user" => user_id}, socket) do
-    socket = change_room(&Chat.rm_blocked/2, user_id, socket)
+    socket = change_room(&Network.unblock_user/2, user_id, socket)
     {:noreply, socket}
   end
 
   defp change_room(change_fun, member_id, socket) do
     case change_fun.(socket.assigns.room, member_id) do
-      {:ok, room} ->
-        PubSub.broadcast(Tc.PubSub, Chat.rooms_topic(), {:edit_room})
-        assign(socket, room: room)
+      {:ok, relation} ->
+        PubSub.broadcast(Tc.PubSub, Network.relation_topic(), {:change_relation})
+        socket
       {:error, %Ecto.Changeset{} = changeset} ->
         assign(socket, changeset: changeset)
     end

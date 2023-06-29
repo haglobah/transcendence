@@ -52,4 +52,13 @@ defmodule TcWeb.HomeLive do
   def handle_params(_params, _uri, socket) do
     {:noreply, socket}
   end
+
+  def handle_info({:change_relation}, socket) do
+    friends = Network.list_friends_for(socket.assigns.current_user.id)
+
+    {:noreply,
+     socket
+     |> assign(friends: friends)
+    }
+  end
 end
