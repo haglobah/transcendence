@@ -36,6 +36,7 @@ defmodule Tc.Network do
     |> Enum.map(fn {u1, u2} -> if u1.id == user_id do u2 else u1 end end)
   end
 
+  def list_pending_users(user_id), do: list_relations_with_status_for(user_id, :pending)
   def list_friends_for(user_id), do: list_relations_with_status_for(user_id, :accepted)
   def list_declined_for(user_id), do: list_relations_with_status_for(user_id, :declined)
   def list_blocked_for(user_id), do: list_relations_with_status_for(user_id, :blocked)
@@ -71,6 +72,10 @@ defmodule Tc.Network do
 
   def are_friends(from_user, user) do
     user in list_friends_for(from_user.id)
+  end
+
+  def are_pending(from_user, user) do
+    user in list_pending_users(from_user.id)
   end
 
   @doc """
