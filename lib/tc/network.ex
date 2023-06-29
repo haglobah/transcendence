@@ -37,9 +37,12 @@ defmodule Tc.Network do
   end
 
   def list_friends_for(user_id), do: list_relations_with_status_for(user_id, :accepted)
-  def list_pending_for(user_id), do: list_relations_with_status_for(user_id, :pending)
   def list_declined_for(user_id), do: list_relations_with_status_for(user_id, :declined)
   def list_blocked_for(user_id), do: list_relations_with_status_for(user_id, :blocked)
+  def list_pending_for(user_id) do
+    Relation.Query.list_filter_status(user_id, :pending)
+    |> Repo.all()
+  end
 
   @doc """
   Gets a single relation.
