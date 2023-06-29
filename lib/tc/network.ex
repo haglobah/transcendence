@@ -114,7 +114,8 @@ defmodule Tc.Network do
 
     case rel do
       nil -> create_relation(%{requester_id: from_user_id, receiver_id: other_user_id, status: :pending})
-      _ -> update_relation(rel, %{status: :accepted})
+      %Relation{status: :pending} -> update_relation(rel, %{status: :accepted})
+      _ -> rel
     end
   end
 
