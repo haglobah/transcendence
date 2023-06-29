@@ -24,6 +24,7 @@ defmodule Tc.Network do
   def list_friends_for(user_id) do
     Relation.Query.list_friends(user_id)
     |> Repo.all()
+    |> Enum.map(fn {u1, u2} -> if u1.id == user_id do u2 else u1 end end)
   end
 
   @doc """
