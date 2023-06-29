@@ -23,7 +23,7 @@ defmodule TcWeb.HomeLive.Component do
       <%= for {req, rec} <- @relations do %>
         <%= if req.id == @current_user.id do %>
           <.display_user user={rec}>
-            <p class="text-xs">Friend request send - waiting for response...</p>
+            <p class="text-xs">Friend request sent - waiting for response...</p>
           </.display_user>
         <% else %>
           <.display_user user={req}>
