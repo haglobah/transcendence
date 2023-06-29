@@ -21,6 +21,11 @@ defmodule Tc.Network do
     Repo.all(Relation)
   end
 
+  def list_friends_for(user_id) do
+    Relation.Query.list_friends(user_id)
+    |> Repo.all()
+  end
+
   @doc """
   Gets a single relation.
 
