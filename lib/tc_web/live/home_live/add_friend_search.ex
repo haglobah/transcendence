@@ -115,7 +115,7 @@ defmodule TcWeb.HomeLive.AddFriendSearch do
 
   defp change_relation(change_fun, other_user_id, socket) do
     case change_fun.(socket.assigns.current_user.id, other_user_id) do
-      {:ok, relation} ->
+      {:ok, _relation} ->
         PubSub.broadcast(Tc.PubSub, Network.relation_topic(), {:change_relation})
         socket
       {:error, %Ecto.Changeset{} = changeset} ->

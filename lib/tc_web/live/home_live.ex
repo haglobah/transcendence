@@ -17,8 +17,10 @@ defmodule TcWeb.HomeLive do
       <div class="text-2xl m-10">
         <h2>This is <%= @current_user.name %>'s Home Page</h2>
       </div>
-      <aside class="h-[88vh] sticky top-14 w-52 overflow-y-scroll hidden md:block">
-        <.friend_list friends={@friends}/>
+      <aside class="h-[88vh] sticky top-14 w-84 overflow-y-scroll hidden md:block">
+        <.relation_list relations={@friends}/>
+        <hr/>
+        <.pending_list relations={@pending} current_user={@current_user} />
         <.link patch={~p"/friend/new"} phx-click={JS.push_focus()}>
           <.button>+</.button>
         </.link>
@@ -41,12 +43,9 @@ defmodule TcWeb.HomeLive do
       Endpoint.subscribe(Network.relation_topic())
     end
 
-    friends = Network.list_friends_for(socket.assigns.current_user.id)
+    socket = fetch_friends(socket)
 
-    {:ok,
-     socket
-     |> assign(friends: friends)
-    }
+    {:ok, socket}
   end
 
   def handle_params(_params, _uri, socket) do
@@ -54,11 +53,17 @@ defmodule TcWeb.HomeLive do
   end
 
   def handle_info({:change_relation}, socket) do
-    friends = Network.list_friends_for(socket.assigns.current_user.id)
+    socket = fetch_friends(socket)
 
-    {:noreply,
-     socket
-     |> assign(friends: friends)
-    }
+    {:noreply, socket}
+  end
+
+  defp fetch_friends(socket) do
+    friends = Network.list_friends_for(socket.assigns.current_user.id)
+    pending = Network.list_pending_for(socket.assigns.current_user.id)
+
+    socket
+    |> assign(friends: friends)
+    |> assign(pending: pending)
   end
 end
