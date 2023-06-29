@@ -8,6 +8,10 @@ defmodule Tc.Network do
 
   alias Tc.Network.Relation
 
+  def relation_topic() do
+    "network:relation"
+  end
+
   @doc """
   Returns the list of relations.
 
