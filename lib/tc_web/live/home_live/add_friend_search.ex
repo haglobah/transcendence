@@ -69,11 +69,17 @@ defmodule TcWeb.HomeLive.AddFriendSearch do
                         Unblock user
               </.button>
             <% else %>
-              <%= if Network.are_friends(@current_user, user) do %>
+              <%= if !Network.are_friends(@current_user, user) do %>
                 <.button  phx-click="befriend-user"
                           phx-value-user={user.id}
                           phx-target={@myself}>
-                          Send friend request (or not, if it was already sent.)
+                          Send friend request
+                </.button>
+              <% else %>
+                <.button  phx-click="unfriend-user"
+                          phx-value-user={user.id}
+                          phx-target={@myself}>
+                          Destroy friendship
                 </.button>
               <% end %>
               <.button  phx-click="block-user"
@@ -103,6 +109,11 @@ defmodule TcWeb.HomeLive.AddFriendSearch do
 
   def handle_event("befriend-user", %{"user" => user_id}, socket) do
     socket = change_relation(&Network.send_friend_request/2, user_id, socket)
+    {:noreply, socket}
+  end
+
+  def handle_event("unfriend-user", %{"user" => user_id}, socket) do
+    socket = change_relation(&Network.unfriend_user/2, user_id, socket)
     {:noreply, socket}
   end
 
