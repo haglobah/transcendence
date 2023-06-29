@@ -66,11 +66,11 @@ defmodule Tc.Network do
   end
 
   def is_blocked(from_user, user) do
-    user.id in list_blocked_for(from_user.id)
+    user in list_blocked_for(from_user.id)
   end
 
   def are_friends(from_user, user) do
-    !(user.id in list_friends_for(from_user.id)) #TODO: WTF - what did I do wrong here?
+    user in list_friends_for(from_user.id)
   end
 
   @doc """
@@ -117,6 +117,7 @@ defmodule Tc.Network do
       _ -> update_relation(rel, %{status: :accepted})
     end
   end
+
   def unfriend_user(from_user_id, other_user_id) do
     rel = get_relation(from_user_id, other_user_id)
 
@@ -137,11 +138,17 @@ defmodule Tc.Network do
   end
 
   def block_user(from_user_id, other_user_id) do
-    %Relation{}
+    rel = get_relation(from_user_id, other_user_id)
+    update_relation(rel, %{status: :blocked})
   end
 
   def unblock_user(from_user_id, other_user_id) do
-    %Relation{}
+        rel = get_relation(from_user_id, other_user_id)
+
+    case rel do
+      nil -> {:error, %Ecto.Changeset{}}
+      _ -> delete_relation(rel)
+    end
   end
 
   @doc """
