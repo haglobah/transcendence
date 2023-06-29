@@ -72,7 +72,7 @@ defmodule TcWeb.HomeLive.AddFriendSearch do
               <.button  phx-click="befriend-user"
                         phx-value-user={user.id}
                         phx-target={@myself}>
-                        Send friend request
+                        Send friend request (or not, if it was already sent.)
               </.button>
               <.button  phx-click="block-user"
                         phx-value-user={user.id}

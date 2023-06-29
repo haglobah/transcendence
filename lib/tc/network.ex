@@ -102,15 +102,20 @@ defmodule Tc.Network do
     |> Repo.update()
   end
 
-  def send_friend_request(from_user, other_user) do
+  def send_friend_request(from_user_id, other_user_id) do
+    rel = get_relation(from_user_id, other_user_id)
+
+    case rel do
+      nil -> create_relation(%{requester_id: from_user_id, receiver_id: other_user_id, status: :pending})
+      _ -> update_relation(rel, %{status: :accepted})
+    end
+  end
+
+  def block_user(from_user_id, other_user_id) do
     %Relation{}
   end
 
-  def block_user(from_user, other_user) do
-    %Relation{}
-  end
-
-  def unblock_user(from_user, other_user) do
+  def unblock_user(from_user_id, other_user_id) do
     %Relation{}
   end
 
