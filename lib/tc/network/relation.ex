@@ -18,4 +18,10 @@ defmodule Tc.Network.Relation do
     |> cast(attrs, [:status, :requester_id, :receiver_id])
     |> validate_required([:status, :requester_id, :receiver_id])
   end
+
+  def change_staus(relation, attrs) do
+    relation
+    |> cast(attrs, [:status])
+    |> validate_required([:status])
+  end
 end
