@@ -21,11 +21,16 @@ defmodule Tc.Network do
     Repo.all(Relation)
   end
 
-  def list_friends_for(user_id) do
-    Relation.Query.list_friends(user_id)
+  def list_relations_with_status_for(user_id, status) do
+    Relation.Query.list_filter_status(user_id, status)
     |> Repo.all()
     |> Enum.map(fn {u1, u2} -> if u1.id == user_id do u2 else u1 end end)
   end
+
+  def list_blocked_for(user_id), do: list_relations_with_status_for(user_id, :blocked)
+  def list_friends_for(user_id), do: list_relations_with_status_for(user_id, :accepted)
+  def list_pending_for(user_id), do: list_relations_with_status_for(user_id, :pending)
+  def list_declined_for(user_id), do: list_relations_with_status_for(user_id, :declined)
 
   @doc """
   Gets a single relation.
@@ -42,6 +47,10 @@ defmodule Tc.Network do
 
   """
   def get_relation!(id), do: Repo.get!(Relation, id)
+
+  def is_blocked(from_user, user) do
+    user.id in list_blocked_for(from_user.id)
+  end
 
   @doc """
   Creates a relation.
