@@ -69,6 +69,10 @@ defmodule Tc.Network do
     user.id in list_blocked_for(from_user.id)
   end
 
+  def are_friends(from_user, user) do
+    user.id in list_friends_for(from_user.id) and from_user.id in list_friends_for(user.id)
+  end
+
   @doc """
   Creates a relation.
 
