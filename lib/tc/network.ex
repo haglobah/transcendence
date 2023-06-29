@@ -114,6 +114,16 @@ defmodule Tc.Network do
     end
   end
 
+  def accept_friend_request(%{requester_id: req_id, receiver_id: rec_id}) do
+    rel = get_relation(req_id, rec_id)
+    update_relation(rel, %{status: :accepted})
+  end
+
+  def decline_friend_request(%{requester_id: req_id, receiver_id: rec_id}) do
+    rel = get_relation(req_id, rec_id)
+    update_relation(rel, %{status: :declined})
+  end
+
   def block_user(from_user_id, other_user_id) do
     %Relation{}
   end
