@@ -38,7 +38,7 @@ defmodule TcWeb.HomeLive do
 
   def mount(_params, _session, socket) do
     if connected?(socket) do
-      # Endpoint.subscribe(Network.friend_topic())
+      Endpoint.subscribe(Network.relation_topic())
     end
 
     friends = Network.list_friends_for(socket.assigns.current_user.id)
