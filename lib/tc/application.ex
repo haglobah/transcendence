@@ -18,8 +18,6 @@ defmodule Tc.Application do
       {DynamicSupervisor, name: Tc.GameSupervisor, strategy: :one_for_one},
       # Start the Game Registry
       {Registry, [keys: :unique, name: @registry]},
-      # Start Presence for tracking the Users' status
-      TcWeb.Presence,
       # Start the Endpoint (http/https)
       TcWeb.Endpoint,
       # Start a worker by calling: Tc.Worker.start_link(arg)
