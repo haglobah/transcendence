@@ -73,6 +73,20 @@ defmodule TcWeb do
         end
       end
 
+      def handle_info({_, _, _} = params, socket) do
+        IO.inspect(params)
+
+        {:noreply, socket}
+      end
+
+      unquote(html_helpers())
+    end
+  end
+
+  def inner_live_view do
+    quote do
+      use Phoenix.LiveView
+
       unquote(html_helpers())
     end
   end
