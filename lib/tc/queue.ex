@@ -32,7 +32,7 @@ defmodule Tc.Queue do
         left = hd(state)
         right = user
         game_id = Nanoid.generate()
-        DynamicSupervisor.start_child(Tc.GameSupervisor, {Game, {left, right, game_id}})
+        DynamicSupervisor.start_child(Tc.GameSupervisor, {Game, {:queue, left, right, game_id}})
         PubSub.broadcast(Tc.PubSub, topic(), {left, right, game_id})
         {:reply, [], []}
       0 ->
