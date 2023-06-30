@@ -81,9 +81,27 @@ defmodule TcWeb.ChatLive.Component do
     ~H"""
     <div class="flex mx-2 py-2 justify-between">
       <div class="flex items-center">
-        <.live_component module={ TcWeb.UserLiveComponent }
-                         user={ @user }
-                         id={ "user-#{@user.id}-status" }/>
+        <div class="relative w-10 mx-2">
+          <img class="rounded-full" src={@user.avatar_upload}/>
+        </div>
+        <h3 class="mx-2 text-lg"><%= @user.name %></h3>
+        <p class="text-xs"><%= @user.id %></p>
+      </div>
+      <div class="flex">
+        <%= render_slot(@inner_block) %>
+      </div>
+    </div>
+    """
+  end
+
+  attr :user, :any
+  attr :the_socket, :any
+  slot :inner_block
+  def live_user(assigns) do
+    ~H"""
+    <div class="flex mx-2 py-2 justify-between">
+      <div class="flex items-center">
+        <%= live_render(@the_socket, TcWeb.UserLive, [id: "user-#{@user.id}-status", session: %{"live_user" => @user}]) %>
         <h3 class="mx-2 text-lg"><%= @user.name %></h3>
         <p class="text-xs"><%= @user.id %></p>
       </div>

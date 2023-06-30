@@ -5,6 +5,7 @@ defmodule TcWeb.HomeLive do
   alias Tc.Network
   alias TcWeb.Endpoint
   alias Phoenix.PubSub
+  alias Tc.Activity
 
   import TcWeb.HomeLive.Component
 
@@ -19,7 +20,11 @@ defmodule TcWeb.HomeLive do
         <h2>This is <%= @current_user.name %>'s Home Page</h2>
       </div>
       <aside class="h-[88vh] sticky top-14 w-84 overflow-y-scroll hidden md:block">
-        <.relation_list relations={@friends}/>
+        <div class="flex flex-col">
+          <%= for friend <- @friends do %>
+            <TcWeb.ChatLive.Component.live_user user={friend} the_socket={@socket}/>
+          <% end %>
+        </div>
         <hr/>
         <.pending_list relations={@pending} current_user={@current_user} />
         <.link patch={~p"/friend/new"} phx-click={JS.push_focus()}>
@@ -44,7 +49,8 @@ defmodule TcWeb.HomeLive do
       Endpoint.subscribe(Network.relation_topic())
     end
 
-    socket = fetch_friends(socket)
+    schedule_tick()
+    socket = fetch_relations(socket)
 
     {:ok, socket}
   end
@@ -78,12 +84,22 @@ defmodule TcWeb.HomeLive do
   end
 
   def handle_info({:change_relation}, socket) do
-    socket = fetch_friends(socket)
+    socket = fetch_relations(socket)
 
     {:noreply, socket}
   end
 
-  defp fetch_friends(socket) do
+  def handle_info(:tick, socket) do
+    PubSub.broadcast(
+      Tc.PubSub,
+      Activity.status_topic(),
+      {:change, socket.assigns.current_user.id, :online})
+    schedule_tick()
+    # IO.puts("Here")
+    {:noreply, socket}
+  end
+
+  defp fetch_relations(socket) do
     friends = Network.list_friends_for(socket.assigns.current_user.id)
     pending = Network.list_pending_for(socket.assigns.current_user.id)
 
@@ -91,4 +107,6 @@ defmodule TcWeb.HomeLive do
     |> assign(friends: friends)
     |> assign(pending: pending)
   end
+
+  defp schedule_tick(), do: Process.send_after(self(), :tick, 1000)
 end
