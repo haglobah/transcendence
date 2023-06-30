@@ -2,8 +2,9 @@ defmodule TcWeb.GameLive do
   use TcWeb, :live_view
 
   alias Tc.Game
-  # alias Tc.Accounts
   alias TcWeb.Endpoint
+  alias Tc.Activity
+  alias Phoenix.PubSub
 
   import TcWeb.GameLive.Component
 
@@ -44,6 +45,8 @@ defmodule TcWeb.GameLive do
       Endpoint.subscribe(Game.over_topic(game_id))
     end
 
+    schedule_status_tick()
+
     {:ok,
     socket
     |> assign(state: Game.current_state(game_id))
@@ -81,6 +84,17 @@ defmodule TcWeb.GameLive do
     # Patch to the game_over screen
     {:noreply, push_patch(socket, to: "/game/#{state.game_id}/game_over")}
   end
+
+  def handle_info(:status_tick, socket) do
+    PubSub.broadcast(
+      Tc.PubSub,
+      Activity.status_topic(),
+      {:change, socket.assigns.current_user.id, :in_game})
+    schedule_status_tick()
+    {:noreply, socket}
+  end
+
+  defp schedule_status_tick(), do: Process.send_after(self(), :status_tick, 1000)
 
   defp handle_stop("ArrowUp", user, state) when user == state.player_right do
       Game.stop_paddle(state.game_id, :right, state.right)

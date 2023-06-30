@@ -63,7 +63,7 @@ defmodule TcWeb do
         {:noreply, socket}
       end
 
-      def handle_info({left, right, game_id}, socket) do
+      def handle_info({:queue, left, right, game_id}, socket) do
         if socket.assigns.current_user == left
         || socket.assigns.current_user == right do
           TcWeb.Endpoint.unsubscribe(Tc.Queue.topic())
@@ -72,6 +72,20 @@ defmodule TcWeb do
           {:noreply, socket}
         end
       end
+
+      def handle_info({_, _, _} = params, socket) do
+        IO.inspect(params)
+
+        {:noreply, socket}
+      end
+
+      unquote(html_helpers())
+    end
+  end
+
+  def inner_live_view do
+    quote do
+      use Phoenix.LiveView
 
       unquote(html_helpers())
     end

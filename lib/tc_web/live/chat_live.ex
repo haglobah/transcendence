@@ -3,6 +3,8 @@ defmodule TcWeb.ChatLive do
   alias Tc.Chat
   alias Tc.Accounts
   alias TcWeb.Endpoint
+  alias Tc.Activity
+  alias Phoenix.PubSub
 
   import TcWeb.ChatLive.Component
   import TcWeb.ChatLive.Messages
@@ -113,6 +115,8 @@ defmodule TcWeb.ChatLive do
     rooms = Chat.list_rooms_for(socket.assigns.current_user.id)
     messages = Chat.list_messages_for(room_id)
 
+    schedule_status_tick()
+
     {:ok,
     socket
     |> assign(page: 1, per_page: 20, start_of_messages?: false)
@@ -128,6 +132,8 @@ defmodule TcWeb.ChatLive do
     if connected?(socket) do
       Endpoint.subscribe(Chat.rooms_topic())
     end
+
+    schedule_status_tick()
 
     rooms = Chat.list_rooms_for(socket.assigns.current_user.id)
     {:ok,
@@ -178,6 +184,17 @@ defmodule TcWeb.ChatLive do
   def handle_info({:chat_msg, message}, socket) do
     {:noreply, stream_insert(socket, :messages, Chat.preload(message, :sender))}
   end
+
+  def handle_info(:status_tick, socket) do
+    PubSub.broadcast(
+      Tc.PubSub,
+      Activity.status_topic(),
+      {:change, socket.assigns.current_user.id, :online})
+    schedule_status_tick()
+    {:noreply, socket}
+  end
+
+  defp schedule_status_tick(), do: Process.send_after(self(), :status_tick, 1000)
 
   # defp paginate_msgs(socket, new_page) when new_page >= 1 do
   #   %{active_room: room, per_page: per_page, page: cur_page} = socket.assigns
