@@ -63,7 +63,7 @@ defmodule TcWeb do
         {:noreply, socket}
       end
 
-      def handle_info({left, right, game_id}, socket) do
+      def handle_info({:queue, left, right, game_id}, socket) do
         if socket.assigns.current_user == left
         || socket.assigns.current_user == right do
           TcWeb.Endpoint.unsubscribe(Tc.Queue.topic())
