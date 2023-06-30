@@ -94,6 +94,8 @@ defmodule TcWeb.HomeLive do
     {:noreply, socket}
   end
 
+  defp schedule_status_tick(), do: Process.send_after(self(), :status_tick, 1000)
+
   defp fetch_relations(socket) do
     friends = Network.list_friends_for(socket.assigns.current_user.id)
     pending = Network.list_pending_for(socket.assigns.current_user.id)
@@ -102,6 +104,4 @@ defmodule TcWeb.HomeLive do
     |> assign(friends: friends)
     |> assign(pending: pending)
   end
-
-  defp schedule_status_tick(), do: Process.send_after(self(), :status_tick, 1000)
 end

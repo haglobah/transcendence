@@ -1,5 +1,5 @@
 defmodule TcWeb.UserLive do
-  use TcWeb, :live_view
+  use TcWeb, :inner_live_view
 
   alias TcWeb.Endpoint
   alias Tc.Activity
@@ -50,9 +50,9 @@ defmodule TcWeb.UserLive do
     now = System.monotonic_time()
     delta_time = now - socket.assigns.last_change
 
-    IO.puts("Here")
+    # IO.puts("Here")
 
-    socket = if System.convert_time_unit(delta_time, :native, :second) > 5 do
+    socket = if System.convert_time_unit(delta_time, :native, :second) > 2 do
       socket |> assign(status: :offline) |> assign(last_change: now)
     else
       socket
