@@ -81,11 +81,9 @@ defmodule TcWeb.ChatLive.Component do
     ~H"""
     <div class="flex mx-2 py-2 justify-between">
       <div class="flex items-center">
-        <%= if @user.avatar_upload do %>
-          <div class="w-10 mx-2">
-            <img class="rounded-full" src={@user.avatar_upload}/>
-          </div>
-        <% end %>
+        <.live_component module={ TcWeb.UserLiveComponent }
+                         user={ @user }
+                         id={ "user-#{@user.id}-status" }/>
         <h3 class="mx-2 text-lg"><%= @user.name %></h3>
         <p class="text-xs"><%= @user.id %></p>
       </div>
