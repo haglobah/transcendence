@@ -45,7 +45,7 @@ defmodule TcWeb.HomeLive do
       Endpoint.subscribe(Network.relation_topic())
     end
 
-    schedule_tick()
+    schedule_status_tick()
     socket = fetch_relations(socket)
 
     {:ok, socket}
@@ -85,13 +85,12 @@ defmodule TcWeb.HomeLive do
     {:noreply, socket}
   end
 
-  def handle_info(:tick, socket) do
+  def handle_info(:status_tick, socket) do
     PubSub.broadcast(
       Tc.PubSub,
       Activity.status_topic(),
       {:change, socket.assigns.current_user.id, :online})
-    schedule_tick()
-    # IO.puts("Here")
+    schedule_status_tick()
     {:noreply, socket}
   end
 
@@ -104,5 +103,5 @@ defmodule TcWeb.HomeLive do
     |> assign(pending: pending)
   end
 
-  defp schedule_tick(), do: Process.send_after(self(), :tick, 1000)
+  defp schedule_status_tick(), do: Process.send_after(self(), :status_tick, 1000)
 end
