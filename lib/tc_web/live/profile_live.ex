@@ -3,6 +3,8 @@ defmodule TcWeb.ProfileLive do
 
   alias Tc.Accounts
   alias Tc.Stats
+  alias Tc.Activity
+  alias Phoenix.PubSub
 
   def render(assigns) do
     ~H"""
@@ -29,10 +31,23 @@ defmodule TcWeb.ProfileLive do
     profile = Accounts.get_user_by_name(user_name)
     matches = Stats.list_matches_for_user(profile.id)
 
+    schedule_status_tick()
+
     {:ok,
     socket
     |> assign(profile: profile)
     |> assign(matches: matches)
     }
   end
+
+  def handle_info(:status_tick, socket) do
+    PubSub.broadcast(
+      Tc.PubSub,
+      Activity.status_topic(),
+      {:change, socket.assigns.current_user.id, :online})
+    schedule_status_tick()
+    {:noreply, socket}
+  end
+
+  defp schedule_status_tick(), do: Process.send_after(self(), :status_tick, 1000)
 end
