@@ -95,13 +95,13 @@ defmodule TcWeb.ChatLive.Component do
   end
 
   attr :user, :any
-  attr :the_socket, :any
+  attr :socket, :any
   slot :inner_block
   def live_user(assigns) do
     ~H"""
     <div class="flex mx-2 py-2 justify-between">
       <div class="flex items-center">
-        <%= live_render(@the_socket, TcWeb.UserLive, [id: "user-#{@user.id}-status", session: %{"live_user" => @user}]) %>
+        <%= live_render(@socket, TcWeb.UserLive, [id: "user-#{@user.id}-status", session: %{"live_user" => @user}]) %>
         <h3 class="mx-2 text-lg"><%= @user.name %></h3>
         <p class="text-xs"><%= @user.id %></p>
       </div>
