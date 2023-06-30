@@ -1,20 +1,8 @@
-defmodule TcWeb.UserLiveComponent do
-  use TcWeb, :live_component
+defmodule TcWeb.UserLive do
+  use TcWeb, :live_view
 
   alias TcWeb.Endpoint
   alias Tc.Activity
-
-  def update(assigns, socket) do
-    if connected?(socket) do
-      Endpoint.subscribe(Activity.status_topic())
-    end
-
-    {:ok,
-     socket
-     |> assign(assigns)
-     |> assign(status: :offline)
-    }
-  end
 
   def render(assigns) do
     ~H"""
@@ -34,7 +22,20 @@ defmodule TcWeb.UserLiveComponent do
     """
   end
 
-  def handle_info({:status_change, user_id, status}, socket) do
+  def mount(_params, %{"live_user" => user} = _session, socket) do
+    if connected?(socket) do
+      Endpoint.subscribe(Activity.status_topic())
+    end
+
+    {:ok,
+     socket
+     |> assign(status: :offline)
+     |> assign(user: user)
+    }
+  end
+
+  def handle_info({:change, user_id, status} = _params, socket) do
+
     socket = case socket.assigns.user.id do
       ^user_id -> assign(socket, status: status)
       _ -> socket
