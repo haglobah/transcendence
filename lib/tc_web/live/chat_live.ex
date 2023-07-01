@@ -40,6 +40,8 @@ defmodule TcWeb.ChatLive do
           </.link>
         <% end %>
         <.list_messages
+          current_user={ @current_user }
+          socket={ @socket }
           messages={ @streams.messages }
           members={ @room_members }
           page={ @page }

@@ -29,7 +29,7 @@ defmodule TcWeb.UserLive do
             on_cancel={hide_modal("user-#{@user.id}-action")}
             >
       <Component.display_user user={@user}/>
-      <.button phx-click="start-game">
+      <.button :if={@status == :online} phx-click="start-game">
         Start a game
       </.button>
       <.link :if={@status == :in_game}
@@ -59,14 +59,8 @@ defmodule TcWeb.UserLive do
     }
   end
 
-  def handle_event("start-game", _params,
-    %{assigns: %{user: other, status: status, current_user: current}} = socket) do
-
-    case status do
-      :online -> Queue.start_private_game(current, other)
-      _ -> :ok
-    end
-
+  def handle_event("start-game", _params, %{assigns: %{user: other, current_user: current}} = socket) do
+    Queue.start_private_game(current, other)
     {:noreply, socket}
   end
 
