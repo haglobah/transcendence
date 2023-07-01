@@ -5,7 +5,7 @@ defmodule TcWeb.GameLive.Component do
   slot :inner_block, required: true
   def canvas(assigns) do
     ~H"""
-    <svg
+    <svg class="m-auto max-w-3xl"
       viewBox={ @view_box }
       xmlns="http://www.w3.org/2000/svg"
       xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -15,7 +15,6 @@ defmodule TcWeb.GameLive.Component do
       <defs>
         <rect id="paddle" width="2" height="25"/>
         <rect id="ball" width="2" height="2"/>
-
       </defs>
       <rect width="100%" height="100%" fill="black"/>
       <%= render_slot(@inner_block) %>
@@ -27,7 +26,7 @@ defmodule TcWeb.GameLive.Component do
   slot :inner_block, required: true
   def game_over(assigns) do
     ~H"""
-    <svg
+    <svg class="m-auto max-w-3xl"
       viewBox={ @view_box }
       xmlns="http://www.w3.org/2000/svg"
       xmlns:xlink="http://www.w3.org/1999/xlink"
@@ -77,12 +76,27 @@ defmodule TcWeb.GameLive.Component do
   attr :left, :integer, required: true
   attr :right, :integer, required: true
   def score(assigns) do
-  ~H"""
-  <text id="score"
-    x="50%" y="12%"
-    font-size="12"
-    fill="lightgray"
-    text-anchor="middle"><%= @left %> : <%= @right %></text>
+    ~H"""
+    <text id="score"
+      class="m-auto"
+      x="50%" y="15%"
+      font-size="12"
+      font-family="monospace"
+      fill="lightgray"
+      text-anchor="middle"><%= @left %> | <%= @right %></text>
+    """
+  end
+
+  attr :x, :integer, required: true
+  attr :y, :integer, required: true
+  attr :color, :string
+  def center_line(assigns) do
+    ~H"""
+    <use xlink:href="center_line"
+      x={ @x }
+      y={ @y }
+      fill="lightgray"
+      />
   """
   end
 
