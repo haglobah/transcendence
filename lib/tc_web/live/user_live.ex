@@ -3,6 +3,7 @@ defmodule TcWeb.UserLive do
 
   alias TcWeb.Endpoint
   alias Tc.Activity
+  alias Tc.Queue
 
   alias TcWeb.ChatLive.Component
 
@@ -28,7 +29,7 @@ defmodule TcWeb.UserLive do
             on_cancel={hide_modal("user-#{@user.id}-action")}
             >
       <Component.display_user user={@user}/>
-      <.button phx-click="start-game" phx-value-other-id={@user.id}>
+      <.button phx-click="start-game">
         Start a game
       </.button>
     </.modal>
@@ -38,6 +39,7 @@ defmodule TcWeb.UserLive do
   def mount(_params, %{"live_user" => user, "current_user" => current_user} = _session, socket) do
     if connected?(socket) do
       Endpoint.subscribe(Activity.status_topic())
+      Endpoint.subscribe(Queue.topic())
     end
 
     schedule_check()
@@ -51,11 +53,25 @@ defmodule TcWeb.UserLive do
     }
   end
 
-  def handle_event("start-game", params, socket) do
-    IO.inspect(params)
-    IO.inspect(socket.assigns.current_user)
+  def handle_event("start-game", _params,
+    %{assigns: %{user: other, status: status, current_user: current}} = socket) do
+
+    case status do
+      :online -> Queue.start_private_game(current, other)
+      _ -> :ok
+    end
 
     {:noreply, socket}
+  end
+
+  def handle_info({:queue, left, right, game_id}, socket) do
+    if socket.assigns.current_user == left
+    || socket.assigns.current_user == right do
+      TcWeb.Endpoint.unsubscribe(Tc.Queue.topic())
+      {:noreply, push_navigate(socket, to: "/game/#{game_id}")}
+    else
+      {:noreply, socket}
+    end
   end
 
   def handle_info({:change, user_id, status} = _params, socket) do
