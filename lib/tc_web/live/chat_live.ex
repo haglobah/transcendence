@@ -13,11 +13,11 @@ defmodule TcWeb.ChatLive do
   def render(%{live_action: action} = assigns) when action in [:show, :edit, :join] do
     ~H"""
     <div id="mobile-sidenav" class="fixed bg-white overflow-y-auto block md:hidden z-50 inset-0">
-      <.room_list rooms={ @rooms } user={@current_user} />
+      <.room_list rooms={ @rooms } user={@current_user} active_room={@active_room}/>
     </div>
     <div class="flex">
       <aside class="h-[86vh] sticky top-14 w-52 overflow-y-auto hidden md:block">
-        <.room_list rooms={ @rooms } user={@current_user} />
+        <.room_list rooms={ @rooms } user={@current_user} active_room={@active_room}/>
       </aside>
       <div class="flex h-[86vh] py-4 px-10 flex-col justify-between mx-4 w-full">
         <%= if @active_room.name != nil do %>
