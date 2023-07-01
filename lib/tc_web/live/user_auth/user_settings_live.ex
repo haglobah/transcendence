@@ -9,7 +9,7 @@ defmodule TcWeb.UserSettingsLive do
       Account Settings
       <:subtitle>Manage your account email address and password settings</:subtitle>
     </.header>
-
+    <div class="w-1/2 mx-auto">
     <div>
       <h2 class="text-2xl my-5">
         <%= @current_user.name %>
@@ -101,6 +101,7 @@ defmodule TcWeb.UserSettingsLive do
           </:actions>
         </.simple_form>
       </div>
+    </div>
     </div>
     """
   end

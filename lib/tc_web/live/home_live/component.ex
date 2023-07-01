@@ -4,13 +4,14 @@ defmodule TcWeb.HomeLive.Component do
 
   import TcWeb.ChatLive.Component
 
+  attr :current_user, :any
   attr :relations, :list
   attr :socket, :any
   def relation_list(assigns) do
     ~H"""
     <div class="flex flex-col">
       <%= for friend <- @relations do %>
-        <.live_user user={friend} socket={@socket}/>
+        <.display_user user={friend} current_user={@current_user} socket={@socket}/>
       <% end %>
     </div>
     """
