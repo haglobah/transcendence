@@ -2,6 +2,7 @@ defmodule TcWeb.UserSettingsLive do
   use TcWeb, :live_view
 
   alias Tc.Accounts
+  import TcWeb.Component
 
   def render(assigns) do
     ~H"""
@@ -14,10 +15,7 @@ defmodule TcWeb.UserSettingsLive do
       <h2 class="text-2xl my-5">
         <%= @current_user.name %>
       </h2>
-      <img
-        alt="user_avatar" width="200"
-        src={@current_user.avatar_upload}
-        />
+      <.user_avatar user={@current_user}/>
     </div>
 
     <div class="space-y-12 divide-y">

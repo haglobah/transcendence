@@ -1,7 +1,7 @@
 defmodule TcWeb.HomeLive.AddFriendSearch do
   use TcWeb, :live_component
 
-  import TcWeb.ChatLive.Component
+  import TcWeb.Component
   alias Phoenix.PubSub
   alias Tc.Network
   alias Tc.Accounts

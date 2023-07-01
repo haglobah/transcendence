@@ -2,7 +2,7 @@ defmodule TcWeb.HomeLive.Component do
   use Phoenix.Component
   use TcWeb, :html
 
-  import TcWeb.ChatLive.Component
+  import TcWeb.Component
 
   attr :current_user, :any
   attr :relations, :list
