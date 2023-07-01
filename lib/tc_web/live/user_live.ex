@@ -32,6 +32,12 @@ defmodule TcWeb.UserLive do
       <.button phx-click="start-game">
         Start a game
       </.button>
+      <.link :if={@status == :in_game}
+             navigate={~p"/game/#{@game_id}"}>
+        <.button>
+          Spectate game
+        </.button>
+      </.link>
     </.modal>
     """
   end
@@ -72,6 +78,20 @@ defmodule TcWeb.UserLive do
     else
       {:noreply, socket}
     end
+  end
+
+  def handle_info({:change, user_id, {:in_game, game_id}}, socket) do
+    socket = case socket.assigns.user.id do
+      ^user_id ->
+        socket
+        |> assign(status: :in_game)
+        |> assign(game_id: game_id)
+        |> assign(last_change: System.monotonic_time())
+
+      _ -> socket
+    end
+
+    {:noreply, socket}
   end
 
   def handle_info({:change, user_id, status} = _params, socket) do

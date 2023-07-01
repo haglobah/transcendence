@@ -85,11 +85,11 @@ defmodule TcWeb.GameLive do
     {:noreply, push_patch(socket, to: "/game/#{state.game_id}/game_over")}
   end
 
-  def handle_info(:status_tick, socket) do
+  def handle_info(:status_tick, %{assigns: %{state: state}} = socket) do
     PubSub.broadcast(
       Tc.PubSub,
       Activity.status_topic(),
-      {:change, socket.assigns.current_user.id, :in_game})
+      {:change, socket.assigns.current_user.id, {:in_game, state.game_id}})
     schedule_status_tick()
     {:noreply, socket}
   end
