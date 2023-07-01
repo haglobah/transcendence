@@ -13,6 +13,18 @@ defmodule TcWeb.GameLive do
   """
   def render(%{live_action: :game_over} = assigns) do
     ~H"""
+    <.header class="text-center">
+      About the Game:
+    </.header>
+    <div>
+      <h2 class="text-center">
+        Players use paddles to hit the ball back and forth.<br>
+        Points are earned when one fails to return the ball.<br><br>
+        <%!-- <b>Goal</b>: Be the <b>1st</b> to reach <b>11 points</b>.<br> --%>
+        <b>How to play</b>:<br>
+        Players move their paddle <b>up</b> and <b>down</b> using <b>↑</b> and <b>↓</b> on their keyboards.<br><br>
+      </h2>
+    </div>
     <.game_over view_box="0 0 100 100">
       <.paddle x={ @left.x } y={ @left.y } />
       <.paddle x={ @right.x } y={ @right.y } />
@@ -25,6 +37,18 @@ defmodule TcWeb.GameLive do
 
   def render(assigns) do
     ~H"""
+    <.header class="text-center">
+      About the Game:
+    </.header>
+    <div>
+      <h2 class="text-center">
+        Players use paddles to hit the ball back and forth.<br>
+        Points are earned when one fails to return the ball.<br><br>
+        <%!-- <b>Goal</b>: Be the <b>1st</b> to reach <b>11 points</b>.<br> --%>
+        <b>How to play</b>:<br>
+        Players move their paddle <b>up</b> and <b>down</b> using <b>↑</b> and <b>↓</b> on their keyboards.<br><br>
+      </h2>
+    </div>
     <.canvas view_box="0 0 100 100">
       <.paddle x={ @state.left.pos.x } y={ @state.left.pos.y } />
       <.paddle x={ @state.right.pos.x } y={ @state.right.pos.y } />
