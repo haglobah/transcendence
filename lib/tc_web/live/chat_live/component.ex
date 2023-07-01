@@ -8,13 +8,14 @@ defmodule TcWeb.ChatLive.Component do
   attr :user, :any
   def room_list(assigns) do
     ~H"""
-    <div class="flex flex-col justify-between h-[88vh]">
-      <div class="bg-sky-200">
+    <div class="flex flex-col h-[86vh] bg-white rounded-lg justify-between">
+      <div class="space-y-6 lg:space-y-2 border-l border-slate-100 dark:border-slate-800">
+        <h5 class="mb-8 lg:mb-3 font-semibold text-slate-900 dark:text-slate-200"> Chat Rooms </h5>
         <%= for room <- @rooms do %>
           <.display_chat room={room} user={@user}/>
         <% end %>
       </div>
-      <div class="flex justify-begin content-center">
+      <div class="py-4 px-10">
         <.link patch={~p"/chat/rooms/new"} phx-click={JS.push_focus()}>
           <.button>+</.button>
         </.link>
@@ -28,12 +29,12 @@ defmodule TcWeb.ChatLive.Component do
   def display_chat(assigns) do
     ~H"""
     <.link navigate={~p"/chat/rooms/#{@room.id}"}
-               class={"flex items-center p-2"}>
+               class={"block border-l pl-4 -ml-px border-transparent hover:border-slate-400 dark:hover:border-slate-500 text-slate-700 hover:text-slate-900 dark:text-slate-400 dark:hover:text-slate-300"}>
       <%= if @room.name == nil do %>
         <% other_user = get_other(@room.members, @user) %>
         <.display_user user={other_user} />
       <% else %>
-        <h3 class="ml-3"><%= @room.name %></h3>
+        <h3 class="o-underline hover:underline ml-3"><%= @room.name %></h3>
         <p class="text-sm ml-3"><%= @room.description %></p>
       <% end %>
     </.link>
@@ -52,7 +53,7 @@ defmodule TcWeb.ChatLive.Component do
   slot :inner_block
   def display_room(assigns) do
     ~H"""
-    <div class="flex justify-between bg-gray-200">
+    <div class="flex justify-between bg-gray-300">
       <div class="flex items-center p-2">
         <h3 class="ml-3"><%= @room.name %></h3>
         <p class="text-sm ml-3"><%= @room.description %></p>

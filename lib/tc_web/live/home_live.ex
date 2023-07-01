@@ -19,7 +19,7 @@ defmodule TcWeb.HomeLive do
       <div class="text-3xl px-11">
         <h2>This is <%= @current_user.name %>'s Home Page</h2>
       </div>
-      <aside class="h-[88vh] sticky top-14 w-84 overflow-y-scroll hidden md:block">
+      <aside class="h-[88vh] sticky top-14 w-84 overflow-y-auto hidden md:block">
         <.relation_list relations={@friends} socket={@socket} />
         <hr/>
         <.pending_list relations={@pending} current_user={@current_user} />

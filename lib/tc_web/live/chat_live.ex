@@ -12,17 +12,17 @@ defmodule TcWeb.ChatLive do
 
   def render(%{live_action: action} = assigns) when action in [:show, :edit, :join] do
     ~H"""
-    <div id="mobile-sidenav" class="fixed bg-white overflow-y-scroll block md:hidden z-50 inset-0">
+    <div id="mobile-sidenav" class="fixed bg-white overflow-y-auto block md:hidden z-50 inset-0">
       <.room_list rooms={ @rooms } user={@current_user} />
     </div>
     <div class="flex">
-      <aside class="h-[88vh] sticky top-14 w-52 overflow-y-scroll hidden md:block">
+      <aside class="h-[86vh] sticky top-14 w-52 overflow-y-auto hidden md:block">
         <.room_list rooms={ @rooms } user={@current_user} />
       </aside>
-      <div class="mx-4 w-full">
+      <div class="flex h-[86vh] py-4 px-10 flex-col justify-between mx-4 w-full">
         <%= if @active_room.name != nil do %>
           <.link patch={~p"/chat/rooms/#{@active_room.id}/edit"}>
-            <div class="text-center py-4 bg-gray-200">
+            <div class="text-center py-4 bg-sky-500/50 rounded-lg">
               <h3 class="text-xl">
                 <%= @active_room.name %>
               </h3>
@@ -34,7 +34,7 @@ defmodule TcWeb.ChatLive do
         <% else %>
           <% other_user = get_other(@active_room.members, @current_user) %>
           <.link navigate={~p"/#{other_user.name}"}>
-            <div class="text-center py-4 bg-gray-200">
+            <div class="text-center py-4 bg-sky-500/50 rounded-lg">
               <.display_user user={other_user} />
             </div>
           </.link>
@@ -85,10 +85,10 @@ defmodule TcWeb.ChatLive do
 
   def render(assigns) do
     ~H"""
-    <div id="mobile-sidenav" class="fixed bg-white overflow-y-scroll block md:hidden z-50 inset-0">
+    <div id="mobile-sidenav" class="fixed bg-white overflow-y-auto block md:hidden z-50 inset-0">
       <.room_list rooms={ @rooms } user={@current_user} />
     </div>
-    <aside class="h-[88vh] sticky top-14 w-52 overflow-y-scroll hidden md:block">
+    <aside class="h-[87vh] sticky top-14 w-52 overflow-y-auto hidden md:block">
       <.room_list rooms={ @rooms } user={@current_user} />
     </aside>
 
