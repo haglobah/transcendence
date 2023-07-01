@@ -6,6 +6,8 @@ defmodule TcWeb.ProfileLive do
   alias Tc.Activity
   alias Phoenix.PubSub
 
+  import TcWeb.Component
+
   def render(assigns) do
     ~H"""
     <div>
@@ -13,9 +15,7 @@ defmodule TcWeb.ProfileLive do
         <%= @profile.name %> | <%= @profile.email %>
       </h2>
       <div class="my-5">
-      <%= if @profile.avatar_upload do %>
-        <img src={@profile.avatar_upload}/>
-      <% end %>
+        <.user_avatar user={@profile} />
       </div>
       <.table id="matches" rows={@matches}>
         <:col :let={match} label="player_left"><%= match.player_left.name %></:col>

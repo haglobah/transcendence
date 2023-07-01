@@ -5,13 +5,13 @@ defmodule TcWeb.UserLive do
   alias Tc.Activity
   alias Tc.Queue
 
-  alias TcWeb.ChatLive.Component
+  import TcWeb.Component
 
   def render(assigns) do
     ~H"""
     <div class="relative w-10 mx-2">
       <div phx-click={show_modal("user-#{@user.id}-action")} class="hover:cursor-pointer">
-        <img class="rounded-full" src={@user.avatar_upload}/>
+        <.user_avatar user={@user} />
         <%= case @status do %>
           <% :online -> %>
             <span class="absolute w-3 h-3 rounded-full bg-green-500 border-2 border-white top-0 right-0"></span>
@@ -29,7 +29,7 @@ defmodule TcWeb.UserLive do
             on_cancel={hide_modal("user-#{@user.id}-action")}
             >
       <.link navigate={~p"/#{@user.name}"}>
-        <Component.display_user user={@user}/>
+        <.display_user user={@user}/>
       </.link>
       <.button :if={@status == :online and @current_user != @user} phx-click="start-game">
         Start a game

@@ -7,7 +7,7 @@ defmodule TcWeb.ChatLive do
   alias Phoenix.PubSub
 
   import TcWeb.ChatLive.Component
-  import TcWeb.ChatLive.Messages
+  import TcWeb.Component
   alias TcWeb.ChatLive
 
   def render(%{live_action: action} = assigns) when action in [:show, :edit, :join] do

@@ -1,7 +1,7 @@
 defmodule TcWeb.ChatLive.MemberList do
   use TcWeb, :live_component
 
-  import TcWeb.ChatLive.Component
+  import TcWeb.Component
   alias Tc.Accounts
   alias Tc.Chat
   alias Phoenix.PubSub
