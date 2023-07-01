@@ -10,7 +10,7 @@ defmodule TcWeb.UserLive do
   def render(assigns) do
     ~H"""
     <div class="relative w-10 mx-2">
-      <.button phx-click={show_modal("user-#{@user.id}-action")}>
+      <div phx-click={show_modal("user-#{@user.id}-action")} class="hover:cursor-pointer">
         <img class="rounded-full" src={@user.avatar_upload}/>
         <%= case @status do %>
           <% :online -> %>
@@ -22,14 +22,16 @@ defmodule TcWeb.UserLive do
           <% :away -> %>
             <span class="absolute w-3 h-3 rounded-full bg-red-500 border-2 border-white top-0 right-0"></span>
         <% end %>
-      </.button>
+      </div>
     </div>
 
     <.modal id={"user-#{@user.id}-action"}
             on_cancel={hide_modal("user-#{@user.id}-action")}
             >
-      <Component.display_user user={@user}/>
-      <.button :if={@status == :online} phx-click="start-game">
+      <.link navigate={~p"/#{@user.name}"}>
+        <Component.display_user user={@user}/>
+      </.link>
+      <.button :if={@status == :online and @current_user != @user} phx-click="start-game">
         Start a game
       </.button>
       <.link :if={@status == :in_game}
