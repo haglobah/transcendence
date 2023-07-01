@@ -11,7 +11,7 @@ defmodule TcWeb.HomeLive.Component do
     ~H"""
     <div class="flex flex-col">
       <%= for friend <- @relations do %>
-        <.live_user user={friend} current_user={@current_user} socket={@socket}/>
+        <.display_user user={friend} current_user={@current_user} socket={@socket}/>
       <% end %>
     </div>
     """
