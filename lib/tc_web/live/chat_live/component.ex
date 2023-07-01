@@ -6,7 +6,7 @@ defmodule TcWeb.ChatLive.Component do
 
   attr :rooms, :list
   attr :user, :any
-  attr :active_room, :any
+  attr :active_room, :any, default: nil
   def room_list(assigns) do
     ~H"""
     <div class="flex flex-col h-[86vh] bg-white rounded-lg justify-between">
