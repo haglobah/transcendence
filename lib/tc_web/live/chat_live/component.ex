@@ -8,14 +8,18 @@ defmodule TcWeb.ChatLive.Component do
   attr :user, :any
   def room_list(assigns) do
     ~H"""
-    <div class="bg-sky-200">
-      <%= for room <- @rooms do %>
-        <.display_chat room={room} user={@user}/>
-      <% end %>
+    <div class="flex flex-col justify-between h-[88vh]">
+      <div class="bg-sky-200">
+        <%= for room <- @rooms do %>
+          <.display_chat room={room} user={@user}/>
+        <% end %>
+      </div>
+      <div class="flex justify-begin content-center">
+        <.link patch={~p"/chat/rooms/new"} phx-click={JS.push_focus()}>
+          <.button>+</.button>
+        </.link>
+      </div>
     </div>
-    <.link patch={~p"/chat/rooms/new"} phx-click={JS.push_focus()}>
-      <.button>+</.button>
-    </.link>
     """
   end
 
