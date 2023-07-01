@@ -22,6 +22,10 @@ defmodule Tc.Queue do
     GenServer.call @name, :current
   end
 
+  def start_private_game(current_user, other_user) do
+    GenServer.call @name, {:priv_game, {current_user, other_user}}
+  end
+
   def init(queue_at_start) do
     {:ok, queue_at_start}
   end
@@ -39,6 +43,14 @@ defmodule Tc.Queue do
         state = [user | state]
         {:reply, state, state}
     end
+  end
+
+  def handle_call({:priv_game, {left, right}}, _from, state) do
+    game_id = Nanoid.generate()
+    DynamicSupervisor.start_child(Tc.GameSupervisor, {Game, {left, right, game_id}})
+    PubSub.broadcast(Tc.PubSub, topic(), {:queue, left, right, game_id})
+
+    {:reply, state, state}
   end
 
   def handle_call(:current, _from, state) do

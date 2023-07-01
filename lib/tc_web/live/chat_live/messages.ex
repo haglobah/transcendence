@@ -2,6 +2,10 @@ defmodule TcWeb.ChatLive.Messages do
   use Phoenix.Component
   use TcWeb, :html
 
+  alias TcWeb.ChatLive.Component
+
+  attr :current_user, :any
+  attr :socket, :any
   attr :messages, :any, required: true
   attr :page, :integer, required: true
   attr :start_of_messages?, :boolean, required: true
@@ -32,17 +36,21 @@ defmodule TcWeb.ChatLive.Messages do
       ]}
     >
       <li :for={{id, message} <- @messages} id={id}>
-        <.message message={message}/>
+        <.message message={message} current_user={@current_user} socket={@socket} id={id}/>
       </li>
     </ul>
     """
   end
 
+  attr :id, :string
+  attr :message, :any
+  attr :current_user, :any
+  attr :socket, :any
   def message(assigns) do
     ~H"""
     <div class="flex mx-2 py-2">
       <div class="w-12">
-        <img class="rounded-full" src={@message.sender.avatar_upload}/>
+        <Component.live_user id={@id} current_user={@current_user} user={@message.sender} socket={@socket}/>
       </div>
       <div class="flex mx-3 flex-col">
         <div class="flex my-2 items-center">

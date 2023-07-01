@@ -16,16 +16,19 @@ defmodule TcWeb.HomeLive do
   def render(assigns) do
     ~H"""
     <div class="flex justify-between">
-      <div class="text-2xl m-10">
+      <div class="text-3xl px-11">
         <h2>This is <%= @current_user.name %>'s Home Page</h2>
       </div>
-      <aside class="h-[88vh] sticky top-14 w-84 overflow-y-scroll hidden md:block">
-        <.relation_list relations={@friends} socket={@socket} />
+      <aside class="h-[88vh] sticky top-14 w-84 overflow-y-auto hidden md:block">
+        <.relation_list relations={@friends} current_user={@current_user} socket={@socket} />
+
         <hr/>
         <.pending_list relations={@pending} current_user={@current_user} />
-        <.link patch={~p"/friend/new"} phx-click={JS.push_focus()}>
-          <.button>+</.button>
-        </.link>
+        <div class="top-14">
+          <.link patch={~p"/friend/new"} phx-click={JS.push_focus()}>
+            <.button>+</.button>
+          </.link>
+        </div>
       </aside>
     </div>
 
