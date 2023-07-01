@@ -20,7 +20,7 @@ defmodule TcWeb.HomeLive do
         <h2>This is <%= @current_user.name %>'s Home Page</h2>
       </div>
       <aside class="h-[88vh] sticky top-14 w-84 overflow-y-scroll hidden md:block">
-        <.relation_list relations={@friends} socket={@socket} />
+        <.relation_list relations={@friends} current_user={@current_user} socket={@socket} />
         <hr/>
         <.pending_list relations={@pending} current_user={@current_user} />
         <.link patch={~p"/friend/new"} phx-click={JS.push_focus()}>
