@@ -31,7 +31,7 @@ defmodule TcWeb.UserLive do
       <.link navigate={~p"/#{@user.name}"}>
         <Component.display_user user={@user}/>
       </.link>
-      <.button :if={@status == :online} phx-click="start-game">
+      <.button :if={@status == :online and @current_user != @user} phx-click="start-game">
         Start a game
       </.button>
       <.link :if={@status == :in_game}
