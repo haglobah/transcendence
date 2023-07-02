@@ -36,11 +36,15 @@ defmodule TcWeb.UserRegistrationLive do
         <.input field={@form[:email]} type="email" label="Email" required />
         <.input field={@form[:password]} type="password" label="Password" required />
 
+
         <div phx-drop-target={ @uploads.image.ref }>
           <label>Avatar</label>
-            <.live_file_input upload={ @uploads.image} />
+          <.live_file_input upload={ @uploads.image} />
         </div>
 
+        <:actions>
+          <.input field={@form[:is_2fa]} type="checkbox" label="Use Two-factor authentication"/>
+        </:actions>
         <:actions>
           <.button phx-disable-with="Creating account..." class="w-full">Create an account</.button>
         </:actions>

@@ -25,6 +25,9 @@ defmodule TcWeb.UserLoginLive do
             Forgot your password?
           </.link>
         </:actions>
+        <%!-- <:actions>
+          <.input field={@form[:is_2fa]} type="checkbox" label="Use Two-factor authentication"/>
+        </:actions> --%>
         <:actions>
           <.button phx-disable-with="Signing in..." class="w-full">
             Sign in <span aria-hidden="true">→</span>
