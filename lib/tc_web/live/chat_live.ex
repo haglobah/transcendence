@@ -33,11 +33,9 @@ defmodule TcWeb.ChatLive do
           </.link>
         <% else %>
           <% other_user = get_other(@active_room.members, @current_user) %>
-          <.link navigate={~p"/#{other_user.name}"}>
-            <div class="text-center py-4 bg-sky-500/50 rounded-lg">
-              <.display_user user={other_user} />
-            </div>
-          </.link>
+          <div class="text-center py-4 bg-sky-500/50 rounded-lg">
+            <.display_user user={other_user} />
+          </div>
         <% end %>
         <.list_messages
           current_user={ @current_user }
