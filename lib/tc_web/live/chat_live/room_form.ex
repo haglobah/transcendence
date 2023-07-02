@@ -20,12 +20,16 @@ defmodule TcWeb.ChatLive.RoomForm do
   def render(assigns) do
     ~H"""
     <div>
+      <div class="flex flex-col justify-between">
+
       <.live_component module={ ChatLive.PrivChatSearch }
+                       class="grow-0"
                        current_user={ @current_user }
                        id={ "new-chat-form" }/>
       <.live_component module={ ChatLive.RoomSearch }
                        current_user={ @current_user }
                        id={ "search-room-form" }/>
+      </div>
       <.simple_form
         for={@form}
         phx-submit="save"
@@ -33,9 +37,13 @@ defmodule TcWeb.ChatLive.RoomForm do
         phx-target={@myself}
         id={@id}
       >
-
+        <h2 class="text-center"> Create a new room </h2>
         <.input field={@form[:owner_id]} type="hidden"/>
-        <.input field={@form[:access]} type="select" options={["private", "protected", "public"]}/>
+        <.input
+          field={@form[:access]}
+          type="select"
+          label="Mode"
+          options={["private", "protected", "public"]}/>
         <%= if @show_password do %>
           <.input field={@form[:password]} type="password" label="Password"/>
         <% end %>
