@@ -24,7 +24,7 @@ defmodule TcWeb.ProfileLive do
           <.render_rank icon="gold_icon.jpeg"/>
           <div class="flex flex-col justify-center pl-5">
             <h5>
-              Scorce:
+              Score:
             </h5>
             <text class="text-center">
             21 - 0
