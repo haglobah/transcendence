@@ -13,16 +13,14 @@ defmodule TcWeb.GameLive do
   """
   def render(%{live_action: :game_over} = assigns) do
     ~H"""
-    <.header class="text-center">
-      About the Game:
-    </.header>
     <div>
-      <h2 class="text-center">
+      <h2 class="text-center font-mono">
+        <br><b>About the game</b>:<br>
         Players use paddles to hit the ball back and forth.<br>
         Points are earned when one fails to return the ball.<br><br>
         <%!-- <b>Goal</b>: Be the <b>1st</b> to reach <b>11 points</b>.<br> --%>
         <b>How to play</b>:<br>
-        Players move their paddle <b>up</b> and <b>down</b> using <b>↑</b> and <b>↓</b> on their keyboards.<br><br>
+        Players move their paddle <b>up</b> and <b>down</b> using <b>↑</b> and <b>↓</b> on their keyboards.<br><br><br>
       </h2>
     </div>
     <.game_over view_box="0 0 100 100">
@@ -37,16 +35,14 @@ defmodule TcWeb.GameLive do
 
   def render(assigns) do
     ~H"""
-    <.header class="text-center">
-      About the Game:
-    </.header>
     <div>
-      <h2 class="text-center">
+      <h2 class="text-center font-mono">
+        <br><b>About the game</b>:<br>
         Players use paddles to hit the ball back and forth.<br>
         Points are earned when one fails to return the ball.<br><br>
         <%!-- <b>Goal</b>: Be the <b>1st</b> to reach <b>11 points</b>.<br> --%>
         <b>How to play</b>:<br>
-        Players move their paddle <b>up</b> and <b>down</b> using <b>↑</b> and <b>↓</b> on their keyboards.<br><br>
+        Players move their paddle <b>up</b> and <b>down</b> using <b>↑</b> and <b>↓</b> on their keyboards.<br><br><br>
       </h2>
     </div>
     <.canvas view_box="0 0 100 100">
