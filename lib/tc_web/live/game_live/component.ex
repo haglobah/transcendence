@@ -78,12 +78,26 @@ defmodule TcWeb.GameLive.Component do
   def score(assigns) do
     ~H"""
     <text id="score"
-      class="m-auto"
+      x="40%" y="15%"
+      font-size="12"
+      font-family="monospace"
+      fill="lightgray"
+      text-anchor="middle"
+      dominant-baseline="middle"><%= @left %></text>
+      <text id="score"
       x="50%" y="15%"
       font-size="12"
       font-family="monospace"
       fill="lightgray"
-      text-anchor="middle"><%= @left %> | <%= @right %></text>
+      text-anchor="middle"
+      dominant-baseline="middle">|</text>
+      <text id="score"
+      x="60%" y="15%"
+      font-size="12"
+      font-family="monospace"
+      fill="lightgray"
+      text-anchor="middle"
+      dominant-baseline="middle"><%= @right %></text>
     """
   end
 
