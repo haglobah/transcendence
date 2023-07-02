@@ -10,19 +10,31 @@ defmodule TcWeb.ProfileLive do
 
   def render(assigns) do
     ~H"""
-    <div>
-      <h2 class="text-2xl">
-        <%= @profile.name %> | <%= @profile.email %>
-      </h2>
-      <div class="my-5">
-        <.user_avatar user={@profile} />
+    <div class="flex h-[86vh]">
+      <aside>
+        <div class="w-80">
+         <.user_avatar user={@profile} />
+        </div>
+        <h2 class="py-5 text-center text-2xl">
+         <%= @profile.name %> | <%= @profile.email %>
+        </h2>
+      </aside>
+      <div class="pl-20 w-full">
+        <div class="flex justify-center pr-20">
+          <.render_rank icon="gold_icon.jpeg"/>
+          <div class="flex flex-col justify-center pl-5">
+            <h5>
+              Scorce:
+            </h5>
+          </div>
+        </div>
+        <.table id="matches" rows={@matches}>
+          <:col :let={match} label="player_left"><%= match.player_left.name %></:col>
+          <:col :let={match} label="score_left"><%= match.score_left %></:col>
+          <:col :let={match} label="score_right"><%= match.score_right %></:col>
+          <:col :let={match} label="player_right"><%= match.player_right.name %></:col>
+        </.table>
       </div>
-      <.table id="matches" rows={@matches}>
-        <:col :let={match} label="player_left"><%= match.player_left.name %></:col>
-        <:col :let={match} label="score_left"><%= match.score_left %></:col>
-        <:col :let={match} label="score_right"><%= match.score_right %></:col>
-        <:col :let={match} label="player_right"><%= match.player_right.name %></:col>
-      </.table>
     </div>
     """
   end

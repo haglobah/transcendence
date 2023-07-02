@@ -11,7 +11,7 @@ defmodule Tc.Game do
   @fps 60
   @tick_ms div(1000, @fps)
 
-  @max_round_length 300
+  @max_round_length 5
 
   @moduledoc """
   A named GenServer which runs the Pong game.

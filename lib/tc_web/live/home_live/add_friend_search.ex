@@ -47,7 +47,7 @@ defmodule TcWeb.HomeLive.AddFriendSearch do
           autocapitalize="off"
           enterkeyhint="search"
           spellcheck="false"
-          placeholder="Add a member..."
+          placeholder="Add a friend..."
           type="search"
           value=""
           tabindex="0"
