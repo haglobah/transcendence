@@ -26,6 +26,9 @@ defmodule TcWeb.ProfileLive do
             <h5>
               Scorce:
             </h5>
+            <text class="text-center">
+            21 - 0
+            </text>
           </div>
         </div>
         <.table id="matches" rows={@matches}>
