@@ -42,7 +42,7 @@ defmodule TcWeb.ChatLive.Component do
                       else " text-slate-700 border-transparent hover:border-slate-400 pl-4" end}>
       <%= if @room.name == nil do %>
         <% other_user = get_other(@room.members, @user) %>
-        <.display_user user={other_user} />
+        <.display_user user={other_user} profile_link={false} />
       <% else %>
         <h3 class="o-underline ml-3"><%= @room.name %></h3>
         <p class="text-sm ml-3"><%= @room.description %></p>

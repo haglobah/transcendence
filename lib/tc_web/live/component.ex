@@ -6,6 +6,7 @@ defmodule TcWeb.Component do
   attr :user, :any
   attr :socket, :any, default: nil
   attr :id, :string, default: ""
+  attr :profile_link, :boolean, default: true
   slot :inner_block
   def display_user(assigns) do
     ~H"""
@@ -13,7 +14,13 @@ defmodule TcWeb.Component do
       <div class="flex items-center">
         <%= if @socket == nil do %>
           <div class="relative w-10 mx-2">
-            <.user_avatar user={@user}/>
+            <%= if @profile_link do %>
+              <.link navigate={~p"/#{@user.name}"} >
+                <.user_avatar user={@user}/>
+              </.link>
+            <% else %>
+              <.user_avatar user={@user}/>
+            <% end %>
           </div>
         <% else %>
           <.live_user id={@id} current_user={@current_user} user={@user} socket={@socket}/>
