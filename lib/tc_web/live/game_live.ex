@@ -41,10 +41,9 @@ defmodule TcWeb.GameLive do
         <p>Points are earned when one fails to return the ball.</p><br>
         <p><b>How to play</b>:</p>
         <p>Players move their paddle <b>up</b> and <b>down</b> using <b>↑</b> and <b>↓</b> on their keyboards.</p><br>
-        <p><b>Additional game features</b>:</p>
-        <.button>
+        <p><.button>
           Pause Game
-        </.button><br><br>
+        </.button></p><br>
       </h2>
     </div>
     <.canvas view_box="0 0 100 100">
