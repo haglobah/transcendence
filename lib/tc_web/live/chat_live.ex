@@ -208,17 +208,13 @@ defmodule TcWeb.ChatLive do
   defp can_write(current_user, room) do
     case room.name do
       nil -> is_member(current_user, room)
-        and !is_blocked(current_user, get_other(room.members, current_user))
+        and !Network.is_blocked(current_user, get_other(room.members, current_user))
       _ -> is_member(current_user, room)
     end
   end
 
   defp is_member(current_user, room) do
     current_user.id in Chat.get_room!(room.id).members
-  end
-
-  defp is_blocked(current_user, other_user) do
-    current_user in Network.list_blocked_for(other_user.id)
   end
 
   def get_other(members, user) do
