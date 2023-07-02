@@ -44,6 +44,10 @@ defmodule Tc.Game do
     game_id |> via_tuple() |> GenServer.call({:unmove, which, paddle})
   end
 
+  def pause(game_id) do
+    game_id |> via_tuple() |> GenServer.call(:pause)
+  end
+
   def init({left, right, game_id}) do
     schedule_tick()
     {:ok, State.new(left, right, game_id, @max_round_length)}
@@ -65,6 +69,10 @@ defmodule Tc.Game do
       :up -> make_change(state, which, paddle, %{x: 0, y: -1})
       :down -> make_change(state, which, paddle, %{x: 0, y: 1})
     end
+  end
+
+  def handle_call(:pause, _from, state) do
+    
   end
 
   defp make_change(state, which, paddle, change) do

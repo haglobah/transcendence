@@ -40,10 +40,10 @@ defmodule TcWeb.GameLive do
         <p>Players use paddles to hit the ball back and forth.</p>
         <p>Points are earned when one fails to return the ball.</p><br>
         <p><b>How to play</b>:</p>
-        <p>Players move their paddle <b>up</b> and <b>down</b> using <b>↑</b> and <b>↓</b> on their keyboards.</p><br>
-        <p><.button>
+        <p>Players move their paddle <b>up</b> and <b>down</b> using <b>↑</b> and <b>↓</b> on their keyboards.</p>
+        <.button phx-click="pause" class="my-4">
           Pause Game
-        </.button></p><br>
+        </.button>
       </h2>
     </div>
     <.canvas view_box="0 0 100 100">
@@ -84,15 +84,19 @@ defmodule TcWeb.GameLive do
   end
 
   def handle_event("move", %{"key" => key} = _params, socket) do
-    # Don't they don't need return state?
     handle_move(key, socket.assigns.current_user, socket.assigns.state)
 
     {:noreply, socket}
   end
 
   def handle_event("stop", %{"key" => key}, socket) do
-    # Don't they don't need return state?
     handle_stop(key, socket.assigns.current_user, socket.assigns.state)
+
+    {:noreply, socket}
+  end
+
+  def handle_event("pause", _params, socket) do
+    handle_pause(socket.assigns.current_user, socket.assigns.state)
 
     {:noreply, socket}
   end
@@ -102,7 +106,6 @@ defmodule TcWeb.GameLive do
   end
 
   def handle_info({:game_over, state}, socket) do
-    # Patch to the game_over screen
     {:noreply, push_patch(socket, to: "/game/#{state.game_id}/game_over")}
   end
 
@@ -116,6 +119,8 @@ defmodule TcWeb.GameLive do
   end
 
   defp schedule_status_tick(), do: Process.send_after(self(), :status_tick, 1000)
+
+  defp handle_pause(_user, state), do: Game.pause(state.game_id, state)
 
   defp handle_stop("ArrowUp", user, state) when user == state.player_right do
       Game.stop_paddle(state.game_id, :right, state.right)
