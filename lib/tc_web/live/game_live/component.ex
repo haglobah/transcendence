@@ -77,41 +77,31 @@ defmodule TcWeb.GameLive.Component do
   attr :right, :integer, required: true
   def score(assigns) do
     ~H"""
-    <text id="score"
+    <text id="score_left"
       x="40%" y="15%"
       font-size="12"
       font-family="monospace"
       fill="lightgray"
       text-anchor="middle"
-      dominant-baseline="middle"><%= @left %></text>
-      <text id="score"
+      dominant-baseline="middle"><%= @left %>
+    </text>
+    <text id="split_score"
       x="50%" y="15%"
       font-size="12"
       font-family="monospace"
       fill="lightgray"
       text-anchor="middle"
-      dominant-baseline="middle">|</text>
-      <text id="score"
+      dominant-baseline="middle">|
+    </text>
+    <text id="score_right"
       x="60%" y="15%"
       font-size="12"
       font-family="monospace"
       fill="lightgray"
       text-anchor="middle"
-      dominant-baseline="middle"><%= @right %></text>
+      dominant-baseline="middle"><%= @right %>
+    </text>
     """
-  end
-
-  attr :x, :integer, required: true
-  attr :y, :integer, required: true
-  attr :color, :string
-  def center_line(assigns) do
-    ~H"""
-    <use xlink:href="center_line"
-      x={ @x }
-      y={ @y }
-      fill="lightgray"
-      />
-  """
   end
 
   attr :seconds, :integer, required: true
@@ -122,7 +112,8 @@ defmodule TcWeb.GameLive.Component do
     font-size="4"
     font-family="monospace"
     fill="lightgray"
-    text-anchor="middle"><%= @seconds %></text>
+    text-anchor="middle"
+    dominant-baseline="middle"><%= @seconds %></text>
   """
   end
 end
