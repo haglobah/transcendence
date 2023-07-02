@@ -15,7 +15,9 @@ defmodule TcWeb.UserSettingsLive do
       <h2 class="text-2xl my-5">
         <%= @current_user.name %>
       </h2>
+      <div class="w-40">
       <.user_avatar user={@current_user}/>
+      </div>
     </div>
 
     <div class="space-y-12 divide-y">

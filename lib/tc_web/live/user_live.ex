@@ -28,7 +28,7 @@ defmodule TcWeb.UserLive do
     <.modal id={"user-#{@user.id}-action"}
             on_cancel={hide_modal("user-#{@user.id}-action")}
             >
-        <.display_user user={@user}/>
+      <.display_user user={@user}/>
       <.button :if={@status == :online and @current_user != @user} phx-click="start-game">
         Start a game
       </.button>
