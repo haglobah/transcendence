@@ -15,12 +15,12 @@ defmodule TcWeb.HomeLive do
 
   def render(assigns) do
     ~H"""
-    <div class="flex justify-between">
-      <div class="text-3xl px-40">
+    <div class="flex justify-between h-[87vh]">
+      <div class="text-3xl">
         <h2>This is <%= @current_user.name %>'s Home Page</h2>
       </div>
-      <aside class="h-[87vh] sticky top-14 w-84 px-40 overflow-y-auto hidden md:block">
-        <div class="flex h-[87vh] flex-col justify-between">
+      <aside class="sticky overflow-y-auto hidden md:block">
+        <div class="flex flex-col justify-between">
           <div>
             <.relation_list relations={@friends} current_user={@current_user} socket={@socket} />
             <hr/>
