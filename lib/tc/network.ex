@@ -30,20 +30,24 @@ defmodule Tc.Network do
     |> Repo.all()
   end
 
-  def list_relations_with_status_for(user_id, status) do
+  def list_users_with_status_for(user_id, status) do
     Relation.Query.list_filter_status(user_id, status)
     |> Repo.all()
     |> Enum.map(fn {u1, u2} -> if u1.id == user_id do u2 else u1 end end)
   end
 
-  def list_pending_users(user_id), do: list_relations_with_status_for(user_id, :pending)
-  def list_friends_for(user_id), do: list_relations_with_status_for(user_id, :accepted)
-  def list_declined_for(user_id), do: list_relations_with_status_for(user_id, :declined)
-  def list_blocked_for(user_id), do: list_relations_with_status_for(user_id, :blocked)
-  def list_pending_for(user_id) do
-    Relation.Query.list_filter_status(user_id, :pending)
+  def list_relations_with_status_for(user_id, status) do
+    Relation.Query.list_filter_status(user_id, status)
     |> Repo.all()
   end
+
+  def list_pending_users(user_id), do: list_users_with_status_for(user_id, :pending)
+  def list_friends_users(user_id), do: list_users_with_status_for(user_id, :accepted)
+  def list_declined_users(user_id), do: list_users_with_status_for(user_id, :declined)
+  def list_blocked_users(user_id), do: list_users_with_status_for(user_id, :blocked)
+
+  def list_declined_for(user_id), do: list_relations_with_status_for(user_id, :declined)
+  def list_pending_for(user_id), do: list_relations_with_status_for(user_id, :pending)
 
   @doc """
   Gets a single relation.
@@ -67,11 +71,17 @@ defmodule Tc.Network do
   end
 
   def is_blocked(from_user, user) do
-    user in list_blocked_for(from_user.id)
+    user in list_blocked_users(from_user.id)
+  end
+
+  def was_declined(from_user, user) do
+    {declined, decliner} = hd(list_declined_for(from_user.id))
+
+    declined == from_user
   end
 
   def are_friends(from_user, user) do
-    user in list_friends_for(from_user.id)
+    user in list_friends_users(from_user.id)
   end
 
   def are_pending(from_user, user) do
@@ -120,7 +130,9 @@ defmodule Tc.Network do
     case rel do
       nil -> create_relation(%{requester_id: from_user_id, receiver_id: other_user_id, status: :pending})
       %Relation{status: :pending} -> update_relation(rel, %{status: :accepted})
-      _ -> rel
+      %Relation{status: :declined} ->
+        delete_relation(rel)
+        create_relation(%{requester_id: from_user_id, receiver_id: other_user_id, status: :pending})
     end
   end
 

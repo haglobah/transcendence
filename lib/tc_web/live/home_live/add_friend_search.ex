@@ -78,6 +78,8 @@ defmodule TcWeb.HomeLive.AddFriendSearch do
                   </.button>
                 <% Network.are_pending(@current_user, user) -> %>
                   <div></div>
+                <% Network.was_declined(@current_user, user) -> %>
+                  <div></div>
                 <% true -> %>
                   <.button  phx-click="befriend-user"
                             phx-value-user={user.id}
