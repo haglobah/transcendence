@@ -2,13 +2,14 @@ defmodule TcWeb.ChatLive do
   use TcWeb, :live_view
   alias Tc.Chat
   alias Tc.Accounts
-  alias TcWeb.Endpoint
   alias Tc.Activity
+  alias Tc.Network
   alias Phoenix.PubSub
 
   import TcWeb.ChatLive.Component
   import TcWeb.Component
   alias TcWeb.ChatLive
+  alias TcWeb.Endpoint
 
   def render(%{live_action: action} = assigns) when action in [:show, :edit, :join] do
     ~H"""
@@ -44,11 +45,13 @@ defmodule TcWeb.ChatLive do
           members={ @room_members }
           page={ @page }
           start_of_messages?={ @start_of_messages? }/>
-        <.live_component module={ ChatLive.WriteForm }
-          room_id={ @active_room.id }
-          sender_id={ @current_user.id }
-          id={ "room-#{@active_room.id}-message-form" }
-          />
+        <%= if can_write(@current_user, @active_room) do %>
+          <.live_component module={ ChatLive.WriteForm }
+            room_id={ @active_room.id }
+            sender_id={ @current_user.id }
+            id={ "room-#{@active_room.id}-message-form" }
+            />
+        <% end %>
       </div>
     </div>
 
@@ -108,6 +111,7 @@ defmodule TcWeb.ChatLive do
     if connected?(socket) do
       Endpoint.subscribe(Chat.rooms_topic())
       Endpoint.subscribe(Chat.msg_topic(room_id))
+      Endpoint.subscribe(Network.relation_topic())
     end
 
     active_room = Chat.get_room!(room_id)
@@ -194,7 +198,36 @@ defmodule TcWeb.ChatLive do
     {:noreply, socket}
   end
 
+  def handle_info({:change_relation}, socket) do
+    PubSub.broadcast(Tc.PubSub, Chat.rooms_topic(), {:edit_room})
+    {:noreply, socket}
+  end
+
   defp schedule_status_tick(), do: Process.send_after(self(), :status_tick, 1000)
+
+  defp can_write(current_user, room) do
+    case room.name do
+      nil -> is_member(current_user, room)
+        and !is_blocked(current_user, get_other(room.members, current_user))
+      _ -> is_member(current_user, room)
+    end
+  end
+
+  defp is_member(current_user, room) do
+    current_user.id in Chat.get_room!(room.id).members
+  end
+
+  defp is_blocked(current_user, other_user) do
+    current_user in Network.list_blocked_for(other_user.id)
+  end
+
+  def get_other(members, user) do
+    [first, second] = Accounts.get_users(members)
+    case first do
+      ^user -> second
+      _ -> first
+    end
+  end
 
   # defp paginate_msgs(socket, new_page) when new_page >= 1 do
   #   %{active_room: room, per_page: per_page, page: cur_page} = socket.assigns

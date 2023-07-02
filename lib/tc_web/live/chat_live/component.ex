@@ -2,7 +2,7 @@ defmodule TcWeb.ChatLive.Component do
   use Phoenix.Component
   use TcWeb, :html
 
-  alias Tc.Accounts
+  alias TcWeb.ChatLive
   import TcWeb.Component
 
   attr :rooms, :list
@@ -41,7 +41,7 @@ defmodule TcWeb.ChatLive.Component do
                       if @active do " text-sky-500/100 border-sky-500/100 pl-5"
                       else " text-slate-700 border-transparent hover:border-slate-400 pl-4" end}>
       <%= if @room.name == nil do %>
-        <% other_user = get_other(@room.members, @user) %>
+        <% other_user = ChatLive.get_other(@room.members, @user) %>
         <.display_user user={other_user} profile_link={false} />
       <% else %>
         <h3 class="o-underline ml-3"><%= @room.name %></h3>
@@ -49,14 +49,6 @@ defmodule TcWeb.ChatLive.Component do
       <% end %>
     </.link>
     """
-  end
-
-  def get_other(members, user) do
-    [first, second] = Accounts.get_users(members)
-    case first do
-      ^user -> second
-      _ -> first
-    end
   end
 
   attr :room, :any
