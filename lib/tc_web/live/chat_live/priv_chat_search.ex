@@ -4,6 +4,7 @@ defmodule TcWeb.ChatLive.PrivChatSearch do
   import TcWeb.Component
   alias Tc.Chat
   alias Tc.Accounts
+  alias Tc.Network
   alias Phoenix.PubSub
 
   def update(assigns, socket) do
@@ -62,22 +63,18 @@ defmodule TcWeb.ChatLive.PrivChatSearch do
       >
         <%= for user <- @chattable_users do %>
           <.display_user user={user} >
-            <%= if is_blocked(@current_user, user) do %>
-              <.button  phx-click="unblock-user"
-                        phx-value-other={user.id}
-                        phx-target={@myself}>
-                        Unblock user
-              </.button>
+            <%= if room = Chat.get_privchat(@current_user.id, user.id) do %>
+              <% IO.inspect(room) %>
+              <.link navigate={~p"/chat/rooms/#{room.id}"}>
+                <.button>
+                  Jump to chat
+                </.button>
+              </.link>
             <% else %>
               <.button  phx-click="start-chat"
                         phx-value-other={user.id}
                         phx-target={@myself}>
                         Start Chat
-              </.button>
-              <.button  phx-click="block-user"
-                        phx-value-other={user.id}
-                        phx-target={@myself}>
-                        Block from chatting
               </.button>
             <% end %>
           </.display_user>
@@ -90,11 +87,16 @@ defmodule TcWeb.ChatLive.PrivChatSearch do
   def handle_event("change", %{"search" => %{"query" => ""}}, socket) do
     {:noreply, assign(socket, chattable_users: [])}
   end
+
   def handle_event("change",
     %{"search" => %{"query" => search_query}},
-    %{assigns: %{current_user: current_user}} = socket) do
-
-    except = [current_user.id] #| current_user.blocked]
+    %{assigns: %{current_user: current_user}} = socket
+  ) do
+    blocked =
+      current_user.id
+      |> Network.list_blocked_users()
+      |> Enum.map(fn u -> u.id end)
+    except = [current_user.id | blocked]
     chattable_users = Accounts.search_users_except(%{query: search_query, except: except})
     {:noreply, assign(socket, chattable_users: chattable_users)}
   end
@@ -107,34 +109,5 @@ defmodule TcWeb.ChatLive.PrivChatSearch do
       {:error, %Ecto.Changeset{} = changeset} -> assign(socket, changeset: changeset)
     end
     {:noreply, socket}
-  end
-
-  def handle_event("block-user", %{"current" => _user_id}, socket) do
-    # socket = change_relation(&Chat.block_user/2, user_id, socket)
-    {:noreply, socket}
-  end
-
-  def handle_event("unblock-user", %{"current" => _user_id}, socket) do
-    # socket = change_relation(&Chat.unblock_user/2, user_id, socket)
-    {:noreply, socket}
-  end
-
-  # defp change_relation(change_fun, member_id, socket) do
-  #   case change_fun.(socket.assigns.room, member_id) do
-  #     {:ok, room} ->
-  #       PubSub.broadcast(Tc.PubSub, Chat.rooms_topic(), {:edit_room})
-  #       assign(socket, room: room)
-  #     {:error, %Ecto.Changeset{} = changeset} ->
-  #       assign(socket, changeset: changeset)
-  #   end
-  # end
-
-  defp is_blocked(_current_user, _user) do
-    # case current_user.blocked do
-    #   nil -> false
-    #   [] -> false
-    #   [_ | _] -> user.id in current_user.blocked
-    # end
-    false
   end
 end

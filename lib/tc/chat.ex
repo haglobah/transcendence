@@ -56,6 +56,11 @@ defmodule Tc.Chat do
   """
   def get_room!(id), do: Repo.get!(Room, id)
 
+  def get_privchat(current_user_id, other_id) do
+    Room.Query.get_privchat(current_user_id, other_id)
+    |> Repo.one()
+  end
+
   @doc """
   Creates a room.
 

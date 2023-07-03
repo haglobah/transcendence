@@ -12,6 +12,12 @@ defmodule Tc.Chat.Room.Query do
     |> where([r], ^user_id == fragment("any(?)", r.members))
   end
 
+  def get_privchat(query \\ base(), current_user_id, other_id) do
+    query
+    |> where([r], is_nil(r.name))
+    |> where([r], ^current_user_id in r.members and ^other_id in r.members)
+  end
+
   def room_search(query \\ base(), search_query, except) do
     search_query = "%#{search_query}"
     exceptions = to_binary(except)
