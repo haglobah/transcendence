@@ -2,14 +2,15 @@ defmodule Tc.Game.Ball do
 
   @movement_speed 1/100000000
 
-  defstruct [:pos, :velocity, :width, :height]
+  defstruct [:pos, :velocity, :width, :height, :velocity_mult]
 
-  def new do
+  def new(mult) do
     %__MODULE__{
       pos: %{x: 50, y: 50},
       velocity: %{x: 2, y: 1},
       width: 2,
       height: 2,
+      velocity_mult: mult,
     }
   end
 
@@ -68,8 +69,8 @@ defmodule Tc.Game.Ball do
   def move(ball, dt) do
     update_in(ball.pos, fn %{x: x, y: y} ->
       %{x: vx, y: vy} = ball.velocity
-      x2 = x + vx * dt * @movement_speed
-      y2 = y + vy * dt * @movement_speed
+      x2 = x + vx * dt * @movement_speed * ball.velocity_mult
+      y2 = y + vy * dt * @movement_speed * ball.velocity_mult
 
       %{x: x2, y: y2}
     end)

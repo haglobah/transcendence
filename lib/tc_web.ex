@@ -59,7 +59,13 @@ defmodule TcWeb do
 
       def handle_event("enqueue", _params, socket) do
         TcWeb.Endpoint.subscribe(Tc.Queue.topic())
-        Tc.Queue.enqueue(socket.assigns.current_user)
+        Tc.Queue.enqueue(socket.assigns.current_user, false)
+        {:noreply, socket}
+      end
+
+      def handle_event("enqueue-fast", _params, socket) do
+        TcWeb.Endpoint.subscribe(Tc.Queue.topic())
+        Tc.Queue.enqueue(socket.assigns.current_user, true)
         {:noreply, socket}
       end
 

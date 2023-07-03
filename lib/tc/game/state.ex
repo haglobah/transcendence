@@ -19,7 +19,7 @@ defmodule Tc.Game.State do
     :left, :right,
     :ball, :score]
 
-  def new(player_left, player_right, game_id, game_length) do
+  def new(player_left, player_right, game_id, game_length, mult) do
     start_time = System.monotonic_time()
     %__MODULE__{
       game_id: game_id,
@@ -28,9 +28,9 @@ defmodule Tc.Game.State do
       rest_seconds: game_length,
       player_left: player_left,
       player_right: player_right,
-      left: Paddle.new(2),
-      right: Paddle.new(96),
-      ball: Ball.new(),
+      left: Paddle.new(2, mult),
+      right: Paddle.new(96, mult),
+      ball: Ball.new(mult),
       score: %{left: 0, right: 0},
     }
   end

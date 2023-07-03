@@ -13,6 +13,9 @@ defmodule Tc.Game do
 
   @max_round_length 50
 
+  @fast_game 3
+  @normal_game 1
+
   @moduledoc """
   A named GenServer which runs the Pong game.
 
@@ -29,7 +32,7 @@ defmodule Tc.Game do
     "#{game_id}:tick"
   end
 
-  def start_link({_, _, game_id} = init_game) do
+  def start_link({_, _, game_id, _} = init_game) do
     GenServer.start_link(__MODULE__, init_game, name: via_tuple(game_id))
   end
 
@@ -44,9 +47,13 @@ defmodule Tc.Game do
     game_id |> via_tuple() |> GenServer.call({:unmove, which, paddle})
   end
 
-  def init({left, right, game_id}) do
+  def init({left, right, game_id, fast?}) do
     schedule_tick()
-    {:ok, State.new(left, right, game_id, @max_round_length)}
+    state = case fast? do
+      true -> State.new(left, right, game_id, @max_round_length, @fast_game)
+      false -> State.new(left, right, game_id, @max_round_length, @normal_game)
+    end
+    {:ok, state}
   end
 
   # Implementation (runs in the GenServer Process)

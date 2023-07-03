@@ -2,12 +2,13 @@ defmodule Tc.Game.Paddle do
 
   @movement_speed 1/30000000
 
-  defstruct [:pos, :velocity, :width, :height]
+  defstruct [:pos, :velocity, :velocity_mult, :width, :height]
 
-  def new(x) do
+  def new(x, mult) do
     %__MODULE__{
       pos: %{x: x, y: 37},
       velocity: %{x: 0, y: 0},
+      velocity_mult: mult,
       width: 2,
       height: 25,
     }
@@ -29,7 +30,7 @@ defmodule Tc.Game.Paddle do
     update_in(paddle.pos, fn %{x: x, y: y} ->
       %{x: _vx, y: vy} = paddle.velocity
       # x2 = x + vx * dt * @movement_speed
-      y2 = y + vy * dt * @movement_speed
+      y2 = y + vy * dt * @movement_speed * paddle.velocity_mult
 
       %{x: x, y: y2}
     end)

@@ -11,11 +11,11 @@ defmodule Tc.Queue do
   end
 
   def start_link(_opts) do
-    GenServer.start_link(__MODULE__, [], name: @name)
+    GenServer.start_link(__MODULE__, %{fast: [], normal: []}, name: @name)
   end
 
-  def enqueue(user) do
-    GenServer.call @name, %{enq: user}
+  def enqueue(user, fast?) do
+    GenServer.call @name, %{enq: user, fast?: fast?}
   end
 
   def current() do
@@ -30,30 +30,43 @@ defmodule Tc.Queue do
     {:ok, queue_at_start}
   end
 
-  def handle_call(%{enq: user}, _from, state) do
-    case length(state) do
-      1 ->
-        left = hd(state)
-        right = user
-        game_id = Nanoid.generate()
-        DynamicSupervisor.start_child(Tc.GameSupervisor, {Game, {left, right, game_id}})
-        PubSub.broadcast(Tc.PubSub, topic(), {:queue, left, right, game_id})
-        {:reply, [], []}
-      0 ->
-        state = [user | state]
-        {:reply, state, state}
+  def handle_call(%{enq: user, fast?: fast?}, _from, state) do
+    case fast? do
+      true -> start_game(user, fast?, state.fast, state)
+      false -> start_game(user, fast?, state.normal, state)
     end
   end
 
   def handle_call({:priv_game, {left, right}}, _from, state) do
     game_id = Nanoid.generate()
-    DynamicSupervisor.start_child(Tc.GameSupervisor, {Game, {left, right, game_id}})
+    DynamicSupervisor.start_child(Tc.GameSupervisor, {Game, {left, right, game_id, false}})
     PubSub.broadcast(Tc.PubSub, topic(), {:queue, left, right, game_id})
 
     {:reply, state, state}
   end
 
   def handle_call(:current, _from, state) do
+    {:reply, state, state}
+  end
+
+  defp start_game(user, fast?, queue, state) do
+    queue = case length(queue) do
+      1 ->
+        left = hd(queue)
+        right = user
+        game_id = Nanoid.generate()
+        DynamicSupervisor.start_child(Tc.GameSupervisor, {Game, {left, right, game_id, fast?}})
+        PubSub.broadcast(Tc.PubSub, topic(), {:queue, left, right, game_id})
+        []
+      0 ->
+        [user | queue]
+    end
+
+    state = case fast? do
+      true -> %{state | fast: queue}
+      false -> %{state | normal: queue}
+    end
+
     {:reply, state, state}
   end
 end
