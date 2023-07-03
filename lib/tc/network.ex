@@ -48,6 +48,7 @@ defmodule Tc.Network do
 
   def list_declined_for(user_id), do: list_relations_with_status_for(user_id, :declined)
   def list_pending_for(user_id), do: list_relations_with_status_for(user_id, :pending)
+  def list_blocked_for(user_id), do: list_relations_with_status_for(user_id, :blocked)
 
   @doc """
   Gets a single relation.
@@ -74,10 +75,18 @@ defmodule Tc.Network do
     user in list_blocked_users(from_user.id)
   end
 
-  def was_declined(from_user, user) do
-    {declined, decliner} = hd(list_declined_for(from_user.id))
+  def was_blocked_by(from_user, _user) do
+    case list_blocked_for(from_user.id) do
+      [{_blocker, blocked} | _] -> blocked == from_user
+      _ -> false
+    end
+  end
 
-    declined == from_user
+  def was_declined(from_user, _user) do
+    case list_declined_for(from_user.id) do
+      [{declined, _decliner} | _] -> declined == from_user
+      _ -> false
+    end
   end
 
   def are_friends(from_user, user) do
@@ -156,12 +165,14 @@ defmodule Tc.Network do
   end
 
   def block_user(from_user_id, other_user_id) do
-    rel = get_relation(from_user_id, other_user_id)
-    update_relation(rel, %{status: :blocked})
+    case get_relation(from_user_id, other_user_id) do
+      nil -> create_relation(%{requester_id: from_user_id, receiver_id: other_user_id, status: :blocked})
+      rel -> update_relation(rel, %{status: :blocked})
+    end
   end
 
   def unblock_user(from_user_id, other_user_id) do
-        rel = get_relation(from_user_id, other_user_id)
+    rel = get_relation(from_user_id, other_user_id)
 
     case rel do
       nil -> {:error, %Ecto.Changeset{}}

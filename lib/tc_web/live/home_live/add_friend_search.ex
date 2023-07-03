@@ -63,10 +63,11 @@ defmodule TcWeb.HomeLive.AddFriendSearch do
         <%= for user <- @changeable_users do %>
           <.display_user user={user} >
             <%= if Network.is_blocked(@current_user, user) do %>
-              <.button  phx-click="unblock-user"
-                        phx-value-user={user.id}
-                        phx-target={@myself}>
-                        Unblock user
+              <.button :if={!Network.was_blocked_by(@current_user, user)}
+                phx-click="unblock-user"
+                phx-value-user={user.id}
+                phx-target={@myself}>
+                Unblock user
               </.button>
             <% else %>
               <%= cond do %>
