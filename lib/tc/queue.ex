@@ -50,16 +50,19 @@ defmodule Tc.Queue do
   end
 
   defp start_game(user, fast?, queue, state) do
-    queue = case length(queue) do
-      1 ->
-        left = hd(queue)
+    queue = case queue do
+      [left] ->
         right = user
-        game_id = Nanoid.generate()
-        DynamicSupervisor.start_child(Tc.GameSupervisor, {Game, {left, right, game_id, fast?}})
-        PubSub.broadcast(Tc.PubSub, topic(), {:queue, left, right, game_id})
-        []
-      0 ->
-        [user | queue]
+        if left == right do
+          [left]
+        else
+          game_id = Nanoid.generate()
+          DynamicSupervisor.start_child(Tc.GameSupervisor, {Game, {left, right, game_id, fast?}})
+          PubSub.broadcast(Tc.PubSub, topic(), {:queue, left, right, game_id})
+          []
+        end
+      [] ->
+        [user]
     end
 
     state = case fast? do
