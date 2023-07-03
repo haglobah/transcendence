@@ -55,8 +55,8 @@ defmodule TcWeb.ChatLive.EditRoomForm do
           phx-key="ArrowUp"
           label="Room description"
           field={@form[:description]} type="text"/>
-        <.input field={@form[:access]} type="select" options={["private", "protected", "public"]}/>
-        <%= if @show_password do %>
+        <.input :if={@user.id == @room.owner_id} field={@form[:access]} type="select" options={["private", "protected", "public"]}/>
+        <%= if @show_password && @user.id == @room.owner_id do %>
           <.input field={@form[:password]} type="password" label="Password"/>
         <% end %>
         <:actions>

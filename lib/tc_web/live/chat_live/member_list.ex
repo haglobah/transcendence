@@ -22,7 +22,7 @@ defmodule TcWeb.ChatLive.MemberList do
         <%= for member <- Accounts.get_users(@room.members) do %>
           <.display_user user={member}>
             <%= if is_admin(@room, @user) do %>
-              <.button :if={is_admin(@room, member) && @user.id != member.id}
+              <.button :if={is_admin(@room, member) && isnt_me(@user, member) && !is_owner(@room, member)}
                 phx-target={@myself}
                 phx-click="rm-admin" phx-value-member-id={member.id}>
                 Remove Admin rights
@@ -32,12 +32,12 @@ defmodule TcWeb.ChatLive.MemberList do
                 phx-click="make-admin" phx-value-member-id={member.id}>
                 Make an admin
               </.button>
-              <.button :if={@user.id != member.id}
+              <.button :if={isnt_me(@user, member) && !is_owner(@room, member)}
                 phx-target={@myself}
                 phx-click="kick" phx-value-member-id={member.id}>
                 Kick from room
               </.button>
-              <.button :if={@user.id == member.id}
+              <.button :if={is_me(@user, member)}
                 phx-target={@myself}
                 phx-click="kick" phx-value-member-id={member.id}>
                 Leave room
@@ -77,7 +77,8 @@ defmodule TcWeb.ChatLive.MemberList do
     end
   end
 
-  defp is_admin(room, user) do
-    user.id in room.admins
-  end
+  defp is_admin(room, user), do: user.id in room.admins
+  defp is_owner(room, user), do: user.id == room.owner_id
+  defp isnt_me(user, other), do: user.id != other.id
+  defp is_me(user, other), do: user.id == other.id
 end
