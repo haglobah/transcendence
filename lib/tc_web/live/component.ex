@@ -55,11 +55,4 @@ defmodule TcWeb.Component do
   <% end %>
   """
   end
-
-  attr :icon, :string
-  def render_rank(assigns) do
-  ~H"""
-  <img class="w-20 rounded-full" src={~p"/images/#{@icon}"}/>
-  """
-  end
 end

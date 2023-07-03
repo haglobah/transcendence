@@ -69,6 +69,38 @@ defmodule Tc.Stats do
       player_right: player_right
     }
   end
+
+  def calculate_stats_for(user, matches) do
+    wins = Enum.count(matches, &is_win(user, &1))
+    draws = Enum.count(matches, &is_draw(user, &1))
+    losses = Enum.count(matches) - wins - draws
+    ladder = calculate_ladder(wins, losses, draws)
+
+    %{wins: wins, losses: losses, draws: draws, ladder: ladder}
+  end
+
+  def calculate_ladder(wins, _losses, _draws) do
+    cond do
+      wins > 20 -> :gold
+      wins > 7 -> :silver
+      true -> :bronze
+    end
+  end
+
+  defp is_win(user,
+    %{player_left: %{id: left_id}, player_right: %{id: right_id}, score_left: left, score_right: right}
+  ) do
+    case user.id do
+      ^left_id -> left > right
+      ^right_id -> left < right
+    end
+  end
+
+  defp is_draw(_user,
+    %{score_left: left, score_right: right}
+  ) do
+      left == right
+  end
   @doc """
   Creates a match.
 
