@@ -1,10 +1,11 @@
 defmodule TcWeb.ChatLive.MemberList do
   use TcWeb, :live_component
 
-  import TcWeb.Component
   alias Tc.Accounts
   alias Tc.Chat
   alias Phoenix.PubSub
+
+  import TcWeb.Component
 
   def update(%{room: room, user: user} = assigns, socket) do
 
@@ -42,6 +43,16 @@ defmodule TcWeb.ChatLive.MemberList do
                 phx-click="kick" phx-value-member-id={member.id}>
                 Leave room
               </.button>
+              <.button :if={!Chat.is_muted(member, @room) && isnt_me(@user, member)}
+                phx-target={@myself}
+                phx-click="mute" phx-value-member-id={member.id}>
+                Mute
+              </.button>
+              <.button :if={Chat.is_muted(member, @room) && isnt_me(@user, member)}
+                phx-target={@myself}
+                phx-click="unmute" phx-value-member-id={member.id}>
+                Unmute
+              </.button>
             <% end %>
           </.display_user>
         <% end %>
@@ -63,6 +74,18 @@ defmodule TcWeb.ChatLive.MemberList do
 
   def handle_event("kick", %{"member-id" => member_id}, socket) do
     socket = change_room(&Chat.rm_member/2, member_id, socket)
+
+    {:noreply, socket}
+  end
+
+  def handle_event("mute", %{"member-id" => member_id}, socket) do
+    socket = change_room(&Chat.mute_member/2, member_id, socket)
+
+    {:noreply, socket}
+  end
+
+  def handle_event("unmute", %{"member-id" => member_id}, socket) do
+    socket = change_room(&Chat.unmute_member/2, member_id, socket)
 
     {:noreply, socket}
   end

@@ -17,6 +17,7 @@ defmodule Tc.Chat.Room do
     field :admins, {:array, :binary_id}
     field :members, {:array, :binary_id}
     field :blocked, {:array, :binary_id}
+    field :muted, {:array, :binary_id}
     has_many :messages, Message
 
     timestamps()
@@ -70,6 +71,12 @@ defmodule Tc.Chat.Room do
     room
     |> cast(attrs, [:blocked])
     |> validate_required([:blocked])
+  end
+
+  def change_muted(room, attrs) do
+    room
+    |> cast(attrs, [:muted])
+    |> validate_required([:muted])
   end
 
   def change_chat(room, attrs) do

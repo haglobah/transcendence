@@ -107,6 +107,21 @@ defmodule TcWeb.ChatLive do
     """
   end
 
+  def can_write(current_user, room) do
+    case room.name do
+      nil -> Chat.is_member(current_user, room) and !Network.is_blocked(current_user, get_other(room.members, current_user))
+      _ -> Chat.is_member(current_user, room) and !Chat.is_muted(current_user, room)
+    end
+  end
+
+  def get_other(members, user) do
+    [first, second] = Accounts.get_users(members)
+    case first do
+      ^user -> second
+      _ -> first
+    end
+  end
+
   def mount(%{"room_id" => room_id}, _session, socket) do
     if connected?(socket) do
       Endpoint.subscribe(Chat.rooms_topic())
@@ -205,25 +220,16 @@ defmodule TcWeb.ChatLive do
 
   defp schedule_status_tick(), do: Process.send_after(self(), :status_tick, 1000)
 
-  defp can_write(current_user, room) do
-    case room.name do
-      nil -> is_member(current_user, room)
-        and !Network.is_blocked(current_user, get_other(room.members, current_user))
-      _ -> is_member(current_user, room)
-    end
-  end
+  # def handle_info({:mute, room, member_id}, socket) do
+  #   Process.send_after(self(), {:unmute, room, member_id}, 1000)
+  #   {:noreply, socket}
+  # end
 
-  defp is_member(current_user, room) do
-    current_user.id in Chat.get_room!(room.id).members
-  end
-
-  def get_other(members, user) do
-    [first, second] = Accounts.get_users(members)
-    case first do
-      ^user -> second
-      _ -> first
-    end
-  end
+  # def handle_info({:unmute, room, member_id}, socket) do
+  #   # Chat.unmute_member(room, member_id)
+  #   PubSub.broadcast(Tc.PubSub, Chat.rooms_topic(), {:edit_room})
+  #   {:noreply, socket}
+  # end
 
   # defp paginate_msgs(socket, new_page) when new_page >= 1 do
   #   %{active_room: room, per_page: per_page, page: cur_page} = socket.assigns

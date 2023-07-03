@@ -130,6 +130,38 @@ defmodule Tc.Chat do
     false
   end
 
+  def is_member(current_user, room) do
+    current_user.id in room.members
+  end
+
+  def is_muted(user, room) do
+    case room.muted do
+      nil -> false
+      _ -> user.id in room.muted
+    end
+  end
+
+  def mute_member(%Room{muted: muted} = room, user_id) do
+    attrs = case muted do
+      nil -> %{muted: [user_id]}
+      _ -> %{muted: [user_id | muted]}
+    end
+
+    room
+    |> Room.change_muted(attrs)
+    |> Repo.update()
+  end
+
+  def unmute_member(%Room{muted: muted} = room, user_id) do
+    attrs = %{muted: muted -- [user_id]}
+
+    IO.inspect(attrs)
+
+    room
+    |> Room.change_muted(attrs)
+    |> IO.inspect()
+    |> Repo.update()
+  end
 
   def add_member(%Room{members: members} = room, user_id) do
     attrs = %{members: [user_id | members]}
