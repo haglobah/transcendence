@@ -11,7 +11,7 @@ defmodule Tc.Accounts.User do
     field :hashed_password, :string, redact: true
     field :confirmed_at, :naive_datetime
     field :is_2fa, :boolean
-    field :otp_secret, :string
+    field :otp_secret, :binary
     field :code, :string, virtual: true
 
     timestamps()
@@ -199,13 +199,15 @@ defmodule Tc.Accounts.User do
   def create_mfa_changeset(user, attrs) do
     changeset =
       user
-      |> cast(attrs, [:is_2fa, :otp_secret, :code])
-      |> validate_required([:is_2fa, :otp_secret, :code])
+      |> cast(attrs, [:otp_secret, :code])
+      |> validate_required([:otp_secret, :code])
       |> validate_format(:code, ~r/^\d{6}$/, message: "should be a 6 digit number")
+      |> put_change(:is_2fa, true)
 
+    secret = Ecto.Changeset.get_field(changeset, :otp_secret)
     code = Ecto.Changeset.get_field(changeset, :code)
 
-    if changeset.valid? and not valid_totp?(user, code) do
+    if changeset.valid? and not valid_creation_totp?(Base.decode64!(secret), code) do
       Ecto.Changeset.add_error(changeset, :code, "invalid code")
     else
       changeset
@@ -229,7 +231,11 @@ defmodule Tc.Accounts.User do
   end
 
   def valid_totp?(user, code) do
-    is_binary(code) and byte_size(code) == 6 and NimbleTOTP.valid?(user.secret, code)
+    is_binary(code) and byte_size(code) == 6 and NimbleTOTP.valid?(user.otp_secret, code)
+  end
+
+  def valid_creation_totp?(secret, code) do
+    is_binary(code) and byte_size(code) == 6 and NimbleTOTP.valid?(secret, code)
   end
 
   # defp validate_otp(changeset, opts) do

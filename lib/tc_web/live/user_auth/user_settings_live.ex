@@ -123,12 +123,6 @@ defmodule TcWeb.UserSettingsLive do
             value={@current_email}
           />
           <.input
-            field={@mfa_form[:is_2fa]}
-            type="hidden"
-            id="hidden_is_2fa"
-            value={"true"}
-          />
-          <.input
             field={@mfa_form[:otp_secret]}
             type="hidden"
             id="hidden_otp_secret"
@@ -143,9 +137,9 @@ defmodule TcWeb.UserSettingsLive do
             value={@current_password}
             required
           /> --%>
-          <%= Mfa.generate_qrcode() %>
+          <%= Mfa.generate_qrcode(@otp_uri) %>
           <.input
-            field={@mfa_form[:code]}
+            field={@mfa_form[:otp_code]}
             name="otp_code"
             type="text"
             label="One-time code"
@@ -182,13 +176,14 @@ defmodule TcWeb.UserSettingsLive do
     password_changeset = Accounts.change_user_password(user)
     mfa_changeset = Accounts.change_create_mfa(user)
     otp_secret = NimbleTOTP.secret()
-    otp_uri = Mfa.generate_uri(user.name, secret)
+    otp_uri = Mfa.generate_uri(user.name, otp_secret)
 
     socket =
       socket
       |> assign(:current_password, nil)
       |> assign(:is_2fa, user.is_2fa)
-      |> assign(:otp_uri, )
+      |> assign(:otp_uri, otp_uri)
+      |> assign(:otp_secret, Base.encode64(otp_secret))
       |> assign(:otp_code, nil)
       |> assign(:name_form_current_password, nil)
       |> assign(:email_form_current_password, nil)
@@ -292,8 +287,21 @@ defmodule TcWeb.UserSettingsLive do
     end
   end
 
-  def handle_event("create_mfa", params, socket) do
-    IO.inspect(params)
+  def handle_event("create_mfa",
+    %{"otp_code" => otp_code, "user" => %{"otp_secret" => otp_secret}},
+    socket
+  ) do
+    user = socket.assigns.current_user
+    mfa_attrs = %{code: otp_code, otp_secret: otp_secret}
+
+    case Accounts.add_mfa(user, mfa_attrs) do
+      {:ok, user} ->
+        IO.inspect(user)
+        {:noreply, assign(socket, trigger_submit: true)}
+      {:error, changeset} ->
+        IO.inspect(changeset)
+        {:noreply, assign(socket, mfa_form: to_form(changeset))}
+    end
 
     {:noreply, socket}
   end

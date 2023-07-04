@@ -282,6 +282,22 @@ defmodule Tc.Accounts do
     User.create_mfa_changeset(user, attrs)
   end
 
+  def add_mfa(user, attrs) do
+    changeset =
+      user
+      |> User.create_mfa_changeset(attrs)
+
+    Repo.update(changeset)
+  end
+
+  # def rm_mfa(user) do
+  #   changeset =
+  #     user
+  #     |> User.create_mfa_changeset()
+
+  #   Repo.update(changeset)
+  # end
+
   ## Session
 
   @doc """
