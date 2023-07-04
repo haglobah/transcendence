@@ -1,10 +1,25 @@
 defmodule TcWeb.GameLive.Component do
   use Phoenix.Component
 
+  def game_header(assigns) do
+    ~H"""
+    <div>
+      <h2 class="text-center font-mono">
+        <p><b>About the game</b>:</p>
+        <p>Players use paddles to hit the ball back and forth.</p>
+        <p>Points are earned when one fails to return the ball.</p><br>
+        <p><b>How to play</b>:</p>
+        <p>Players move their paddle <b>up</b> and <b>down</b> using <b>↑</b> and <b>↓</b> on their keyboards.</p><br>
+      </h2>
+    </div>
+    """
+  end
+
   attr :view_box, :string
   slot :inner_block, required: true
   def canvas(assigns) do
     ~H"""
+    <.game_header />
     <svg class="m-auto max-w-3xl"
       viewBox={ @view_box }
       xmlns="http://www.w3.org/2000/svg"

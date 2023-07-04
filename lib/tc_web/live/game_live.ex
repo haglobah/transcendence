@@ -13,39 +13,22 @@ defmodule TcWeb.GameLive do
   """
   def render(%{live_action: :game_over} = assigns) do
     ~H"""
-    <div>
-      <h2 class="text-center font-mono">
-        <p><b>About the game</b>:</p>
-        <p>Players use paddles to hit the ball back and forth.</p>
-        <p>Points are earned when one fails to return the ball.</p><br>
-        <p><b>How to play</b>:</p>
-        <p>Players move their paddle <b>up</b> and <b>down</b> using <b>↑</b> and <b>↓</b> on their keyboards.</p><br>
-      </h2>
-    </div>
-    <.game_over view_box="0 0 100 100">
-      <.paddle x={ @left.x } y={ @left.y } />
-      <.paddle x={ @right.x } y={ @right.y } />
-      <.ball x={ @ball.x } y={ @ball.y } />
-      <.score left={ @score.left } right={ @score.right } />
-      <.clock seconds={ 0 } />
-    </.game_over>
+    <%= if @gone do %>
+      <p class="my-10 text-center font-mono font-bold text-3xl">This game is already over.</p>
+    <% else %>
+      <.game_over view_box="0 0 100 100">
+        <.paddle x={ @left.x } y={ @left.y } />
+        <.paddle x={ @right.x } y={ @right.y } />
+        <.ball x={ @ball.x } y={ @ball.y } />
+        <.score left={ @score.left } right={ @score.right } />
+        <.clock seconds={ 0 } />
+      </.game_over>
+    <% end %>
     """
   end
 
   def render(assigns) do
     ~H"""
-    <div>
-      <h2 class="text-center font-mono">
-        <p><b>About the game</b>:</p>
-        <p>Players use paddles to hit the ball back and forth.</p>
-        <p>Points are earned when one fails to return the ball.</p><br>
-        <p><b>How to play</b>:</p>
-        <p>Players move their paddle <b>up</b> and <b>down</b> using <b>↑</b> and <b>↓</b> on their keyboards.</p><br>
-        <p><.button>
-          Pause Game
-        </.button></p><br>
-      </h2>
-    </div>
     <.canvas view_box="0 0 100 100">
       <.paddle x={ @state.left.pos.x } y={ @state.left.pos.y } />
       <.paddle x={ @state.right.pos.x } y={ @state.right.pos.y } />
@@ -71,16 +54,22 @@ defmodule TcWeb.GameLive do
     {:ok,
     socket
     |> assign(state: Game.current_state(game_id))
+    |> assign(gone: false)
     }
   end
 
   def handle_params(_params, _uri, %{assigns: assigns} = socket) do
-    {:noreply, socket
+    socket = case assigns[:state] do
+     nil -> assign(socket, gone: true)
+     _ ->
+      socket
       |> assign(left: %{x: assigns.state.left.pos.x, y: assigns.state.left.pos.y})
       |> assign(right: %{x: assigns.state.right.pos.x, y: assigns.state.right.pos.y})
       |> assign(ball: %{x: assigns.state.ball.pos.x, y: assigns.state.ball.pos.y})
       |> assign(score: %{left: assigns.state.score.left, right: assigns.state.score.right})
-    }
+    end
+
+    {:noreply, socket}
   end
 
   def handle_event("move", %{"key" => key} = _params, socket) do
