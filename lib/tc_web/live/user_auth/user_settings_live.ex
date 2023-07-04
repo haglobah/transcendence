@@ -22,93 +22,140 @@ defmodule TcWeb.UserSettingsLive do
       </div>
 
       <div class="space-y-12 divide-y">
-        <div>
-          <.simple_form
-            for={@name_form}
-            id="name_form"
-            phx-submit="update_name"
-            phx-change="validate_name"
-          >
-            <.input field={@name_form[:name]} type="text" label="name" required />
-            <.input
-              field={@name_form[:current_password]}
-              name="current_password"
-              id="current_password_for_name"
-              type="password"
-              label="Current password"
-              value={@name_form_current_password}
-              required
-            />
-            <:actions>
-              <.button phx-disable-with="Changing...">Change Email</.button>
-            </:actions>
-          </.simple_form>
-        </div>
-        <div>
-          <.simple_form
-            for={@email_form}
-            id="email_form"
-            phx-submit="update_email"
-            phx-change="validate_email"
-          >
-            <.input field={@email_form[:email]} type="email" label="Email" required />
-            <.input
-              field={@email_form[:current_password]}
-              name="current_password"
-              id="current_password_for_email"
-              type="password"
-              label="Current password"
-              value={@email_form_current_password}
-              required
-            />
-            <:actions>
-              <.button phx-disable-with="Changing...">Change Email</.button>
-            </:actions>
-          </.simple_form>
-        </div>
-        <div>
-          <.simple_form
-            for={@password_form}
-            id="password_form"
-            action={~p"/users/log_in?_action=password_updated"}
-            method="post"
-            phx-change="validate_password"
-            phx-submit="update_password"
-            phx-trigger-action={@trigger_submit}
-          >
-            <.input
-              field={@password_form[:email]}
-              type="hidden"
-              id="hidden_user_email"
-              value={@current_email}
-            />
-            <.input field={@password_form[:password]} type="password" label="New password" required />
-            <.input
-              field={@password_form[:password_confirmation]}
-              type="password"
-              label="Confirm new password"
-            />
-            <.input
-              field={@password_form[:current_password]}
-              name="current_password"
-              type="password"
-              label="Current password"
-              id="current_password_for_password"
-              value={@current_password}
-              required
-            />
-            <:actions>
-              <.button phx-disable-with="Changing...">Change Password</.button>
-            </:actions>
-          </.simple_form>
-        </div>
-        <.button :if={!@is_2fa} phx-click={show_modal("mfa-modal")}>
+        <.simple_form
+          for={@name_form}
+          id="name_form"
+          phx-submit="update_name"
+          phx-change="validate_name"
+        >
+          <.input field={@name_form[:name]} type="text" label="name" required />
+          <.input
+            field={@name_form[:current_password]}
+            name="current_password"
+            id="current_password_for_name"
+            type="password"
+            label="Current password"
+            value={@name_form_current_password}
+            required
+          />
+          <:actions>
+            <.button phx-disable-with="Changing...">Change Email</.button>
+          </:actions>
+        </.simple_form>
+        <.simple_form
+          for={@email_form}
+          id="email_form"
+          phx-submit="update_email"
+          phx-change="validate_email"
+        >
+          <.input field={@email_form[:email]} type="email" label="Email" required />
+          <.input
+            field={@email_form[:current_password]}
+            name="current_password"
+            id="current_password_for_email"
+            type="password"
+            label="Current password"
+            value={@email_form_current_password}
+            required
+          />
+          <:actions>
+            <.button phx-disable-with="Changing...">Change Email</.button>
+          </:actions>
+        </.simple_form>
+        <.simple_form :if={!@is_2fa}
+          for={@password_form}
+          id="password_form"
+          action={~p"/users/log_in?_action=password_updated"}
+          method="post"
+          phx-change="validate_password"
+          phx-submit="update_password"
+          phx-trigger-action={@trigger_submit}
+        >
+          <.input
+            field={@password_form[:email]}
+            type="hidden"
+            id="hidden_user_email"
+            value={@current_email}
+          />
+          <.input field={@password_form[:password]} type="password" label="New password" required />
+          <.input
+            field={@password_form[:password_confirmation]}
+            type="password"
+            label="Confirm new password"
+          />
+          <.input
+            field={@password_form[:current_password]}
+            name="current_password"
+            type="password"
+            label="Current password"
+            id="current_password_for_password"
+            value={@current_password}
+            required
+          />
+          <:actions>
+            <.button phx-disable-with="Changing...">Change Password</.button>
+          </:actions>
+        </.simple_form>
+        <.button :if={@is_2fa} phx-click={show_modal("totp-modal")}>
+          Change your password
+        </.button>
+        <.button :if={!@is_2fa} phx-click={show_modal("create-mfa-modal")}>
           Add Two-factor Authentication
         </.button>
       </div>
     </div>
 
-    <.modal id="mfa-modal">
+    <.modal id="totp-modal">
+      <.simple_form
+        for={@totp_form}
+        id="totp_form"
+        phx-submit="check_totp"
+        phx-trigger-action={@trigger_submit}
+      >
+        <.input field={@totp_form[:code]} type="text" label="One-time code" required />
+        <:actions>
+          <.button phx-disable-with="Checking...">Check Code</.button>
+        </:actions>
+      </.simple_form>
+    </.modal>
+    <.modal id="change-mfa-password-modal">
+      <.simple_form
+        for={@password_form}
+        id="password_form"
+        action={~p"/users/log_in?_action=password_updated"}
+        method="post"
+        phx-change="validate_password"
+        phx-submit="update_password"
+        phx-trigger-action={@trigger_submit}
+      >
+        <.input
+          field={@password_form[:email]}
+          type="hidden"
+          id="hidden_user_email"
+          value={@current_email}
+        />
+        <.input field={@password_form[:password]} type="password" label="New password" required />
+        <.input
+          field={@password_form[:password_confirmation]}
+          type="password"
+          label="Confirm new password"
+        />
+        <.input
+          field={@password_form[:current_password]}
+          name="current_password"
+          type="password"
+          label="Current password"
+          id="current_password_for_password"
+          value={@current_password}
+          required
+        />
+        <:actions>
+          <.button phx-disable-with="Changing...">Change Password</.button>
+        </:actions>
+      </.simple_form>
+    </.modal>
+
+    <.modal id="create-mfa-modal">
       <div>
         <.simple_form
           for={@mfa_form}
@@ -128,15 +175,6 @@ defmodule TcWeb.UserSettingsLive do
             id="hidden_otp_secret"
             value={@otp_secret}
           />
-          <%!-- <.input
-            field={@mfa_form[:current_password]}
-            name="current_password"
-            type="password"
-            label="Current password"
-            id="current_password_for_mfa"
-            value={@current_password}
-            required
-          /> --%>
           <%= Mfa.generate_qrcode(@otp_uri) %>
           <.input
             field={@mfa_form[:otp_code]}
@@ -175,6 +213,7 @@ defmodule TcWeb.UserSettingsLive do
     email_changeset = Accounts.change_user_email(user)
     password_changeset = Accounts.change_user_password(user)
     mfa_changeset = Accounts.change_create_mfa(user)
+    totp_changeset = Accounts.change_totp(user)
     otp_secret = NimbleTOTP.secret()
     otp_uri = Mfa.generate_uri(user.name, otp_secret)
 
@@ -193,6 +232,7 @@ defmodule TcWeb.UserSettingsLive do
       |> assign(:email_form, to_form(email_changeset))
       |> assign(:password_form, to_form(password_changeset))
       |> assign(:mfa_form, to_form(mfa_changeset))
+      |> assign(:totp_form, to_form(totp_changeset))
       |> assign(:trigger_submit, false)
 
     {:ok, socket}
@@ -301,6 +341,28 @@ defmodule TcWeb.UserSettingsLive do
       {:error, changeset} ->
         IO.inspect(changeset)
         {:noreply, assign(socket, mfa_form: to_form(changeset))}
+    end
+
+    {:noreply, socket}
+  end
+
+  def handle_event("check_totp",
+    %{"user" => %{"code" => code}} = params,
+    socket
+  ) do
+
+    IO.inspect(params)
+    user = socket.assigns.current_user
+    totp_attrs = %{code: code}
+
+    case Accounts.change_totp(user, totp_attrs) do
+      %Ecto.Changeset{} = changeset ->
+        IO.inspect(user)
+        show_modal("change-mfa-password-modal")
+        {:noreply, socket}
+      {:error, changeset} ->
+        IO.inspect(changeset)
+        {:noreply, assign(socket, totp_form: to_form(changeset))}
     end
 
     {:noreply, socket}

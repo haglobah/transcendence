@@ -282,6 +282,10 @@ defmodule Tc.Accounts do
     User.create_mfa_changeset(user, attrs)
   end
 
+  def change_totp(user, attrs \\ %{}) do
+    User.totp_changeset(user, attrs)
+  end
+
   def add_mfa(user, attrs) do
     changeset =
       user

@@ -214,7 +214,7 @@ defmodule Tc.Accounts.User do
     end
   end
 
-  def change_totp(user, attrs) do
+  def totp_changeset(user, attrs) do
     changeset =
       user
       |> cast(attrs, [:code])
