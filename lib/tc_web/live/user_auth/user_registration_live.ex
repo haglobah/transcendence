@@ -43,9 +43,6 @@ defmodule TcWeb.UserRegistrationLive do
         </div>
 
         <:actions>
-          <.input field={@form[:is_2fa]} type="checkbox" label="Use Two-factor authentication"/>
-        </:actions>
-        <:actions>
           <.button phx-disable-with="Creating account..." class="w-full">Create an account</.button>
         </:actions>
       </.simple_form>
