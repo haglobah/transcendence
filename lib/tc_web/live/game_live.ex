@@ -29,13 +29,17 @@ defmodule TcWeb.GameLive do
 
   def render(assigns) do
     ~H"""
-    <.canvas view_box="0 0 100 100">
-      <.paddle x={ @state.left.pos.x } y={ @state.left.pos.y } />
-      <.paddle x={ @state.right.pos.x } y={ @state.right.pos.y } />
-      <.ball x={ @state.ball.pos.x } y={ @state.ball.pos.y } />
-      <.score left={ @state.score.left } right={ @state.score.right } />
-      <.clock seconds={ @state.rest_seconds } />
-    </.canvas>
+    <%= if @broken do %>
+      <p class="my-10 text-center font-mono font-bold text-3xl">This game does not seem to exist (anymore).</p>
+    <% else %>
+      <.canvas view_box="0 0 100 100">
+        <.paddle x={ @state.left.pos.x } y={ @state.left.pos.y } />
+        <.paddle x={ @state.right.pos.x } y={ @state.right.pos.y } />
+        <.ball x={ @state.ball.pos.x } y={ @state.ball.pos.y } />
+        <.score left={ @state.score.left } right={ @state.score.right } />
+        <.clock seconds={ @state.rest_seconds } />
+      </.canvas>
+    <% end %>
     """
   end
 
@@ -51,11 +55,19 @@ defmodule TcWeb.GameLive do
 
     schedule_status_tick()
 
-    {:ok,
-    socket
-    |> assign(state: Game.current_state(game_id))
-    |> assign(gone: false)
-    }
+    socket = case Game.current_state(game_id) do
+      {_, _} ->
+        socket
+        |> assign(broken: true)
+        |> assign(gone: false)
+      state ->
+        socket
+        |> assign(broken: false)
+        |> assign(state: state)
+        |> assign(gone: false)
+    end
+
+    {:ok, socket}
   end
 
   def handle_params(_params, _uri, %{assigns: assigns} = socket) do
@@ -100,6 +112,15 @@ defmodule TcWeb.GameLive do
       Tc.PubSub,
       Activity.status_topic(),
       {:change, socket.assigns.current_user.id, {:in_game, state.game_id}})
+    schedule_status_tick()
+    {:noreply, socket}
+  end
+
+  def handle_info(:status_tick, socket) do
+    PubSub.broadcast(
+      Tc.PubSub,
+      Activity.status_topic(),
+      {:change, socket.assigns.current_user.id, :online})
     schedule_status_tick()
     {:noreply, socket}
   end

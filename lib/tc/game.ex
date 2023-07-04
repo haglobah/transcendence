@@ -37,7 +37,11 @@ defmodule Tc.Game do
   end
 
   def current_state(game_id) do
-    game_id |> via_tuple() |> GenServer.call(:current)
+    try do
+      game_id |> via_tuple() |> GenServer.call(:current)
+    catch
+      :exit, _ -> {nil, true}
+    end
   end
 
   def move_paddle(game_id, which, paddle, direction) do
