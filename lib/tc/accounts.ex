@@ -278,6 +278,10 @@ defmodule Tc.Accounts do
     end
   end
 
+  def change_create_mfa(user, attrs \\ %{}) do
+    User.create_mfa_changeset(user, attrs)
+  end
+
   ## Session
 
   @doc """

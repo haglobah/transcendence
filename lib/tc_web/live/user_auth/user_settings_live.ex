@@ -102,7 +102,7 @@ defmodule TcWeb.UserSettingsLive do
             </:actions>
           </.simple_form>
         </div>
-        <.button phx-click={show_modal("mfa-modal")}>
+        <.button :if={!@is_2fa} phx-click={show_modal("mfa-modal")}>
           Add Two-factor Authentication
         </.button>
       </div>
@@ -123,6 +123,18 @@ defmodule TcWeb.UserSettingsLive do
             value={@current_email}
           />
           <.input
+            field={@mfa_form[:is_2fa]}
+            type="hidden"
+            id="hidden_is_2fa"
+            value={"true"}
+          />
+          <.input
+            field={@mfa_form[:otp_secret]}
+            type="hidden"
+            id="hidden_otp_secret"
+            value={@otp_secret}
+          />
+          <%!-- <.input
             field={@mfa_form[:current_password]}
             name="current_password"
             type="password"
@@ -130,19 +142,19 @@ defmodule TcWeb.UserSettingsLive do
             id="current_password_for_mfa"
             value={@current_password}
             required
-          />
-          <%= Mfa.generate_qrcode(Mfa.generate_uri(@current_name, NimbleTOTP.secret())) %>
+          /> --%>
+          <%= Mfa.generate_qrcode() %>
           <.input
             field={@mfa_form[:code]}
             name="otp_code"
-            type="numeric"
+            type="text"
             label="One-time code"
             id="otp_code_for_mfa"
             value={@otp_code}
             required
           />
           <:actions>
-            <.button phx-disable-with="Changing...">Add Two-factor Authentication </.button>
+            <.button phx-disable-with="Adding...">Add Two-factor Authentication </.button>
           </:actions>
         </.simple_form>
       </div>
@@ -168,11 +180,15 @@ defmodule TcWeb.UserSettingsLive do
     name_changeset = Accounts.change_user_name(user)
     email_changeset = Accounts.change_user_email(user)
     password_changeset = Accounts.change_user_password(user)
-    mfa_changeset = nil && Accounts.change_create_mfa(user)
+    mfa_changeset = Accounts.change_create_mfa(user)
+    otp_secret = NimbleTOTP.secret()
+    otp_uri = Mfa.generate_uri(user.name, secret)
 
     socket =
       socket
       |> assign(:current_password, nil)
+      |> assign(:is_2fa, user.is_2fa)
+      |> assign(:otp_uri, )
       |> assign(:otp_code, nil)
       |> assign(:name_form_current_password, nil)
       |> assign(:email_form_current_password, nil)
@@ -274,5 +290,11 @@ defmodule TcWeb.UserSettingsLive do
       {:error, changeset} ->
         {:noreply, assign(socket, password_form: to_form(changeset))}
     end
+  end
+
+  def handle_event("create_mfa", params, socket) do
+    IO.inspect(params)
+
+    {:noreply, socket}
   end
 end

@@ -42,11 +42,10 @@ defmodule Tc.Accounts.User do
   """
   def registration_changeset(user, attrs, opts \\ []) do
     user
-    |> cast(attrs, [:name, :email, :password, :avatar_upload, :is_2fa, :otp_secret, :code])
+    |> cast(attrs, [:name, :email, :password, :avatar_upload])
     |> validate_name(opts)
     |> validate_email(opts)
     |> validate_password(opts)
-    |> validate_otp(opts)
   end
 
   defp validate_name(changeset, opts) do
@@ -74,24 +73,6 @@ defmodule Tc.Accounts.User do
     # |> validate_format(:password, ~r/[A-Z]/, message: "at least one upper case character")
     # |> validate_format(:password, ~r/[!?@#$%^&*_0-9]/, message: "at least one digit or punctuation character")
     |> maybe_hash_password(opts)
-  end
-
-  defp validate_otp(changeset, opts) do
-    changeset
-    |> validate_required([:is_2fa])
-    |> maybe_validate_otp(opts)
-  end
-
-  defp maybe_validate_otp(changeset, opts) do
-    wants_2fa? = Keyword.get(opts, :is_2fa, false)
-    otp_secret = get_change(changeset, :otp_secret)
-    code = get_change(changeset, :code)
-
-    if wants_2fa? && otp_secret && code && changeset.valid? do
-      changeset
-    else
-      changeset
-    end
   end
 
   defp maybe_hash_password(changeset, opts) do
@@ -215,6 +196,22 @@ defmodule Tc.Accounts.User do
     end
   end
 
+  def create_mfa_changeset(user, attrs) do
+    changeset =
+      user
+      |> cast(attrs, [:is_2fa, :otp_secret, :code])
+      |> validate_required([:is_2fa, :otp_secret, :code])
+      |> validate_format(:code, ~r/^\d{6}$/, message: "should be a 6 digit number")
+
+    code = Ecto.Changeset.get_field(changeset, :code)
+
+    if changeset.valid? and not valid_totp?(user, code) do
+      Ecto.Changeset.add_error(changeset, :code, "invalid code")
+    else
+      changeset
+    end
+  end
+
   def change_totp(user, attrs) do
     changeset =
       user
@@ -234,4 +231,22 @@ defmodule Tc.Accounts.User do
   def valid_totp?(user, code) do
     is_binary(code) and byte_size(code) == 6 and NimbleTOTP.valid?(user.secret, code)
   end
+
+  # defp validate_otp(changeset, opts) do
+  #   changeset
+  #   |> validate_required([:is_2fa])
+  #   |> maybe_validate_otp(opts)
+  # end
+
+  # defp maybe_validate_otp(changeset, opts) do
+  #   wants_2fa? = Keyword.get(opts, :is_2fa, false)
+  #   otp_secret = get_change(changeset, :otp_secret)
+  #   code = get_change(changeset, :code)
+
+  #   if wants_2fa? && otp_secret && code && changeset.valid? do
+  #     changeset
+  #   else
+  #     changeset
+  #   end
+  # end
 end
