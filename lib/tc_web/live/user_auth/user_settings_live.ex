@@ -130,7 +130,7 @@ defmodule TcWeb.UserSettingsLive do
             <.button phx-disable-with="Changing...">Change Password</.button>
           </:actions>
         </.simple_form>
-        <.button :if={@is_2fa} phx-click={show_modal("totp-modal")}>
+        <.button :if={@is_2fa and !@totp_checked} phx-click={show_modal("totp-modal")}>
           Change your password
         </.button>
         <.button :if={!@is_2fa} phx-click={show_modal("create-mfa-modal")}>
@@ -230,10 +230,14 @@ defmodule TcWeb.UserSettingsLive do
       |> assign(:totp_form, to_form(totp_changeset))
       |> assign(:trigger_submit, false)
       |> assign(:show_password_change, false)
-      |> assign(:show_totp, false)
+      |> assign(:totp_checked, false)
 
     {:ok, socket}
   end
+
+  # def handle_params(_params, _sesssion, socket) do
+  #   {:noreply, socket}
+  # end
 
   def handle_event("validate_name", params, socket) do
     %{"current_password" => password, "user" => user_params} = params
@@ -348,8 +352,6 @@ defmodule TcWeb.UserSettingsLive do
     socket
   ) do
 
-    {:reply, %{}, assign(socket, show_password_change: !socket.assigns.show_password_change)}
-
     IO.inspect(params)
     user = socket.assigns.current_user
     totp_attrs = %{code: code}
@@ -357,16 +359,16 @@ defmodule TcWeb.UserSettingsLive do
     case Accounts.change_totp(user, totp_attrs) do
       %Ecto.Changeset{valid?: true} = changeset ->
         IO.inspect(changeset)
+
         {:reply, %{},
           socket
           |> assign(show_password_change: !socket.assigns.show_password_change)
-          |> assign(show_totp: !socket.assigns.show_totp)
+          |> assign(totp_checked: !socket.assigns.totp_checked)
+          |> assign(totp_form: to_form(changeset))
         }
       %Ecto.Changeset{valid?: false} = changeset ->
         IO.inspect(changeset)
         {:noreply, assign(socket, totp_form: to_form(changeset))}
-      x -> IO.puts("\n\n\nwhatever:")
-        IO.inspect(x)
     end
   end
 end
