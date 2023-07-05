@@ -21,7 +21,7 @@ defmodule TcWeb.UserSettingsLive do
           />
       </div>
 
-      <div class="space-y-12 divide-y">
+      <div id="settings" class="space-y-12 divide-y">
         <.simple_form
           for={@name_form}
           id="name_form"
@@ -96,6 +96,40 @@ defmodule TcWeb.UserSettingsLive do
             <.button phx-disable-with="Changing...">Change Password</.button>
           </:actions>
         </.simple_form>
+        <.simple_form :if={@show_password_change}
+          for={@password_form}
+          id="password_form"
+          action={~p"/users/log_in?_action=password_updated"}
+          method="post"
+          phx-change="validate_password"
+          phx-submit="update_password"
+          phx-trigger-action={@trigger_submit}
+        >
+          <.input
+            field={@password_form[:email]}
+            type="hidden"
+            id="hidden_user_email"
+            value={@current_email}
+          />
+          <.input field={@password_form[:password]} type="password" label="New password" required />
+          <.input
+            field={@password_form[:password_confirmation]}
+            type="password"
+            label="Confirm new password"
+          />
+          <.input
+            field={@password_form[:current_password]}
+            name="current_password"
+            type="password"
+            label="Current password"
+            id="current_password_for_password"
+            value={@current_password}
+            required
+          />
+          <:actions>
+            <.button phx-disable-with="Changing...">Change Password</.button>
+          </:actions>
+        </.simple_form>
         <.button :if={@is_2fa} phx-click={show_modal("totp-modal")}>
           Change your password
         </.button>
@@ -110,48 +144,9 @@ defmodule TcWeb.UserSettingsLive do
         for={@totp_form}
         id="totp_form"
         phx-submit="check_totp"
-        phx-trigger-action={@trigger_submit}
       >
         <.input field={@totp_form[:code]} type="text" label="One-time code" required />
-        <:actions>
-          <.button phx-disable-with="Checking...">Check Code</.button>
-        </:actions>
-      </.simple_form>
-    </.modal>
-    <.modal id="change-mfa-password-modal">
-      <.simple_form
-        for={@password_form}
-        id="password_form"
-        action={~p"/users/log_in?_action=password_updated"}
-        method="post"
-        phx-change="validate_password"
-        phx-submit="update_password"
-        phx-trigger-action={@trigger_submit}
-      >
-        <.input
-          field={@password_form[:email]}
-          type="hidden"
-          id="hidden_user_email"
-          value={@current_email}
-        />
-        <.input field={@password_form[:password]} type="password" label="New password" required />
-        <.input
-          field={@password_form[:password_confirmation]}
-          type="password"
-          label="Confirm new password"
-        />
-        <.input
-          field={@password_form[:current_password]}
-          name="current_password"
-          type="password"
-          label="Current password"
-          id="current_password_for_password"
-          value={@current_password}
-          required
-        />
-        <:actions>
-          <.button phx-disable-with="Changing...">Change Password</.button>
-        </:actions>
+        <.button phx-disable-with="Checking...">Check</.button>
       </.simple_form>
     </.modal>
 
@@ -234,6 +229,8 @@ defmodule TcWeb.UserSettingsLive do
       |> assign(:mfa_form, to_form(mfa_changeset))
       |> assign(:totp_form, to_form(totp_changeset))
       |> assign(:trigger_submit, false)
+      |> assign(:show_password_change, false)
+      |> assign(:show_totp, false)
 
     {:ok, socket}
   end
@@ -332,7 +329,7 @@ defmodule TcWeb.UserSettingsLive do
     socket
   ) do
     user = socket.assigns.current_user
-    mfa_attrs = %{code: otp_code, otp_secret: otp_secret}
+    mfa_attrs = %{code: otp_code, otp_secret: Base.decode64!(otp_secret)}
 
     case Accounts.add_mfa(user, mfa_attrs) do
       {:ok, user} ->
@@ -351,20 +348,25 @@ defmodule TcWeb.UserSettingsLive do
     socket
   ) do
 
+    {:reply, %{}, assign(socket, show_password_change: !socket.assigns.show_password_change)}
+
     IO.inspect(params)
     user = socket.assigns.current_user
     totp_attrs = %{code: code}
 
     case Accounts.change_totp(user, totp_attrs) do
-      %Ecto.Changeset{} = changeset ->
-        IO.inspect(user)
-        show_modal("change-mfa-password-modal")
-        {:noreply, socket}
-      {:error, changeset} ->
+      %Ecto.Changeset{valid?: true} = changeset ->
+        IO.inspect(changeset)
+        {:reply, %{},
+          socket
+          |> assign(show_password_change: !socket.assigns.show_password_change)
+          |> assign(show_totp: !socket.assigns.show_totp)
+        }
+      %Ecto.Changeset{valid?: false} = changeset ->
         IO.inspect(changeset)
         {:noreply, assign(socket, totp_form: to_form(changeset))}
+      x -> IO.puts("\n\n\nwhatever:")
+        IO.inspect(x)
     end
-
-    {:noreply, socket}
   end
 end

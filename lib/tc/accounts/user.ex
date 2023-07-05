@@ -207,7 +207,7 @@ defmodule Tc.Accounts.User do
     secret = Ecto.Changeset.get_field(changeset, :otp_secret)
     code = Ecto.Changeset.get_field(changeset, :code)
 
-    if changeset.valid? and not valid_creation_totp?(Base.decode64!(secret), code) do
+    if changeset.valid? and not valid_creation_totp?(secret, code) do
       Ecto.Changeset.add_error(changeset, :code, "invalid code")
     else
       changeset
