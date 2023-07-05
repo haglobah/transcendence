@@ -278,6 +278,30 @@ defmodule Tc.Accounts do
     end
   end
 
+  def change_create_mfa(user, attrs \\ %{}) do
+    User.create_mfa_changeset(user, attrs)
+  end
+
+  def change_totp(user, attrs \\ %{}) do
+    User.totp_changeset(user, attrs)
+  end
+
+  def add_mfa(user, attrs) do
+    changeset =
+      user
+      |> User.create_mfa_changeset(attrs)
+
+    Repo.update(changeset)
+  end
+
+  # def rm_mfa(user) do
+  #   changeset =
+  #     user
+  #     |> User.create_mfa_changeset()
+
+  #   Repo.update(changeset)
+  # end
+
   ## Session
 
   @doc """
