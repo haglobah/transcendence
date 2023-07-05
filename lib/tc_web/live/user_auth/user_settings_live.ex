@@ -215,7 +215,7 @@ defmodule TcWeb.UserSettingsLive do
     socket =
       socket
       |> assign(:current_password, nil)
-      |> assign(:is_2fa, user.is_2fa)
+      |> assign(:is_2fa, Accounts.has_2fa(user))
       |> assign(:otp_uri, otp_uri)
       |> assign(:otp_secret, Base.encode64(otp_secret))
       |> assign(:otp_code, nil)

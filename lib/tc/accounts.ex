@@ -286,6 +286,13 @@ defmodule Tc.Accounts do
     User.totp_changeset(user, attrs)
   end
 
+  def has_2fa(user) do
+    case user.is_2fa do
+      nil -> false
+      is_2fa -> is_2fa
+    end
+  end
+
   def add_mfa(user, attrs) do
     changeset =
       user
